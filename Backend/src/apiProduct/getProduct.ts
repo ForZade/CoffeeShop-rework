@@ -15,7 +15,7 @@ router.get("/getProduct", (req, res) => {
   }
 });
 
-// GET PRODUCT BY ID AVAILABLE ON DB
+// GET SPECIFIC PRODUCT BY ID AVAILABLE ON DB
 router.get("/getProductById", (req, res) => {
   try {
     // const databaseRes = await db.product.findOne({id: ${req.body.id}})
