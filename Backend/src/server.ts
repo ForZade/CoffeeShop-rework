@@ -8,6 +8,7 @@ import StartDB from "./Database/MongoDB";
 
 //Routes
 import allRoutes from "./routes/index";
+import { generateUserId } from "./utils/idgen";
 
 const PORT = process.env.PORT || 3000;
 

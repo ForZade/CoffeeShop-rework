@@ -3,6 +3,7 @@ import express, {Request, Response } from "express";
 import { generateToken } from "../../utils/token";
 import { sendVerificationEmail } from "../../utils/email";
 import User from "../../models/userModel";
+import { generateUserId } from "../../utils/idgen";
 
 const router = express.Router();
 
@@ -17,10 +18,13 @@ router.post("/", async (req: Request, res: Response) => {
             })
         }
 
-        console.log(email, password)
+        console.log(first_name, last_name, email, password)
+        
+        const id = await generateUserId();
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
+            id,
             first_name,
             last_name,
             email,

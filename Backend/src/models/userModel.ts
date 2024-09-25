@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 import { cartItemSchema, cartInterface } from "./cartModel";
 
 const userSchema = new mongoose.Schema({
-    _id: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
+    id: {
+        type: Number,
+        required: true,
+        unique: true
     },
     first_name: {
         type: String,

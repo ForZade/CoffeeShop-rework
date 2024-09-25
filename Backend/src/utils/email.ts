@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendVerificationEmail(email: string, token: string) {
-    const verificationLink = `${process.env.BASE_URL}/verify?token=${token}`;
+    const verificationLink = `${process.env.BASE_URL}/api/v1/auth/verify-email?token=${token}`;
 
     const mailOptions = {
         from: process.env.MAIL_USER,
@@ -20,8 +20,18 @@ export async function sendVerificationEmail(email: string, token: string) {
         subject: "Verify your email",
         html: `
             <h1>Verify your email</h1>
-            <p>Please click the following link to verify your email:</p>
-            <a href="${verificationLink}">${verificationLink}</a>
+            <p>Please verify your email by clicking the button below:</p>
+            <a href="${verificationLink}" style="
+                background-color: #4CAF50; 
+                color: white; 
+                padding: 10px 20px; 
+                text-align: center; 
+                text-decoration: none; 
+                display: inline-block; 
+                font-size: 16px; 
+                border-radius: 5px;
+                font-family: Arial, sans-serif;
+            ">Verify Your Email</a>
         `
     };
     

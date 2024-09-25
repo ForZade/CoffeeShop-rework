@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 
 const transactionSchema = new mongoose.Schema({
-    _id: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
+    id: {
+        type: String,
+        required: true,
+        unique: true
     },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,

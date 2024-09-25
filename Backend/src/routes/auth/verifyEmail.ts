@@ -8,9 +8,9 @@ router.get("/", async (req: Request, res: Response) => {
     const { token } = req.query;
 
     try {
-        const decoded: any = verifyToken(token as string);
+        const decoded: any = await verifyToken(token as string);
 
-        const user: any = User.findOne({ email: decoded.email });
+        const user: any = await User.findOne({ email: decoded.email });
 
         if (!user) {
             return res.status(404).json({
