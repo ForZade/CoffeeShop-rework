@@ -4,19 +4,19 @@ import mongoose from "mongoose";
 
 const router = express.Router();
 
-// Middleware to check if the user is an administrator
-const isAdmin = (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user || !('admin' in req.user) || !req.user.admin) {
-      return res.status(403).json({ error: "Only administrators can access this route" });
-    }
-    next();
-  };
-
 // POST /admin/ route to promote a user to administrator
-router.post("/admin", isAdmin, async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     console.log("1");
-    const { identifier } = req.body; // 123456 ; hello@mail.com
+    const { identifier, userId } = req.body; // 123456 ; hello@mail.com
+    
+    const admin = await User.findOne({id: userId});
+    
+    if ( !admin.isAdmin ){
+      return res.status(400).json({
+        message: "User is not admin"
+      });
+    }
 
     let user;
 
@@ -28,6 +28,14 @@ router.post("/admin", isAdmin, async (req: Request, res: Response) => {
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.isAdmin){
+      return res.status(400).json(
+        {
+          message: "User is already an admin"
+        }
+      )
     }
 
     user.isAdmin = true;
@@ -41,9 +49,17 @@ router.post("/admin", isAdmin, async (req: Request, res: Response) => {
 });
 
 // DELETE /admin/ route to remove a user from administrator role
-router.delete("/admin", isAdmin, async (req: Request, res: Response) => {
+router.delete("/", async (req: Request, res: Response) => {
   try {
-    const { identifier } = req.body; // 123456 ; hello@mail.com
+    const { identifier, userId } = req.body; // 123456 ; hello@mail.com
+
+    const admin = await User.findOne({id: userId});
+    
+    if ( !admin.isAdmin ){
+      return res.status(400).json({
+        message: "User is not admin"
+      });
+    }
 
     let user;
 
@@ -55,6 +71,14 @@ router.delete("/admin", isAdmin, async (req: Request, res: Response) => {
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!user.isAdmin){
+      return res.status(400).json(
+        {
+          message: "User is not an admin"
+        }
+      )
     }
 
     user.isAdmin = false;
