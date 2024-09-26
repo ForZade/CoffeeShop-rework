@@ -10,10 +10,10 @@ import logger from "../../logger/logger";
 
 // GET ALL PRODUCTS AVAILABLE ON DB
 router.get("/getProduct", async (req: Request, res: Response) => {
-  const { id } = req.body;
-  const user: any = User.findOne({ id });
+//  const { id } = req.body Currently not necessery
+//  const Admin = isAdmin(id);
 
-  if (user.admin) {
+//  if (Admin) {
     try {
       const databaseRes = await Product.find({});
       res.json({ message: "Success", databaseRes }); // SUBJECT TO CHANGE
@@ -21,17 +21,17 @@ router.get("/getProduct", async (req: Request, res: Response) => {
       logger.error(error);
       res.send({ message: "Failure", error }); // SUBJECT TO CHANGE
     }
-  } else {
-    res.json({ message: "User is not permitted to commit this action" });
-  }
+//  } else {
+//    res.json({ message: "User is not permitted to commit this action" });
+//  }
 });
 
 // GET SPECIFIC PRODUCT BY ID AVAILABLE ON DB
 router.get("/getProductById", async (req: Request, res: Response) => {
-  const { id } = req.body;
-  const Admin = isAdmin(id);
+ // const { id } = req.body;   // Currently not necessery
+ // const Admin = isAdmin(id);
 
-  if (Admin) {
+ // if (Admin) {
     try {
       const databaseRes = await Product.findOne({ id: req.body.id });
       res.send({ message: "Success", databaseRes }); // SUBJECT TO CHANGE
@@ -39,9 +39,9 @@ router.get("/getProductById", async (req: Request, res: Response) => {
       logger.error(error);
       res.send({ message: "Failure", error }); // SUBJECT TO CHANGE
     }
-  } else {
-    res.json({ message: "User is not permitted to commit this action" });
-  }
+ // } else {
+ //   res.json({ message: "User is not permitted to commit this action" });
+ // }
 });
 
 //typescript interface
@@ -87,8 +87,7 @@ router.patch("/patchProduct", async (req: Request, res: Response) => {
 
   if (Admin) {
     Object.keys(req.body).forEach((key) => {
-      // Technicly useless, subject to change
-      if (req.body[key] !== undefined && req.body[key] !== null) {
+      if (req.body[key] !== undefined && req.body[key] !== null) {  // Technicly useless, subject to change
         fieldsToUpdate[key] = req.body[key];
       }
     });
