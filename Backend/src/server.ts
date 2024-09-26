@@ -9,6 +9,8 @@ import StartDB from "./Database/MongoDB";
 //Routes
 import allRoutes from "./routes/index";
 import { generateUserId } from "./utils/idgen";
+import handleError500 from "./middlewares/error500";
+import { loggerMiddleware } from "./middlewares/logger";
 
 const PORT = process.env.PORT || 3000;
 
@@ -35,6 +37,9 @@ async function startServer() {
                 origin: "http://localhost:5173",
                 credentials: true
         }));
+
+        app.use(handleError500);
+        app.use(loggerMiddleware);
 
         app.use("/api/v1", allRoutes);
     } 
