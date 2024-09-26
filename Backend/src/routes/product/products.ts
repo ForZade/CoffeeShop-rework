@@ -6,7 +6,6 @@ const router = express.Router();
 
 // logger.**(ERR) LOGS UNWANTED ACTIVITY
 import logger from "../../logger/logger";
-import { userMention } from "discord.js";
 
 // GET ALL PRODUCTS AVAILABLE ON DB
 router.get("/getProduct", async (req: Request, res: Response) => {
@@ -16,10 +15,10 @@ router.get("/getProduct", async (req: Request, res: Response) => {
   if (user.admin) {
     try {
       const databaseRes = await productModel.find({});
-      res.json({ message: "Success", databaseRes }); // OBJECT TO CHANGE
+      res.json({ message: "Success", databaseRes }); // SUBJECT TO CHANGE
     } catch (error) {
       logger.error(error);
-      res.send({ message: "Failure", error }); // OBJECT TO CHANGE
+      res.send({ message: "Failure", error }); // SUBJECT TO CHANGE
     }
   } else {
     res.json({ message: "User is not permitted to commit this action" });
@@ -34,10 +33,10 @@ router.get("/getProductById", async (req: Request, res: Response) => {
   if (user.admin) {
     try {
       const databaseRes = await productModel.findOne({ id: req.body.id });
-      res.send({ message: "Success", databaseRes }); // OBJECT TO CHANGE
+      res.send({ message: "Success", databaseRes }); // SUBJECT TO CHANGE
     } catch (error) {
       logger.error(error);
-      res.send({ message: "Failure", error }); // OBJECT TO CHANGE
+      res.send({ message: "Failure", error }); // SUBJECT TO CHANGE
     }
   } else {
     res.json({ message: "User is not permitted to commit this action" });
@@ -70,10 +69,10 @@ router.post("/postProduct", async (req, res) => {
         image,
       });
       const savedProduct = await newProduct.save();
-      res.status(201).json({ message: "Success", savedProduct }); // OBJECT TO CHANGE
+      res.status(201).json({ message: "Success", savedProduct }); // SUBJECT TO CHANGE
     } catch (error) {
       logger.error(error);
-      res.status(400).json({ message: "Failure", error }); // OBJECT TO CHANGE
+      res.status(400).json({ message: "Failure", error }); // SUBJECT TO CHANGE
     }
   } else {
     res.json({ message: "User is not permitted to commit this action" });
@@ -86,7 +85,7 @@ router.patch("/patchProduct", async (req, res) => {
   const fieldsToUpdate = {};
 
   if (user.admin) {
-    Object.keys(req.body).forEach((key) => {
+    Object.keys(req.body).forEach((key) => { // Technicly useless, subject to change
       if (req.body[key] !== undefined && req.body[key] !== null) {
         fieldsToUpdate[key] = req.body[key];
       }
