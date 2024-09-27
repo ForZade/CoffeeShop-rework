@@ -8,7 +8,6 @@ import StartDB from "./Database/MongoDB";
 
 //Routes
 import allRoutes from "./routes/index";
-import { generateUserId } from "./utils/idgen";
 import handleError500 from "./middlewares/error500";
 import { loggerMiddleware } from "./middlewares/logger";
 
@@ -34,8 +33,8 @@ async function startServer() {
         });
         app.use(express.json());
         app.use(cors({
-                origin: "http://localhost:5173",
-                credentials: true
+            origin: "http://localhost:5173",
+            credentials: true
         }));
 
         app.use(handleError500);
