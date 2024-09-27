@@ -1,13 +1,11 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 import User from "../../models/userModel"; 
-import mongoose from "mongoose";
 
 const router = express.Router();
 
 // POST /admin/ route to promote a user to administrator
 router.post("/", async (req: Request, res: Response) => {
   try {
-    console.log("1");
     const { identifier, userId } = req.body; // 123456 ; hello@mail.com
     
     const admin = await User.findOne({id: userId});
