@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import User from "../../models/userModel"; 
+import User, { UserInterface } from "../../models/userModel";
 
 const router = express.Router();
 
@@ -7,16 +7,16 @@ const router = express.Router();
 router.post("/", async (req: Request, res: Response) => {
   try {
     const { identifier, userId } = req.body; // 123456 ; hello@mail.com
-    
-    const admin = await User.findOne({id: userId});
-    
-    if ( !admin.isAdmin ){
+
+    const admin = await User.findOne({ id: userId });
+
+    if (!admin.isAdmin) {
       return res.status(400).json({
-        message: "User is not admin"
+        message: "User is not admin",
       });
     }
 
-    let user;
+    let user: UserInterface;
 
     if (identifier.includes("@")) {
       user = await User.findOne({ email: identifier });
@@ -28,20 +28,16 @@ router.post("/", async (req: Request, res: Response) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    if (user.isAdmin){
-      return res.status(400).json(
-        {
-          message: "User is already an admin"
-        }
-      )
+    if (user.isAdmin) {
+      return res.status(400).json({
+        message: "User is already an admin",
+      });
     }
 
-    if(user.isVerified === false){
-      return res.status(400).json(
-        {
-          message: "User is not verified"
-        }
-      )
+    if (!user.isVerified) {
+      return res.status(400).json({
+        message: "User is not verified",
+      });
     }
 
     user.isAdmin = true;
@@ -59,11 +55,11 @@ router.delete("/", async (req: Request, res: Response) => {
   try {
     const { identifier, userId } = req.body; // 123456 ; hello@mail.com
 
-    const admin = await User.findOne({id: userId});
-    
-    if ( !admin.isAdmin ){
+    const admin = await User.findOne({ id: userId });
+
+    if (!admin.isAdmin) {
       return res.status(400).json({
-        message: "User is not admin"
+        message: "User is not admin",
       });
     }
 
@@ -79,20 +75,16 @@ router.delete("/", async (req: Request, res: Response) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    if (!user.isAdmin){
-      return res.status(400).json(
-        {
-          message: "User is not an admin"
-        }
-      )
+    if (!user.isAdmin) {
+      return res.status(400).json({
+        message: "User is not an admin",
+      });
     }
 
-    if(user.isVerified === false){
-      return res.status(400).json(
-        {
-          message: "User is not verified"
-        }
-      )
+    if (user.isVerified === false) {
+      return res.status(400).json({
+        message: "User is not verified",
+      });
     }
 
     user.isAdmin = false;

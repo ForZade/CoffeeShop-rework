@@ -16,35 +16,35 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 async function initializeDatabase() {
-    try {
-        await StartDB();
-    }
-    catch (err) {
-        console.log(err);
-    }
+  try {
+    await StartDB();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function startServer() {
-    try {
-        await initializeDatabase();
+  try {
+    await initializeDatabase();
 
-        app.listen(PORT, () => {
-            console.log(`[express] Server is running on port: ${PORT}`)
-        });
-        app.use(express.json());
-        app.use(cors({
-            origin: "http://localhost:5173",
-            credentials: true
-        }));
+    app.listen(PORT, () => {
+      console.log(`[express] Server is running on port: ${PORT}`);
+    });
+    app.use(express.json());
+    app.use(
+      cors({
+        origin: "http://localhost:5173",
+        credentials: true,
+      }),
+    );
 
-        app.use(handleError500);
-        app.use(loggerMiddleware);
+    // app.use(handleError500);
+    app.use(loggerMiddleware);
 
-        app.use("/api/v1", allRoutes);
-    } 
-    catch (err) {
-        console.log(err);
-    }
+    app.use("/api/v1", allRoutes);
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 startServer();

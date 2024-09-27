@@ -1,36 +1,36 @@
 import mongoose from "mongoose";
 
-const loggerSchema = new mongoose.Schema({
+const loggerSchema = new mongoose.Schema(
+  {
     status: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     message: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     user_id: {
-        type: Number
+      type: Number,
     },
     order_id: {
-        type: Number,
+      type: Number,
     },
     product_id: {
-        type: Number
+      type: Number,
     },
-    created_at: {
-        type: Date,
-        default: Date.now
-    }
-});
+  },
+  { timestamps: true },
+);
 
 export default mongoose.model("Logger", loggerSchema);
 
 export interface loggerInterface extends mongoose.Document {
-    status: string
-    message: string
-    user_id: number
-    order_id: number
-    product_id: number
-    created_at: Date
+  status: string;
+  message: string;
+  user_id: number;
+  order_id: number;
+  product_id: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

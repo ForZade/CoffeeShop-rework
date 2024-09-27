@@ -1,60 +1,63 @@
 import mongoose from "mongoose";
-import { cartItemSchema, cartInterface } from "./cartModel";
+import { cartItemSchema, CartInterface } from "./cartModel";
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     id: {
-        type: Number,
-        required: true,
-        unique: true
+      type: Number,
+      required: true,
+      unique: true,
     },
     first_name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     last_name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     password: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     isVerified: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     isAdmin: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
-    created_at: {
-        type: Date,
-        default: Date.now
+    roles: {
+      type: [String],
+      default: ["user"],
     },
     wallet: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
-    cart: [
-        cartItemSchema
-    ]
-});
+    cart: [cartItemSchema],
+  },
+  { timestamps: true },
+);
 
 export default mongoose.model("User", userSchema);
 
-export interface UserInterface {
-    _id: number,
-    first_name: string,
-    last_name: string,
-    email: string,
-    password: string,
-    isVerified: boolean,
-    admin: boolean,
-    created_at: Date,
-    wallet?: number,
-    cart?: cartInterface
+export interface UserInterface extends mongoose.Document {
+  _id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  isVerified: boolean;
+  isAdmin: boolean;
+  roles: string[];
+  wallet?: number;
+  cart?: CartInterface[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
