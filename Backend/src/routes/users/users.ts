@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 // import mongoose from "mongoose";
 import Users from "../../models/userModel";
 import dotenv from "dotenv";
@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
     try {
         const users = await Users.find(); 
         res.status(200).json(users);  
@@ -17,9 +17,10 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get("/id/:id", async (req, res) => {
+router.get("/id/:id", async (req: Request, res: Response) => {
     try {
         const getUserId = await Users.findOne({ id: parseInt(req.params.id) });
+        
         
         if (!getUserId) {
             return res.status(404).json({
@@ -34,14 +35,14 @@ router.get("/id/:id", async (req, res) => {
             data: getUserId
         });
     } catch (error) {
-        res.status(404).json({
+        res.status(400).json({
             status: "error",
             message: "Input a proper ID"
         });
     }
 });
 
-router.get("/email/:email", async (req, res) => {
+router.get("/email/:email", async (req: Request, res: Response) => {
     try {
         const getUserEmail = await Users.findOne({ email: req.params.email });
         
@@ -58,7 +59,7 @@ router.get("/email/:email", async (req, res) => {
             data: getUserEmail
         });
     } catch (error) {
-        res.status(404).json({
+        res.status(400).json({
             status: "error",
             message: "Input a proper email"
         });
