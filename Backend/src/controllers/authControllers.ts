@@ -52,6 +52,15 @@ const authControllers = {
     }
   },
 
+  //^ POST /api/v1/auth/login - Login route (authenticates user)
+  login: async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
+
+    try {
+      
+    }
+  }
+
   //^ POST /api/v1/auth/verify-email - Verify Email Route (Verifies user email)
   verifyEmail: async (req: Request, res: Response, next: NextFunction) => {
     // Request user data
