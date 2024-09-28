@@ -1,17 +1,9 @@
-import express, { Request, Response } from "express";
-import Product from "../models/productModel";
+import { Request, Response, NextFunction } from "express";
+import Product, { ProductInterface } from "../models/productModel";
 import { generateProductId } from "../utils/idgen";
 
-interface ProductInterface {
-  id: Number | string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-}
-
-const  productControllers = {
-  createProduct: async (req: Request, res: Response) => {
+const productControllers = {
+  createProduct: async (req: Request, res: Response, next: NextFunction) => {
     const { name, description, price, image }: ProductInterface = req.body; // product json
     try {
       const id = await generateProductId();
@@ -22,58 +14,78 @@ const  productControllers = {
         price,
         image,
       });
+
       const savedProduct = await newProduct.save();
-      res.status(201).json({ message: "Success", savedProduct }); // SUBJECT TO CHANGE
-    } catch (error) {
-      res.status(400).json({ message: "Failure", error }); // SUBJECT TO CHANGE
+
+      res.status(201).json({
+        message: "Success",
+        savedProduct,
+      }); // SUBJECT TO CHANGE
+    } catch (err) {
+      next(err);
     }
   },
-  getAllProducts: async (req: Request, res: Response) => {
+  getAllProducts: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const databaseRes = await Product.find({});
-      res.json({ message: "Success", databaseRes }); // SUBJECT TO CHANGE
-    } catch (error) {
-      res.send({ message: "Failure", error }); // SUBJECT TO CHANGE
+      const databaseRes = await Product.find();
+
+      res.status(201).json({
+        message: "Success",
+        databaseRes,
+      }); // SUBJECT TO CHANGE
+    } catch (err) {
+      next(err);
     }
   },
-  getProductById: async (req: Request, res: Response) => {
+  getProductById: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const databaseRes = await Product.findOne({ id: req.body.id });
-      res.send({ message: "Success", databaseRes }); // SUBJECT TO CHANGE
-    } catch (error) {
-      res.send({ message: "Failure", error }); // SUBJECT TO CHANGE
+
+      res.send({
+        message: "Success",
+        databaseRes,
+      }); // SUBJECT TO CHANGE
+    } catch (err) {
+      next(err);
     }
   },
-  patchProduct: async (req: Request, res: Response) => {
+  patchProduct: async (req: Request, res: Response, next: NextFunction) => {
     const fieldsToUpdate = {};
 
     Object.keys(req.body).forEach((key) => {
       if (req.body[key] !== undefined && req.body[key] !== null) {
-        // Technicly useless, subject to change
         fieldsToUpdate[key] = req.body[key];
       }
     });
+
     try {
       const result = await Product.updateOne(
         { id: req.body.id },
-        { $set: fieldsToUpdate }
+        { $set: fieldsToUpdate },
       );
-      res.send({ message: "Success", result });
+
+      res.status(201).json({
+        message: "Success",
+        result,
+      });
     } catch (err) {
-      res.send({ message: "Failure", err });
+      next(err);
     }
   },
-  deleteProduct: async (req: Request, res: Response) => {
-    try {
-        const deletedProduct = await Product.findOneAndDelete({
-          id: req.body.id,
-        });
-        res.json({ message: "Success", deletedProduct });
-      } catch (err) {
-        res.json({ message: "Failure", err });
-      }
-  }
-};
+  deleteProduct: async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.body;
 
+    try {
+      const deletedProduct = await Product.findOneAndDelete({ id });
+
+      res.status(201).json({
+        message: "Success",
+        deletedProduct,
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+};
 
 export default productControllers;

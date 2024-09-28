@@ -1,50 +1,63 @@
 import mongoose from "mongoose";
+import { cartItemSchema, CartInterface } from "./cartModel";
 
-const userSchema = new mongoose.Schema({
-    _id: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
+const userSchema = new mongoose.Schema(
+  {
+    id: {
+      type: Number,
+      required: true,
+      unique: true,
     },
     first_name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     last_name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     password: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
-    admin: {
-        type: Boolean,
-        default: false
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
-    created_at: {
-        type: Date,
-        default: Date.now
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    roles: {
+      type: [String],
+      default: ["user"],
     },
     wallet: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
-    cart: [
-        {
-            productId: {
-                type: mongoose.Schema.Types.ObjectId,
-                required: true,
-            },
-            quantity: {
-                type: Number,
-                default: 1
-            }
-        }
-    ]
-});
+    cart: [cartItemSchema],
+  },
+  { timestamps: true },
+);
 
-export default mongoose.model("User", userSchema)
+export default mongoose.model("User", userSchema);
+
+export interface UserInterface extends mongoose.Document {
+  _id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  isVerified: boolean;
+  isAdmin: boolean;
+  roles: string[];
+  wallet?: number;
+  cart?: CartInterface[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}

@@ -1,26 +1,51 @@
 import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 import StartDB from "./Database/MongoDB";
-import logger from "./logger/logger";
 
-const PORT = 3000;
+//Routes
+import allRoutes from "./routes/index";
+import handleError500 from "./middlewares/error500";
+import { loggerMiddleware } from "./middlewares/logger";
+
+const PORT = process.env.PORT || 3000;
+
 const app = express();
-app.use(express.json());
 
-// START SERVER
-try {
-  const server = app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-  // HANDLE ERROR, LOG IT FOR DEBUGGING
-  server.on("error", (err: any) => {
-    if (err.code === "EADDRINUSE") {
-      logger.error("Port 3000 is already in use.");
-    } else {
-      logger.error("Server error:", err);
-    }
-  });
-} catch (err) {
-  logger.error("Failed to start the server:", err);
+async function initializeDatabase() {
+  try {
+    await StartDB();
+  } catch (err) {
+    console.log(err);
+  }
 }
-// OBVIOUSLY
-StartDB();
+
+async function startServer() {
+  try {
+    await initializeDatabase();
+
+    app.listen(PORT, () => {
+      console.log(`[express] Server is running on port: ${PORT}`);
+    });
+    app.use(express.json());
+    app.use(
+      cors({
+        origin: "http://localhost:5173",
+        credentials: true,
+      }),
+    );
+
+    app.use(loggerMiddleware);
+
+    app.use("/api/v1", allRoutes);
+
+    app.use(handleError500);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+startServer();
