@@ -13,7 +13,6 @@ import { loggerMiddleware } from "./middlewares/logger";
 
 const PORT = process.env.PORT || 3000;
 
-const PORT = 3000;
 const app = express();
 
 async function initializeDatabase() {
@@ -39,10 +38,11 @@ async function startServer() {
       }),
     );
 
-    // app.use(handleError500);
     app.use(loggerMiddleware);
 
     app.use("/api/v1", allRoutes);
+
+    app.use(handleError500);
   } catch (err) {
     console.log(err);
   }
