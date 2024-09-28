@@ -13,6 +13,7 @@ import { loggerMiddleware } from "./middlewares/logger";
 
 const PORT = process.env.PORT || 3000;
 
+const PORT = 3000;
 const app = express();
 
 async function initializeDatabase() {
