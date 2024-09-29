@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use("/api/v1", routes);
 
-app.listen(4040, () => console.log(`[express] Server is running on port http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`[express] Server is running on port http://localhost:${PORT}`));
 
 app.get('/status', (req, res) => {
     res.status(200).json({

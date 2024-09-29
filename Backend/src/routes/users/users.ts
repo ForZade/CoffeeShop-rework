@@ -11,7 +11,11 @@ const router = express.Router();
 router.get('/', async (req: Request, res: Response) => {
     try {
         const users = await Users.find(); 
-        res.status(200).json(users);  
+        res.status(200).json({
+            status: "success",
+            message: "All Users successfully",
+            data: users
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
