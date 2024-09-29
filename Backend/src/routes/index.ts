@@ -1,11 +1,14 @@
 import express from "express";
 
-
-import usersRoutes from "./users/users";
-
+// Routes
+import authRoutes from "./auth/auth";
+import userRoutes from "./users/users";
+import adminRoutes from "./admin/admins";
 
 const router = express.Router();
 
-router.use("/users", usersRoutes);
+router.use("/auth", authRoutes);
+router.use("/users", userRoutes);
+router.use("/admin", adminRoutes);
 
 export default router;

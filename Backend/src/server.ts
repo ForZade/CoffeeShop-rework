@@ -1,26 +1,53 @@
 import express from "express";
-
-import StartDB from "./Database/MongoDB";
+import cors from "cors";
 import dotenv from "dotenv";
-import routes from "./routes/index";
-
 
 dotenv.config();
 
+import StartDB from "./Database/MongoDB";
+
+//Routes
+import allRoutes from "./routes/index";
+import handleError500 from "./middlewares/error500";
+import { loggerMiddleware } from "./middlewares/logger";
 
 const PORT = process.env.PORT || 4040;
+
 const app = express();
-app.use(express.json());
-app.use("/api/v1", routes);
 
-app.listen(PORT, () => console.log(`[express] Server is running on port http://localhost:${PORT}`));
+async function initializeDatabase() {
+  try {
+    await StartDB();
+  } catch (err) {
+    console.log(err);
+  }
+}
 
-app.get('/status', (req, res) => {
-    res.status(200).json({
-      status: "success",
-      message: "Jeigu servas veikia tai ko tu neveiki"
+async function startServer() {
+  try {
+    await initializeDatabase();
+
+    app.listen(PORT, () => {
+      console.log(
+        `[express] Server is running on port: http://localhost:${PORT}`
+      );
     });
-});
-  
+    app.use(express.json());
+    app.use(
+      cors({
+        origin: "http://localhost:5173",
+        credentials: true,
+      })
+    );
 
-StartDB();
+    app.use(loggerMiddleware);
+
+    app.use("/api/v1", allRoutes);
+
+    app.use(handleError500);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+startServer();
