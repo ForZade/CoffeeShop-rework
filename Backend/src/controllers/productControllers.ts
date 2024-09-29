@@ -20,7 +20,7 @@ const productControllers = {
       res.status(201).json({
         message: "Success",
         savedProduct,
-      }); // SUBJECT TO CHANGE
+      }); 
     } catch (err) {
       next(err);
     }
@@ -29,10 +29,10 @@ const productControllers = {
     try {
       const databaseRes = await Product.find();
 
-      res.status(201).json({
+      res.status(200).json({
         message: "Success",
         databaseRes,
-      }); // SUBJECT TO CHANGE
+      }); 
     } catch (err) {
       next(err);
     }
@@ -41,10 +41,10 @@ const productControllers = {
     try {
       const databaseRes = await Product.findOne({ id: req.body.id });
 
-      res.send({
+      res.status(201).json({
         message: "Success",
         databaseRes,
-      }); // SUBJECT TO CHANGE
+      }); 
     } catch (err) {
       next(err);
     }
