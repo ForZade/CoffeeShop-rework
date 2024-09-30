@@ -10,14 +10,14 @@ export default async function requireAuth(
 
   if (!token) {
     return res.status(401).json({
-      message: "Access denied. No token provided.",
+      message: "Access denied. You are not authenticated.",
       token: token,
     });
   }
 
   try {
     const decoded = verifyToken(token);
-    console.log(decoded);
+
     req.user = decoded;
     next();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

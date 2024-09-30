@@ -264,6 +264,43 @@ const authControllers = {
       next(err);
     }
   },
+
+  //^ POST /api/v1/auth/change-password - Change Password Route (Changes user password)
+  changePassword: async (req: Request, res: Response, next: NextFunction) => {
+    // Request user data
+    const token = req.cookies.jwt;
+    const { oldPassword, newPassword } = req.body;
+
+    try {
+      const decoded = verifyToken(token);
+
+      const user: UserInterface = await User.findOne({ email: decoded.email });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+
+      console.log(await user.verifyPassword(oldPassword));
+
+      if (!(await user.verifyPassword(oldPassword))) {
+        return res.status(400).json({
+          message: "Old password is incorrect",
+        });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+
+      res.status(200).json({
+        message: "Password changed successfully",
+      });
+    } catch (err: unknown) {
+      next(err);
+    }
+  },
 };
 
 export default authControllers;

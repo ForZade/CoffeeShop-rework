@@ -13,29 +13,7 @@ export async function isAdmin(req: Request, res: Response, next: NextFunction) {
 
     if (!decoded.roles.includes("admin")) {
       return res.status(403).json({
-        message: "Forbidden",
-      });
-    }
-
-    next();
-  } catch (err: unknown) {
-    next(err);
-  }
-}
-
-export async function isUser(req: Request, res: Response, next: NextFunction) {
-  try {
-    const token = req.cookies.jwt;
-
-    if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const decoded: TokenInterface = verifyToken(token);
-
-    if (!decoded.roles.includes("user")) {
-      return res.status(403).json({
-        message: "Forbidden",
+        message: "You are not authorized to perform this action",
       });
     }
 
