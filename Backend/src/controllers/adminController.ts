@@ -43,7 +43,7 @@ const adminController = {
     try {
       const { identifier } = req.body; // 123456 ; hello@mail.com
 
-      let user;
+      let user: UserInterface;
 
       if (identifier.includes("@")) {
         user = await User.findOne({ email: identifier });
