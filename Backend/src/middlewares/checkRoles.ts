@@ -9,7 +9,7 @@ export async function isAdmin(req: Request, res: Response, next: NextFunction) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const decoded: TokenInterface = await verifyToken(token);
+    const decoded: TokenInterface = verifyToken(token);
 
     if (!decoded.roles.includes("admin")) {
       return res.status(403).json({
@@ -25,14 +25,13 @@ export async function isAdmin(req: Request, res: Response, next: NextFunction) {
 
 export async function isUser(req: Request, res: Response, next: NextFunction) {
   try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1];
+    const token = req.cookies.jwt;
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const decoded: TokenInterface = await verifyToken(token);
+    const decoded: TokenInterface = verifyToken(token);
 
     if (!decoded.roles.includes("user")) {
       return res.status(403).json({

@@ -3,6 +3,7 @@ import Product, { ProductInterface } from "../models/productModel";
 import { generateProductId } from "../utils/idgen";
 
 const productControllers = {
+  // ^ POST /api/v1/products - Create product (creates product)
   createProduct: async (req: Request, res: Response, next: NextFunction) => {
     const { name, description, price, image }: ProductInterface = req.body; // product json
     try {
@@ -25,6 +26,7 @@ const productControllers = {
       next(err);
     }
   },
+  // ^ GET /api/v1/products - Get all products (gets all products)
   getAllProducts: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const databaseRes = await Product.find();
@@ -37,6 +39,7 @@ const productControllers = {
       next(err);
     }
   },
+  // ^ GET /api/v1/products/product - Get product by id (gets product by id)
   getProductById: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const databaseRes = await Product.findOne({ id: req.body.id });
@@ -49,6 +52,7 @@ const productControllers = {
       next(err);
     }
   },
+  // ^ PATCH /api/v1/products - Update product by id (updates product by id)
   patchProduct: async (req: Request, res: Response, next: NextFunction) => {
     const fieldsToUpdate = {};
 
@@ -72,6 +76,7 @@ const productControllers = {
       next(err);
     }
   },
+  // ^ DELETE /api/v1/products - Delete product by id (deletes product by id)
   deleteProduct: async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.body;
 
