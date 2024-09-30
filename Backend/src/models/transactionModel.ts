@@ -9,7 +9,7 @@ const transactionSchema = new mongoose.Schema(
       unique: true,
     },
     user_id: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Number,
       required: true,
     },
     order_details: [cartItemSchema],
@@ -21,8 +21,15 @@ export default mongoose.model("Transaction", transactionSchema);
 
 export interface TransactionInterface extends mongoose.Document {
   id: string;
-  user_id: string;
+  user_id: number;
   order_details: CartInterface[];
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface cardDataInterface{
+    cardNumber: string,
+    expiryDate: string,
+    cvv: string,
+    name: string
 }

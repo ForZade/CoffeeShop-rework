@@ -7,3 +7,5 @@ router.delete("/", productController.deleteProduct);
 router.get("/", productController.getAllProducts);
 router.get("/", productController.getProductById);
 router.patch("/", productController.patchProduct);
+
+export default router;
