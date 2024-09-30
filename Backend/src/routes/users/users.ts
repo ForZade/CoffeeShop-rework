@@ -2,11 +2,12 @@ import express, { Request, Response } from "express";
 // import mongoose from "mongoose";
 import Users from "../../models/userModel";
 import dotenv from "dotenv";
+import requireAuth from "../../middlewares/authMiddleware";
 
 dotenv.config();
 const router = express.Router();
 
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", requireAuth, async (req: Request, res: Response) => {
   try {
     const users = await Users.find();
     res.status(200).json({

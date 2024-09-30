@@ -15,8 +15,13 @@ export const cartItemSchema = new mongoose.Schema({
   },
 });
 
-export interface CartInterface extends mongoose.Document {
+export interface CartItemInterface extends mongoose.Document {
   product: string;
   quantity: number;
+  total: number;
+}
+
+export interface CartInterface {
+  items: CartItemInterface[];
   total: number;
 }

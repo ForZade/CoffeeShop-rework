@@ -22,6 +22,10 @@ const productSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    liked: {
+      type: Number,
+      default: 0,
+    },
     options: [],
   },
   { timestamps: true },

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-export default async function handleError500(
+export default function handleError500(
   err: unknown,
   _req: Request,
   res: Response,

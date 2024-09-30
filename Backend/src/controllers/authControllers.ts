@@ -57,9 +57,44 @@ const authControllers = {
     const { email, password } = req.body;
 
     try {
-      
+      const user: UserInterface = await User.findOne({ email });
+
+      if (!user || !user.verifyPassword(password)) {
+        return res.status(401).json({
+          message: "Invalid credentials",
+        });
+      }
+
+      const token = generateToken(email, user.id, user.roles);
+      const isProduction = process.env.NODE_ENV === "production";
+
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        secure: isProduction,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: "strict",
+      });
+
+      res.status(200).json({
+        message: "Login successful",
+      });
+    } catch (err) {
+      next(err);
     }
-  }
+  },
+
+  //^ POST /api/v1/auth/logout - Logout route (logs user out)
+  logout: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.cookie("jwt", "", { maxAge: 0 });
+
+      res.status(200).json({
+        message: "Logout successful",
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
 
   //^ POST /api/v1/auth/verify-email - Verify Email Route (Verifies user email)
   verifyEmail: async (req: Request, res: Response, next: NextFunction) => {
