@@ -45,11 +45,6 @@ const transactionsController = {
                     reason: "Insuffiecient funds",
                 })
             }
-
-            res.status(201).json({
-                message: "Transaction successful",
-                newTransaction,
-            })
         } catch (err) {
             next(err);
         }
@@ -60,11 +55,13 @@ const transactionsController = {
         try {
             const decoded: TokenInterface = await verifyToken(token!);
             const transaction: TransactionInterface = await Transaction.findOne({ id: decoded.id });
+            
             if (!transaction) {
                 return res.status(404).json({
                     message: "No purchases made",
                 })
             };
+
             res.status(200).json({
                 message: "Transactions retrieved successfully",
                 transactions: transaction
