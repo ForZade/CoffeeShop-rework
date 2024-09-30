@@ -4,6 +4,7 @@ import Transaction, { TransactionInterface } from "../models/transactionModel";
 import { verifyToken, TokenInterface } from "../utils/token";
 import generateTransactionId from "../utils/idgen";
 import { fakeTransaction } from "../utils/fakeTransaction";
+import transactionModel from "../models/transactionModel";
 
 const transactionsController = {
     makeTransaction: async (req: Request, res: Response, next: NextFunction) => {
@@ -20,7 +21,7 @@ const transactionsController = {
                 return res.status(404).json({
                     message: "User not found",
                 })
-            }
+                }
 
             const newTransaction: TransactionInterface = new Transaction({
                 id,
@@ -28,19 +29,19 @@ const transactionsController = {
                 order_details: user.cart,
             });
 
-            if(await fakeTransaction(newTransaction, req.body.cardData)) {  /* Reikia dar padaryt kad darant pirkima paimam kortos duomenis*/
+            if (await fakeTransaction(newTransaction, req.body.cardData)) {  /* Reikia dar padaryt kad darant pirkima paimam kortos duomenis*/
                 user.cart = [];
                 user.save();
                 newTransaction.save();
-                
+
                 return res.status(201).json({
                     message: "Transaction successful",
                     newTransaction,
                 })
             }
-            else{
+            else {
                 return res.status(400).json({
-                    message: "Transaction faileds",
+                    message: "Transaction failed",
                     reason: "Insuffiecient funds",
                 })
             }
@@ -52,6 +53,25 @@ const transactionsController = {
         } catch (err) {
             next(err);
         }
+    },
+    getTransactions: async (req: Request, res: Response, next: NextFunction) => {
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(" ")[1];
+        try {
+            const decoded: TokenInterface = await verifyToken(token!);
+            const transaction: TransactionInterface = await Transaction.findOne({ id: decoded.id });
+            if (!transaction) {
+                return res.status(404).json({
+                    message: "No purchases made",
+                })
+            };
+            res.status(200).json({
+                message: "Transactions retrieved successfully",
+                transactions: transaction
+            });
+        } catch (err) {
+            next(err);
+        };
     }
 }
 
