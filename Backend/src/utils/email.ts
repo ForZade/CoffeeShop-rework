@@ -45,6 +45,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     to: email,
     subject: "Password Reset",
     html: `
+          <h1>Reset your password</h1>
           <p>Click the button below to reset your password:</p>
           <a href="${resetLink}" style="
             background-color: #007bff; 

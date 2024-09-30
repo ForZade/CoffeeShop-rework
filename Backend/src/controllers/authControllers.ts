@@ -59,11 +59,38 @@ const authControllers = {
     try {
       const user: UserInterface = await User.findOne({ email });
 
-      if (!user || !user.verifyPassword(password)) {
+      if (user.lock.until > new Date()) {
+        return res.status(401).json({
+          message: "Too many login attempts. Please try again later.",
+        });
+      }
+
+      if (!user) {
+        return res.status(401).json({
+          message: "Invalid credentials: Provided email is not registered",
+        });
+      }
+
+      const maxLockAttempts = user.lock.count > 0 ? 3 : 5;
+      const lockTime = user.lock.count > 0 ? 5 * 60 * 1000 : 30 * 60 * 1000;
+
+      if (!user.verifyPassword(password)) {
+        user.lock.attempts++;
+
+        if (user.lock.attempts >= maxLockAttempts) {
+          user.lock.until = new Date(Date.now() + lockTime);
+          user.lock.count++;
+        }
+
         return res.status(401).json({
           message: "Invalid credentials",
         });
       }
+
+      user.lock.attempts = 0;
+      user.lock.until = new Date();
+      user.lock.count = 0;
+      await user.save();
 
       const token = generateToken(email, user.id, user.roles);
       const isProduction = process.env.NODE_ENV === "production";
