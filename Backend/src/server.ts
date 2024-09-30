@@ -15,7 +15,7 @@ import allRoutes from "./routes/index";
 import handleError500 from "./middlewares/error500";
 import { loggerMiddleware } from "./middlewares/logger";
 
-const PORT = process.env.PORT || 4040;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -33,7 +33,7 @@ async function startServer() {
 
     app.listen(PORT, () => {
       console.log(
-        `[express] Server is running on port: http://localhost:${PORT}`
+        `[express] Server is running on port: http://localhost:${PORT}`,
       );
     });
 
@@ -45,10 +45,12 @@ async function startServer() {
       cors({
         origin: "http://localhost:5173",
         credentials: true,
-      })
+      }),
     );
 
     app.use(loggerMiddleware);
+
+    app.use(handleError500);
 
     app.use("/api/v1", allRoutes);
   } catch (err) {
