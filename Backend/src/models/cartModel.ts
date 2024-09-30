@@ -14,3 +14,10 @@ export const cartItemSchema = new mongoose.Schema({
         required: true
     }
 });
+
+export interface cartInterface {
+    _id: number
+    product: string
+    quantity: number
+    total: number
+}
