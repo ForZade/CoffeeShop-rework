@@ -57,12 +57,14 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
     cart: {
-      items: [cartItemSchema],
+      items: {
+        type: [cartItemSchema],
+      },
       total: {
-        type: String,
+        type: Number,
       },
     },
-    liked: {
+    favorite: {
       type: [Number],
       default: [],
     },
