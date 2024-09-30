@@ -1,18 +1,15 @@
 import express from "express";
-
-// Routes
-import registerRoute from "./register";
-import verifyEmailRoute from "./verifyEmail";
-import resendVerifyRoute from "./resendVerifyEmail";
-import requestPasswordResetRoute from "./requestPasswordReset";
-import passwordResetRoute from "./passwordReset";
+import authControllers from "../../controllers/authControllers";
+import requireAuth from "../../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.use("/register", registerRoute);
-router.use("/verify-email", verifyEmailRoute);
-router.use("/resend-verify", resendVerifyRoute);
-router.use("/request-password-reset", requestPasswordResetRoute);
-router.use("/password-reset", passwordResetRoute);
+router.post("/register", authControllers.register);
+router.post("/login", authControllers.login);
+router.post("/verify-email", authControllers.verifyEmail);
+router.post("/resend-verify", authControllers.resendVerifyEmail);
+router.post("/request-password-reset", authControllers.requestPasswordReset);
+router.post("/password-reset", authControllers.passwordReset);
+router.post("/change-password", requireAuth, authControllers.changePassword);
 
 export default router;
