@@ -4,13 +4,10 @@ import Transaction, { TransactionInterface } from "../models/transactionModel";
 import { verifyToken, TokenInterface } from "../utils/token";
 import generateTransactionId from "../utils/idgen";
 import { fakeTransaction } from "../utils/fakeTransaction";
-import transactionModel from "../models/transactionModel";
 
 const transactionsController = {
     makeTransaction: async (req: Request, res: Response, next: NextFunction) => {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(" ")[1];
-
+        const token = req.cookies.jwt;
         try {
             const decoded: TokenInterface = await verifyToken(token!);
 
@@ -29,7 +26,7 @@ const transactionsController = {
                 order_details: user.cart,
             });
 
-            if (await fakeTransaction(newTransaction, req.body.cardData)) {  /* Reikia dar padaryt kad darant pirkima paimam kortos duomenis*/
+            if (await fakeTransaction(newTransaction)) {  /* Reikia dar padaryt kad darant pirkima paimam kortos duomenis*/
                 user.cart = [];
                 user.save();
                 newTransaction.save();
@@ -50,8 +47,7 @@ const transactionsController = {
         }
     },
     getTransactions: async (req: Request, res: Response, next: NextFunction) => {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(" ")[1];
+        const token = req.cookies.jwt;
         try {
             const decoded: TokenInterface = await verifyToken(token!);
             const transaction: TransactionInterface = await Transaction.findOne({ id: decoded.id });

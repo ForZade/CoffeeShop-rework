@@ -10,6 +10,14 @@
 - "mongoose": "^8.6.3",
 - "passport": "^0.7.0",
 - "passport-jwt": "^4.0.1",
+- "winston": "^3.14.2"
+
+## Description
+- product API is used to manage products in DATABASE, which is connected powered by mongodb.
+  Basic routes to get data in JSON format, to display on Front. More complex routes
+  were created to add, update and delete products. They require parameters inserted 
+  by user (Front). Back recieves information, processes it and send result back to 
+  the front. Response may vary because of many validation steps.
 
 ## Requirments
 - Written in Typescript

@@ -6,9 +6,7 @@ function getRandomNumber(min: number = 1, max: number = 99999, decimals: number 
     return parseFloat(random.toFixed(decimals));
 }
 
-export async function fakeTransaction(
-    newTransaction: TransactionInterface,
-    cardData: cardDataInterface) {
+export async function fakeTransaction(newTransaction: TransactionInterface) {
     const currentAmount = getRandomNumber();
     return currentAmount > newTransaction.order_details[0].total ? true : false
 }
