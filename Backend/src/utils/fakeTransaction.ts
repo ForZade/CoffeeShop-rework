@@ -1,5 +1,4 @@
 import { TransactionInterface } from "../models/transactionModel";
-import { cardDataInterface } from "../models/transactionModel";
 
 function getRandomNumber(min: number = 1, max: number = 99999, decimals: number = 2): number {
     const random = Math.random() * (max - min) + min;

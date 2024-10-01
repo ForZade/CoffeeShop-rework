@@ -27,9 +27,9 @@ export interface TransactionInterface extends mongoose.Document {
   updatedAt?: Date;
 }
 
-export interface cardDataInterface{
-    cardNumber: string,
-    expiryDate: string,
-    cvv: string,
-    name: string
+export interface CardDataInterface {
+  cardNumber: string;
+  expiryDate: string;
+  cvv: string;
+  name: string;
 }
