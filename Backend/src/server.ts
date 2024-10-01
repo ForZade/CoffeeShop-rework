@@ -29,7 +29,7 @@ async function startServer() {
 
     app.listen(PORT, () => {
       console.log(
-        `[express] Server is running on port: http://localhost:${PORT}`
+        `[express] Server is running on port: http://localhost:${PORT}`,
       );
     });
     app.use(express.json());
@@ -37,7 +37,7 @@ async function startServer() {
       cors({
         origin: "http://localhost:5173",
         credentials: true,
-      })
+      }),
     );
 
     app.use(loggerMiddleware);
