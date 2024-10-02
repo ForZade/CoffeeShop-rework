@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 export const cartItemSchema = new mongoose.Schema({
-  product: {
-    type: String,
+  productId: {
+    type: Number,
     required: true,
   },
   quantity: {
@@ -15,8 +15,13 @@ export const cartItemSchema = new mongoose.Schema({
   },
 });
 
-export interface CartInterface extends mongoose.Document {
-  product: string;
+export interface CartItemInterface {
+  productId: number;
   quantity: number;
+  total: number;
+}
+
+export interface CartInterface extends mongoose.Document{
+  items: CartItemInterface[];
   total: number;
 }

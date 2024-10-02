@@ -1,63 +1,167 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { CartInterface, cartItemSchema } from '../models/cartModel';
-import { model } from 'mongoose';
+import User, { UserInterface } from "../models/userModel";
+import Product, { ProductInterface } from "../models/productModel";
+import { TokenInterface, verifyToken } from '../utils/token';
 
-const Cart = model('Cart', cartItemSchema);
+const cartController = {
+    getCart: async (req: Request, res: Response, next: NextFunction) => {
+        const token = req.cookies.jwt;
 
-// Get all items in the user's cart
-export const getCart = async (req: Request, res: Response) => {
-    try {
-        const cart = await Cart.find();
-        if (cart.length === 0) {
-            return res.status(200).json({ message: 'Your cart is empty.' });
+        try {
+            const decoded: TokenInterface = await verifyToken(token); 
+            
+            const user: UserInterface = await User.findOne({
+                id: decoded.id
+            });
+
+            if (!user) {
+                return res.status(400).json({
+                    message: "User not found",
+                });
+            }
+
+            res.status(200).json({
+                message: "Succsefull",
+                data: user.cart
+            });
+        } catch (err) {
+            next(err);
         }
-        return res.status(200).json({ cart });
-    } catch (error) {
-        return res.status(500).json({ message: 'Failed to retrieve cart.', error });
-    }
-};
+    },
 
-// Add a product to the user's cart
-export const addToCart = async (req: Request, res: Response) => {
-    try {
-        const { product, quantity, total } = req.body;
+    addToCart: async (req: Request, res: Response, next: NextFunction) => {
+        const token = req.cookies.jwt;
+        const { productId } = req.body;
 
-        if (!product || !quantity || !total) {
-            return res.status(400).json({ message: 'Product, quantity, and total are required.' });
+        try {
+            const decoded: TokenInterface = await verifyToken(token); 
+            
+            const user: UserInterface = await User.findOne({
+                id: decoded.id
+            });
+
+            if (!user) {
+                return res.status(400).json({
+                    message: "User not found",
+                });
+            }
+
+            const product: ProductInterface = await Product.findOne({
+                id: productId
+            });
+
+            if (!product){
+                return res.status(400).json({
+                    message: "Product not found",
+                });
+            }
+
+            const existingItem = user.cart.items.find(item => item.productId === productId);
+
+            if (existingItem){
+                existingItem.quantity++;
+                existingItem.total += product.price;
+            } else {
+                user.cart.items.push({
+                    productId, 
+                    quantity: 1,
+                    total: product.price
+                })
+            }
+            user.cart.total += product.price;
+
+            await user.save();
+
+            res.status(200).json({
+                message: "item added to cart",
+            });
+            
+        } catch (err) {
+            next(err);
         }
 
-        const newCartItem = new Cart({
-            product,
-            quantity,
-            total
-        });
+    },
 
-        await newCartItem.save();
-        return res.status(201).json({ message: 'Product added to cart.' });
-    } catch (error) {
-        return res.status(500).json({ message: 'Failed to add product to cart.', error });
+    removeFromCart: async (req: Request, res: Response, next: NextFunction) => {
+        const token = req.cookies.jwt;
+        const { productId } = req.body;
+
+        try {
+            const decoded: TokenInterface = await verifyToken(token); 
+            
+            const user: UserInterface = await User.findOne({
+                id: decoded.id
+            });
+
+            if (!user) {
+                return res.status(400).json({
+                    message: "User not found",
+                });
+            }
+
+            const product: ProductInterface = await Product.findOne({
+                id: productId
+            });
+
+            if (!product){
+                return res.status(400).json({
+                    message: "Product not found",
+                });
+            }
+
+            const existingItem = user.cart.items.find(item => item.productId === productId);
+
+            // if (!existingItem){
+            //     return res.status(400).json({
+            //         message: "Item is not in the cart",
+            //     });
+            // }
+
+            if (existingItem.quantity > 1){
+                existingItem.quantity--;
+                existingItem.total -= product.price;
+            }
+
+            user.cart.items.filter(item => item.productId !== productId);
+            user.cart.total -= product.price;
+
+            await user.save();
+
+            res.status(200).json({
+                message: "item removed",
+            });
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    clearCart: async (req: Request, res: Response, next: NextFunction) => {
+        const token = req.cookies.jwt;
+
+        try {
+            const decoded: TokenInterface = await verifyToken(token); 
+            
+            const user: UserInterface = await User.findOne({
+                id: decoded.id
+            });
+
+            if (!user) {
+                return res.status(400).json({
+                    message: "User not found",
+                });
+            }
+
+            user.cart.items = [];
+
+            user.cart.total = 0;
+
+            await user.save();
+            res.status(200).json({
+                message: "Cart cleared",
+            });
+        } catch (err) {
+            next(err);
+        }
     }
-};
-
-// Remove a product from the user's cart
-export const removeFromCart = async (req: Request, res: Response) => {
-    try {
-        const { productId } = req.params;
-
-        await Cart.findOneAndDelete({ product: productId });
-        return res.status(200).json({ message: 'Product removed from cart.' });
-    } catch (error) {
-        return res.status(500).json({ message: 'Failed to remove product from cart.', error });
-    }
-};
-
-// Clear all items in the cart
-export const clearCart = async (req: Request, res: Response) => {
-    try {
-        await Cart.deleteMany({});
-        return res.status(200).json({ message: 'Cart cleared successfully.' });
-    } catch (error) {
-        return res.status(500).json({ message: 'Failed to clear cart.', error });
-    }
-};
-
+}
