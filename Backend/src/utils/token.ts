@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export async function generateToken(
+export  function generateToken(
   email: string,
   id: number,
   roles: string[],
@@ -13,12 +13,12 @@ export async function generateToken(
   });
 }
 
-export async function verifyToken(token: string) {
+export  function verifyToken(token: string) {
   return jwt.verify(token, process.env.JWT_SECRET) as JwtPayload &
     TokenInterface;
 }
 
-export async function generateResetToken(email: string, id: number) {
+export  function generateResetToken(email: string, id: number) {
   return jwt.sign({ email: email, id: id }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
