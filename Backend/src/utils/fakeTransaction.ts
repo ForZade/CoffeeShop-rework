@@ -15,5 +15,6 @@ export async function fakeTransaction(
 ): Promise<boolean> {
   let currentAmount: number | mongoose.Types.Decimal128 = getRandomNumber(); // 1 - 1500
   currentAmount = toDecimal(currentAmount);
+  console.log(currentAmount, total);
   return currentAmount > total ? true : false;
 }

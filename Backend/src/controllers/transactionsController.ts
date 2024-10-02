@@ -38,17 +38,18 @@ const transactionsController = {
         order_details: user.cart.items,
         total: user.cart.total,
       });
-
-      if (!(await fakeTransaction(user.cart.total))) {
+      const ifFake = await fakeTransaction(user.cart.total);
+      console.log(ifFake)
+      if (!ifFake) {
         return res.status(400).json({
           message: "Transaction failed",
           reason: "Insuffiecient funds",
         });
       }
 
-      user.cart.items = [];
-      user.cart.total = toDecimal(0);
-      user.save();
+    // user.cart.items = [];
+    // user.cart.total = toDecimal(0);
+    //  user.save();
       newTransaction.save();
 
       return res.status(201).json({

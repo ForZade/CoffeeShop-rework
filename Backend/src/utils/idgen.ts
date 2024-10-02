@@ -19,7 +19,6 @@ export async function generateProductId() {
   const id = Math.floor(Math.random() * 100000);
 
   const matchingProduct = await Product.findOne({ id });
-  console.log(matchingProduct);
   if (matchingProduct) {
     return generateProductId();
   }
@@ -31,7 +30,6 @@ export default async function generateTransactionId() {
   const id = uuidv4();
 
   const matchingTransaction = await Transaction.findOne({ id });
-  console.log(matchingTransaction);
   if (matchingTransaction) {
     return generateProductId();
   }
