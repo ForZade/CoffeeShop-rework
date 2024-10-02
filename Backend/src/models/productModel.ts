@@ -16,11 +16,15 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      type: Number,
+      type: mongoose.Schema.Types.Decimal128,
       required: true,
     },
     image: {
       type: String,
+    },
+    liked: {
+      type: Number,
+      default: 0,
     },
     options: [],
   },
@@ -33,8 +37,9 @@ export interface ProductInterface extends mongoose.Document {
   id: number;
   name: string;
   description: string;
-  price: number;
+  price: mongoose.Types.Decimal128;
   image: string;
+  liked: number;
   options?: string[];
   createdAt?: Date;
   updatedAt?: Date;
