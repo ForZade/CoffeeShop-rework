@@ -1,6 +1,6 @@
 import User from "../models/userModel";
 import Product from "../models/productModel";
-import { v4 as uuidv4 } from "uuid"; 
+import { v4 as uuidv4 } from "uuid";
 import Transaction from "../models/transactionModel";
 
 export async function generateUserId() {
