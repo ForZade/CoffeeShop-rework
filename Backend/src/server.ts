@@ -8,8 +8,9 @@ import StartDB from "./Database/MongoDB";
 
 //Routes
 import allRoutes from "./routes/index";
-import handleError500 from "./middlewares/error500";
+//import handleError500 from "./middlewares/error500";
 import { loggerMiddleware } from "./middlewares/logger";
+import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT || 3000;
 
@@ -31,6 +32,7 @@ async function startServer() {
       console.log(`[express] Server is running on port: ${PORT}`);
     });
     app.use(express.json());
+    app.use(cookieParser());
     app.use(
       cors({
         origin: "http://localhost:5173",
