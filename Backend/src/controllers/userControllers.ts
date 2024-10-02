@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import Users from "../models/userModel";
+import Users, { UserInterface } from "../models/userModel";
+
+import Product, { ProductInterface } from "../models/productModel";
+import { verifyToken } from "../utils/token";
 
 const userControllers = {
   getUsers: async (req: Request, res: Response, next: NextFunction) => {
@@ -54,6 +57,7 @@ const userControllers = {
       next(err);
     }
   },
+
 };
 
 export default userControllers;

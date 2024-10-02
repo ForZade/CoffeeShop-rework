@@ -17,11 +17,17 @@ const authControllers = {
       // Request user data
       const { first_name, last_name, email, password } = req.body;
 
+      if (!password) {
+        return res.status(400).json({
+          message: "Password is required.",
+        });
+      }
+
       // Check if user already exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({
-          message: "User already exists",
+          message: "User with this email already exists.",
         });
       }
 

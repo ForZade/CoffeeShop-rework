@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test ./tests/*.test.ts",
     "dev": "nodemon ./src/server.ts",
     "lint": "eslint '**/*.ts'",
     "lint:fix": "eslint '**/*.ts' --fix",
@@ -49,6 +49,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.9.0",

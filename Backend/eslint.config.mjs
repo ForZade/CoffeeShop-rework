@@ -27,6 +27,10 @@ export default [
       },
     },
 
+    env: {
+      node: true,
+    },
+
     rules: {
       "prettier/prettier": "error",
 

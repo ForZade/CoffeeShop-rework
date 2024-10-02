@@ -12,7 +12,7 @@ import passport from "./config/passport";
 import allRoutes from "./routes/index";
 
 // Middlewares
-import handleError500 from "./middlewares/error500";
+// import handleError500 from "./middlewares/error500";
 import { loggerMiddleware } from "./middlewares/logger";
 
 const PORT = process.env.PORT || 3000;
@@ -50,7 +50,7 @@ async function startServer() {
 
     app.use(loggerMiddleware);
 
-    app.use(handleError500);
+    // app.use(handleError500);
 
     app.use("/api/v1", allRoutes);
   } catch (err) {

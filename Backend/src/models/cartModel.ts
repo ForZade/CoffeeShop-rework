@@ -10,18 +10,18 @@ export const cartItemSchema = new mongoose.Schema({
     required: true,
   },
   total: {
-    type: Number,
+    type: mongoose.Schema.Types.Decimal128,
     required: true,
   },
 });
 
-export interface CartItemInterface extends mongoose.Document {
+export interface CartItemInterface {
   product: string;
   quantity: number;
-  total: number;
+  total: mongoose.Types.Decimal128;
 }
 
-export interface CartInterface {
+export interface CartInterface extends mongoose.Document {
   items: CartItemInterface[];
-  total: number;
+  total: mongoose.Types.Decimal128;
 }
