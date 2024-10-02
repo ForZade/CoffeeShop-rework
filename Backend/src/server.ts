@@ -44,7 +44,7 @@ async function startServer() {
 
     app.use("/api/v1", allRoutes);
 
-   // app.use(handleError500);
+    // app.use(handleError500);
   } catch (err) {
     console.log(err);
   }

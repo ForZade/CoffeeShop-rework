@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { CartInterface, cartItemSchema } from "./cartModel";
+import { CartItemInterface, cartItemSchema } from "./cartModel";
 
 const transactionSchema = new mongoose.Schema(
   {
@@ -14,9 +14,9 @@ const transactionSchema = new mongoose.Schema(
     },
     order_details: [cartItemSchema],
     total: {
-      type: mongoose.Types.Decimal128,
+      type: mongoose.Schema.Types.Decimal128,
       required: true,
-    }
+    },
   },
   { timestamps: true },
 );
@@ -26,8 +26,8 @@ export default mongoose.model("Transaction", transactionSchema);
 export interface TransactionInterface extends mongoose.Document {
   id: string;
   user_id: number;
-  order_details: CartInterface[];
-  total: number;
+  order_details: CartItemInterface[];
+  total: mongoose.Types.Decimal128;
   createdAt?: Date;
   updatedAt?: Date;
 }

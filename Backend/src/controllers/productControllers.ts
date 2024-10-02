@@ -20,7 +20,7 @@ const productControllers = {
       res.status(201).json({
         message: "Success",
         savedProduct,
-      }); 
+      });
     } catch (err) {
       next(err);
     }
@@ -32,7 +32,7 @@ const productControllers = {
       res.status(200).json({
         message: "Success",
         databaseRes,
-      }); 
+      });
     } catch (err) {
       next(err);
     }
@@ -44,7 +44,7 @@ const productControllers = {
       res.status(201).json({
         message: "Success",
         databaseRes,
-      }); 
+      });
     } catch (err) {
       next(err);
     }

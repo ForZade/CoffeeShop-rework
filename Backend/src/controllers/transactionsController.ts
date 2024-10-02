@@ -4,7 +4,7 @@ import Transaction, { TransactionInterface } from "../models/transactionModel";
 import { verifyToken, TokenInterface } from "../utils/token";
 import generateTransactionId from "../utils/idgen";
 import { fakeTransaction } from "../utils/fakeTransaction";
-import mongoose from "mongoose";
+import toDecimal from "../utils/toDecimal";
 
 // import transactionModel from "../models/transactionModel";
 
@@ -23,8 +23,10 @@ const transactionsController = {
           message: "User not found",
         });
       }
-      user.cart.total = mongoose.Types.Decimal128.fromString("3.15")
-      if(user.cart.total === mongoose.Types.Decimal128.fromString("0") || !user.cart.total) {
+
+      const ifEmpty = user.cart.total === toDecimal(0) || !user.cart.total;
+
+      if (ifEmpty) {
         return res.status(400).json({
           message: "Cart is empty",
         });
@@ -45,7 +47,7 @@ const transactionsController = {
       }
 
       user.cart.items = [];
-      user.cart.total = mongoose.Types.Decimal128.fromString("0");
+      user.cart.total = toDecimal(0);
       user.save();
       newTransaction.save();
 
@@ -53,7 +55,6 @@ const transactionsController = {
         message: "Transaction successful",
         newTransaction,
       });
-
     } catch (err) {
       next(err);
     }
