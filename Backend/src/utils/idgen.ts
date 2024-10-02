@@ -1,6 +1,6 @@
 import User from "../models/userModel";
 import Product from "../models/productModel";
-import { uuid } from "uuidv4";
+import { v4 as uuidv4 } from "uuid"; 
 import Transaction from "../models/transactionModel";
 
 export async function generateUserId() {
@@ -28,7 +28,7 @@ export async function generateProductId() {
 }
 
 export default async function generateTransactionId() {
-  const id = uuid();
+  const id = uuidv4();
 
   const matchingTransaction = await Transaction.findOne({ id });
   console.log(matchingTransaction);

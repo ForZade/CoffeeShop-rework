@@ -4,6 +4,8 @@ import Transaction, { TransactionInterface } from "../models/transactionModel";
 import { verifyToken, TokenInterface } from "../utils/token";
 import generateTransactionId from "../utils/idgen";
 import { fakeTransaction } from "../utils/fakeTransaction";
+import mongoose from "mongoose";
+
 // import transactionModel from "../models/transactionModel";
 
 const transactionsController = {
@@ -14,36 +16,44 @@ const transactionsController = {
       const decoded: TokenInterface = await verifyToken(token);
 
       const user: UserInterface = await User.findOne({ id: decoded.id });
-      const id = generateTransactionId();
+      const id = await generateTransactionId();
 
       if (!user) {
         return res.status(404).json({
           message: "User not found",
         });
       }
+      user.cart.total = mongoose.Types.Decimal128.fromString("3.15")
+      if(user.cart.total === mongoose.Types.Decimal128.fromString("0") || !user.cart.total) {
+        return res.status(400).json({
+          message: "Cart is empty",
+        });
+      }
 
       const newTransaction: TransactionInterface = new Transaction({
         id,
         user_id: user.id,
-        order_details: user.cart,
+        order_details: user.cart.items,
+        total: user.cart.total,
       });
 
-      if (await fakeTransaction(newTransaction)) {
-        /* Reikia dar padaryt kad darant pirkima paimam kortos duomenis*/
-        user.cart = [];
-        user.save();
-        newTransaction.save();
-
-        return res.status(201).json({
-          message: "Transaction successful",
-          newTransaction,
-        });
-      } else {
+      if (!(await fakeTransaction(user.cart.total))) {
         return res.status(400).json({
           message: "Transaction failed",
           reason: "Insuffiecient funds",
         });
       }
+
+      user.cart.items = [];
+      user.cart.total = mongoose.Types.Decimal128.fromString("0");
+      user.save();
+      newTransaction.save();
+
+      return res.status(201).json({
+        message: "Transaction successful",
+        newTransaction,
+      });
+
     } catch (err) {
       next(err);
     }

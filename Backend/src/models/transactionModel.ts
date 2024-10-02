@@ -13,6 +13,10 @@ const transactionSchema = new mongoose.Schema(
       required: true,
     },
     order_details: [cartItemSchema],
+    total: {
+      type: mongoose.Types.Decimal128,
+      required: true,
+    }
   },
   { timestamps: true },
 );
@@ -23,13 +27,7 @@ export interface TransactionInterface extends mongoose.Document {
   id: string;
   user_id: number;
   order_details: CartInterface[];
+  total: number;
   createdAt?: Date;
   updatedAt?: Date;
-}
-
-export interface CardDataInterface {
-  cardNumber: string;
-  expiryDate: string;
-  cvv: string;
-  name: string;
 }

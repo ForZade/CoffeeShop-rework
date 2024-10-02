@@ -16,11 +16,15 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      type: Number,
+      type: mongoose.Types.Decimal128,
       required: true,
     },
     image: {
       type: String,
+    },
+    liked: {
+      type: Number,
+      default: 0,
     },
     options: [],
   },
