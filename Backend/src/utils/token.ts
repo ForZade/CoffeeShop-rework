@@ -9,7 +9,7 @@ export async function generateToken(
   roles: string[],
 ) {
   return jwt.sign({ email, id, roles }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "7d",
   });
 }
 

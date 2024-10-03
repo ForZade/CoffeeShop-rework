@@ -5,7 +5,7 @@ import { TokenInterface, verifyToken } from "../utils/token";
 
 const cartController = {
   getCart: async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.jwt;
+    const token: string = req.cookies.jwt;
 
     try {
       const decoded: TokenInterface = await verifyToken(token);
@@ -30,7 +30,7 @@ const cartController = {
   },
 
   addToCart: async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.jwt;
+    const token: string = req.cookies.jwt;
     const { productId } = req.body;
 
     try {
@@ -57,7 +57,7 @@ const cartController = {
       }
 
       const existingItem = user.cart.items.find(
-        (item) => item.productId === productId,
+        (item) => item.productId === parseInt(productId),
       );
 
       if (existingItem) {
@@ -83,7 +83,7 @@ const cartController = {
   },
 
   removeFromCart: async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.jwt;
+    const token: string = req.cookies.jwt;
     const { productId } = req.body;
 
     try {
@@ -110,14 +110,8 @@ const cartController = {
       }
 
       const existingItem = user.cart.items.find(
-        (item) => item.productId === productId,
+        (item) => item.productId === parseInt(productId),
       );
-
-      // if (!existingItem){
-      //     return res.status(400).json({
-      //         message: "Item is not in the cart",
-      //     });
-      // }
 
       if (existingItem.quantity > 1) {
         existingItem.quantity--;
@@ -138,7 +132,7 @@ const cartController = {
   },
 
   clearCart: async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.jwt;
+    const token: string = req.cookies.jwt;
 
     try {
       const decoded: TokenInterface = await verifyToken(token);
