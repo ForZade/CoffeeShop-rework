@@ -11,6 +11,7 @@ import toDecimal from "../utils/toDecimal";
 const transactionsController = {
   makeTransaction: async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.jwt;
+    // const { card_number, cvv, expiry_date, name } = req.body;
 
     try {
       const decoded: TokenInterface = await verifyToken(token);
