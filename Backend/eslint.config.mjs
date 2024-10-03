@@ -15,7 +15,7 @@ export default [
   eslintConfigPrettier,
 
   {
-    files: ["**/*.{js,mjs,cjs,ts}"],
+    files: ["**/*.{js,mjs,cjs,ts,}",],
 
     plugins: {
       prettier: eslintPluginPrettier,
@@ -25,6 +25,10 @@ export default [
       globals: {
         console: "readonly",
       },
+    },
+
+    env: {
+      node: true,
     },
 
     rules: {
