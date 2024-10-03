@@ -4,7 +4,7 @@ import { Strategy as JwtStrategy } from "passport-jwt";
 import User, { UserInterface } from "../models/userModel";
 
 const cookieExtractor = function (req: Request) {
-  let token = null;
+  let token: string = null;
   if (req && req.cookies) {
     token = req.cookies.jwt;
   }
@@ -25,7 +25,7 @@ passport.use(
       } else {
         return done(null, false);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.log(err);
       return done(err, false);
     }

@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../utils/token";
+import { TokenInterface, verifyToken } from "../utils/token";
 
 export default async function requireAuth(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  const token = req.cookies.jwt;
+  const token: string = req.cookies.jwt;
 
   if (!token) {
     return res.status(401).json({
@@ -16,7 +16,7 @@ export default async function requireAuth(
   }
 
   try {
-    const decoded = verifyToken(token);
+    const decoded: TokenInterface = verifyToken(token);
 
     req.user = decoded;
     next();

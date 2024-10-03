@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import User, { UserInterface } from "../models/userModel";
 import Product, { ProductInterface } from "../models/productModel";
 import { TokenInterface, verifyToken } from "../utils/token";
+import toDecimal, { addDecimals, removeDecimals } from "../utils/toDecimal";
 
 const cartController = {
   getCart: async (req: Request, res: Response, next: NextFunction) => {
@@ -31,7 +32,7 @@ const cartController = {
 
   addToCart: async (req: Request, res: Response, next: NextFunction) => {
     const token: string = req.cookies.jwt;
-    const { productId } = req.body;
+    const { productId }: { productId: number } = req.body;
 
     try {
       const decoded: TokenInterface = await verifyToken(token);
@@ -57,12 +58,12 @@ const cartController = {
       }
 
       const existingItem = user.cart.items.find(
-        (item) => item.productId === parseInt(productId),
+        (item) => item.productId === productId,
       );
 
       if (existingItem) {
         existingItem.quantity++;
-        existingItem.total += product.price;
+        existingItem.total = addDecimals(existingItem.total, product.price);
       } else {
         user.cart.items.push({
           productId,
@@ -70,7 +71,7 @@ const cartController = {
           total: product.price,
         });
       }
-      user.cart.total += product.price;
+      user.cart.total = addDecimals(user.cart.total, product.price);
 
       await user.save();
 
@@ -110,16 +111,16 @@ const cartController = {
       }
 
       const existingItem = user.cart.items.find(
-        (item) => item.productId === parseInt(productId),
+        (item) => item.productId === productId,
       );
 
       if (existingItem.quantity > 1) {
         existingItem.quantity--;
-        existingItem.total -= product.price;
+        existingItem.total = removeDecimals(existingItem.total, product.price);
       }
 
       user.cart.items.filter((item) => item.productId !== productId);
-      user.cart.total -= product.price;
+      user.cart.total = removeDecimals(user.cart.total, product.price);
 
       await user.save();
 
@@ -149,7 +150,7 @@ const cartController = {
 
       user.cart.items = [];
 
-      user.cart.total = 0;
+      user.cart.total = toDecimal(0);
 
       await user.save();
       res.status(200).json({

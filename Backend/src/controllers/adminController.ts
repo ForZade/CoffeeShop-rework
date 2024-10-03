@@ -3,9 +3,9 @@ import User, { UserInterface } from "../models/userModel";
 
 const adminController = {
   addAdmin: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { identifier } = req.body; // 123456 ; hello@mail.com
+    const { identifier }: { identifier: string } = req.body;
 
+    try {
       let user: UserInterface;
 
       if (identifier.includes("@")) {
@@ -33,16 +33,18 @@ const adminController = {
       user.roles.push("Admin");
       await user.save();
 
-      res.json({ message: "User added to administrator role successfully" });
+      res.status(200).json({
+        message: "User added to administrator role successfully"
+      });
     } catch (err) {
       next(err);
     }
   },
 
   removeAdmin: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { identifier } = req.body; // 123456 ; hello@mail.com
+    const { identifier }: { identifier: string } = req.body;
 
+    try {
       let user: UserInterface;
 
       if (identifier.includes("@")) {

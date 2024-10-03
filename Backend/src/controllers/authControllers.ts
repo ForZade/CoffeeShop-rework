@@ -10,13 +10,36 @@ import {
 import { generateUserId } from "../utils/idgen";
 import { sendVerificationEmail, sendPasswordResetEmail } from "../utils/email";
 
+interface RegisterInterface {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+}
+
+interface LoginInterface {
+  email: string;
+  password: string;
+}
+
+interface ResetPasswordInterface {
+  token: string;
+  password: string;
+  repeat_password: string;
+}
+
+interface ChangePasswordInterface {
+  oldPassword: string;
+  newPassword: string;
+}
+
 const authControllers = {
   //^ POST /api/v1/auth/register - Register route (registers user)
   register: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      // Request user data
-      const { first_name, last_name, email, password } = req.body;
+    // Request user data
+    const { first_name, last_name, email, password }: RegisterInterface = req.body;
 
+    try {
       if (!password) {
         return res.status(400).json({
           message: "Password is required.",
@@ -24,7 +47,7 @@ const authControllers = {
       }
 
       // Check if user already exists
-      const existingUser = await User.findOne({ email });
+      const existingUser: UserInterface = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({
           message: "User with this email already exists.",
@@ -32,11 +55,11 @@ const authControllers = {
       }
 
       // Generate custom user ID / Hash user password
-      const id = await generateUserId();
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const id: number = await generateUserId();
+      const hashedPassword: string = await bcrypt.hash(password, 10);
 
       // Create new User / save user to database
-      const newUser = new User({
+      const newUser: UserInterface = new User({
         id,
         first_name,
         last_name,
@@ -47,7 +70,7 @@ const authControllers = {
       newUser.save();
 
       // Generate JWT token / Send verification email to users email
-      const token = await generateToken(email, newUser.id, newUser.roles);
+      const token: string = await generateToken(email, newUser.id, newUser.roles);
       await sendVerificationEmail(email, token);
 
       res.status(200).json({
@@ -60,7 +83,8 @@ const authControllers = {
 
   //^ POST /api/v1/auth/login - Login route (authenticates user)
   login: async (req: Request, res: Response, next: NextFunction) => {
-    const { email, password } = req.body;
+    // Request user data
+    const { email, password }: LoginInterface = req.body;
 
     try {
       const user: UserInterface = await User.findOne({ email });
@@ -77,8 +101,8 @@ const authControllers = {
         });
       }
 
-      const maxLockAttempts = user.lock.count > 0 ? 3 : 5;
-      const lockTime = user.lock.count > 0 ? 5 * 60 * 1000 : 30 * 60 * 1000;
+      const maxLockAttempts: number = user.lock.count > 0 ? 3 : 5;
+      const lockTime: number = user.lock.count > 0 ? 5 * 60 * 1000 : 30 * 60 * 1000;
 
       if (!user.verifyPassword(password)) {
         user.lock.attempts++;
@@ -98,8 +122,8 @@ const authControllers = {
       user.lock.count = 0;
       await user.save();
 
-      const token = generateToken(email, user.id, user.roles);
-      const isProduction = process.env.NODE_ENV === "production";
+      const token: string = generateToken(email, user.id, user.roles);
+      const isProduction: boolean = process.env.NODE_ENV === "production";
 
       res.cookie("jwt", token, {
         httpOnly: true,
@@ -117,7 +141,7 @@ const authControllers = {
   },
 
   //^ POST /api/v1/auth/logout - Logout route (logs user out)
-  logout: async (req: Request, res: Response, next: NextFunction) => {
+  logout: async (_req: Request, res: Response, next: NextFunction) => {
     try {
       res.cookie("jwt", "", { maxAge: 0 });
 
@@ -178,11 +202,11 @@ const authControllers = {
     next: NextFunction,
   ) => {
     // Request user data
-    const { email } = req.body;
+    const { email }: { email: string } = req.body;
 
     try {
       // Find user anc check if user exists
-      const user = await User.findOne({ email });
+      const user: UserInterface = await User.findOne({ email });
       if (!user) {
         return res.status(404).json({
           message: "User not found",
@@ -197,7 +221,7 @@ const authControllers = {
       }
 
       // Generate JWT token and send it to users email
-      const token = await generateToken(email, user.id, user.roles);
+      const token: string = await generateToken(email, user.id, user.roles);
       await sendVerificationEmail(email, token);
 
       res.status(200).json({
@@ -215,11 +239,11 @@ const authControllers = {
     next: NextFunction,
   ) => {
     // Request user data
-    const { email } = req.body;
+    const { email }: { email: string } = req.body;
 
     try {
       // Find user and check if they exist
-      const user = await User.findOne({ email });
+      const user: UserInterface = await User.findOne({ email });
 
       if (!user) {
         return res.status(404).json({
@@ -228,7 +252,7 @@ const authControllers = {
       }
 
       // Generate password reset token and send it to users email
-      const token = await generateResetToken(email, user.id);
+      const token: string = await generateResetToken(email, user.id);
       sendPasswordResetEmail(email, token);
 
       res.status(200).json({
@@ -242,14 +266,14 @@ const authControllers = {
   //^ POST /api/v1/auth/reset-password - Reset Password Route (Resets user password)
   passwordReset: async (req: Request, res: Response, next: NextFunction) => {
     // Request user data
-    const { token, password } = req.body;
+    const { token, password, repeat_password }: ResetPasswordInterface = req.body;
 
     try {
       // Verify token
       const decoded: TokenInterface = await verifyToken(token);
 
       // Find user and check if user exists
-      const user = await User.findOne({ email: decoded.email });
+      const user: UserInterface = await User.findOne({ email: decoded.email });
 
       if (!user) {
         return res.status(404).json({
@@ -258,7 +282,7 @@ const authControllers = {
       }
 
       // Hash users new password and save it to database
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword: string = await bcrypt.hash(password, 10);
 
       user.password = hashedPassword;
       await user.save();
@@ -274,11 +298,11 @@ const authControllers = {
   //^ POST /api/v1/auth/change-password - Change Password Route (Changes user password)
   changePassword: async (req: Request, res: Response, next: NextFunction) => {
     // Request user data
-    const token = req.cookies.jwt;
-    const { oldPassword, newPassword } = req.body;
+    const token: string = req.cookies.jwt;
+    const { oldPassword, newPassword }: ChangePasswordInterface = req.body;
 
     try {
-      const decoded = verifyToken(token);
+      const decoded: TokenInterface = verifyToken(token);
 
       const user: UserInterface = await User.findOne({ email: decoded.email });
 
@@ -288,15 +312,13 @@ const authControllers = {
         });
       }
 
-      console.log(await user.verifyPassword(oldPassword));
-
       if (!(await user.verifyPassword(oldPassword))) {
         return res.status(400).json({
           message: "Old password is incorrect",
         });
       }
 
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const hashedPassword: string = await bcrypt.hash(newPassword, 10);
       user.password = hashedPassword;
       await user.save();
 

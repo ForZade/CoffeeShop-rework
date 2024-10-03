@@ -1,13 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import Users, { UserInterface } from "../models/userModel";
-
+import User, { UserInterface } from "../models/userModel";
 import Product, { ProductInterface } from "../models/productModel";
-import { verifyToken } from "../utils/token";
+import { verifyToken, TokenInterface } from "../utils/token";
 
 const userControllers = {
-  getUsers: async (req: Request, res: Response, next: NextFunction) => {
+  getUsers: async (_req: Request, res: Response, next: NextFunction) => {
     try {
-      const users = await Users.find();
+      const users: UserInterface[] = await User.find();
       res.status(200).json({
         status: "success",
         message: "All Users successfully retrieved",
@@ -19,9 +18,9 @@ const userControllers = {
   },
   getUserById: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const getUserId = await Users.findOne({ id: parseInt(req.params.id) });
+      const user = await User.findOne({ id: parseInt(req.params.id) });
 
-      if (!getUserId) {
+      if (!user) {
         return res.status(404).json({
           status: "error",
           message: "User ID not found",
@@ -31,7 +30,7 @@ const userControllers = {
       res.status(200).json({
         status: "success",
         message: "User retrieved by ID successfully",
-        data: getUserId,
+        data: user,
       });
     } catch (err: unknown) {
       next(err);
@@ -39,9 +38,9 @@ const userControllers = {
   },
   getUserByEmail: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const getUserEmail = await Users.findOne({ email: req.params.email });
+      const user = await User.findOne({ email: req.params.email });
 
-      if (!getUserEmail) {
+      if (!user) {
         return res.status(404).json({
           status: "error",
           message: "User email not found",
@@ -51,7 +50,56 @@ const userControllers = {
       res.status(200).json({
         status: "success",
         message: "User retrieved by email successfully",
-        data: getUserEmail,
+        data: user,
+      });
+    } catch (err: unknown) {
+      next(err);
+    }
+  },
+
+  review: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+    const { productId }: { productId: number } = req.body;
+
+    try {
+      const decoded: TokenInterface = verifyToken(token);
+      const user: UserInterface = await User.findOne({ id: decoded.id });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+
+      const product: ProductInterface = await Product.findOne({
+        id: productId,
+      });
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      if (user.favorite.includes(productId)) {
+        user.favorite = user.favorite.filter((id) => id !== productId);
+        product.liked--;
+
+        await user.save();
+        await product.save();
+
+        return res.status(200).json({
+          message: "Product unfavorited.",
+        });
+      }
+
+      user.favorite.push(productId);
+      product.liked++;
+
+      await user.save();
+      await product.save();
+
+      res.status(200).json({
+        message: "Product favorited.",
       });
     } catch (err: unknown) {
       next(err);

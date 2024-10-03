@@ -5,10 +5,10 @@ import { generateProductId } from "../utils/idgen";
 const productControllers = {
   // ^ POST /api/v1/products - Create product (creates product)
   createProduct: async (req: Request, res: Response, next: NextFunction) => {
-    const { name, description, price, image }: ProductInterface = req.body; // product json
+    const { name, description, price, image }: ProductInterface = req.body;
     try {
-      const id = await generateProductId();
-      const newProduct = new Product({
+      const id: number = await generateProductId();
+      const newProduct: ProductInterface = new Product({
         id,
         name,
         description,
@@ -16,45 +16,45 @@ const productControllers = {
         image,
       });
 
-      const savedProduct = await newProduct.save();
+      const savedProduct: ProductInterface = await newProduct.save();
 
       res.status(201).json({
         message: "Success",
         savedProduct,
       });
-    } catch (err) {
+    } catch (err: unknown) {
       next(err);
     }
   },
   // ^ GET /api/v1/products - Get all products (gets all products)
-  getAllProducts: async (req: Request, res: Response, next: NextFunction) => {
+  getAllProducts: async (_req: Request, res: Response, next: NextFunction) => {
     try {
-      const databaseRes = await Product.find({});
+      const data: ProductInterface[] = await Product.find({});
 
       res.status(200).json({
         message: "Success",
-        databaseRes,
+        data,
       });
-    } catch (err) {
+    } catch (err: unknown) {
       next(err);
     }
   },
   // ^ GET /api/v1/products/product - Get product by id (gets product by id)
   getProductById: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const databaseRes = await Product.findOne({ id: req.body.id });
+      const data: ProductInterface = await Product.findOne({ id: req.body.id });
 
       res.status(201).json({
         message: "Success",
-        databaseRes,
+        data,
       });
-    } catch (err) {
+    } catch (err: unknown) {
       next(err);
     }
   },
   // ^ PATCH /api/v1/products - Update product by id (updates product by id)
   patchProduct: async (req: Request, res: Response, next: NextFunction) => {
-    const fieldsToUpdate = {};
+    const fieldsToUpdate: object = {};
 
     Object.keys(req.body).forEach((key) => {
       if (req.body[key] !== undefined && req.body[key] !== null) {
@@ -78,7 +78,7 @@ const productControllers = {
   },
   // ^ DELETE /api/v1/products - Delete product by id (deletes product by id)
   deleteProduct: async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.body;
+    const { id }: { id: number } = req.body;
 
     try {
       const deletedProduct = await Product.findOneAndDelete({ id });
