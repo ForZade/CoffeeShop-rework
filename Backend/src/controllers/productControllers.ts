@@ -21,9 +21,9 @@ const productControllers = {
       res.status(201).json({
         message: "Success",
         savedProduct,
-      }); // SUBJECT TO CHANGE
-    } catch (err: unknown) {
-      res.status(500).json({ error: err });
+      });
+    } catch (err) {
+      next(err);
     }
   },
   // ^ GET /api/v1/products - Get all products (gets all products)
@@ -31,12 +31,12 @@ const productControllers = {
     try {
       const databaseRes = await Product.find({});
 
-      res.status(201).json({
+      res.status(200).json({
         message: "Success",
-        data: databaseRes,
+        databaseRes,
       });
-    } catch (err: unknown) {
-      res.status(500).json({ error: err });
+    } catch (err) {
+      next(err);
     }
   },
   // ^ GET /api/v1/products/product - Get product by id (gets product by id)
@@ -44,12 +44,12 @@ const productControllers = {
     try {
       const databaseRes = await Product.findOne({ id: req.body.id });
 
-      res.send({
+      res.status(201).json({
         message: "Success",
-        data: databaseRes,
-      }); // SUBJECT TO CHANGE
-    } catch (err: unknown) {
-      res.status(500).json({ error: err });
+        databaseRes,
+      });
+    } catch (err) {
+      next(err);
     }
   },
   // ^ PATCH /api/v1/products - Update product by id (updates product by id)

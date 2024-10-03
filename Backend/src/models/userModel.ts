@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema(
         type: [cartItemSchema],
       },
       total: {
-        type: mongoose.Schema.Types.Decimal128,
+        type: mongoose.Types.Decimal128,
       },
     },
     favorite: {
@@ -98,9 +98,7 @@ export interface UserInterface extends mongoose.Document {
   roles: string[];
   wallet?: number;
   cart?: CartInterface;
-  favorite?: number[];
   createdAt?: Date;
   updatedAt?: Date;
-  verifyPassword(password: string): Promise<boolean>;
   verifyPassword(password: string): Promise<boolean>;
 }
