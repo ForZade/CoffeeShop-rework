@@ -4,7 +4,7 @@ import express from "express";
 import authRoutes from "./auth/auth";
 import userRoutes from "./users/users";
 import adminRoutes from "./admin/admins";
-import reviewRoutes from "./review/review"
+import reviewRoutes from "./review/review";
 
 const router = express.Router();
 
