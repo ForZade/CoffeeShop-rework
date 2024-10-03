@@ -15,7 +15,7 @@ export default [
   eslintConfigPrettier,
 
   {
-    files: ["**/*.{js,mjs,cjs,ts}"],
+    files: ["**/*.{js,mjs,cjs,ts,}",],
 
     plugins: {
       prettier: eslintPluginPrettier,

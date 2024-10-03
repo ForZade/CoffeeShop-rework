@@ -57,7 +57,6 @@ const userControllers = {
       next(err);
     }
   },
-
 };
 
 export default userControllers;

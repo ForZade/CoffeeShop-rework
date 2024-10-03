@@ -1,15 +1,29 @@
-// import request from "supertest";
-// import express from "express";
-const request = require("supertest");
-const express = require("express");
+import request from "supertest";
+import express from "express";
+import { describe, it, before, after } from "node:test";
+import assert from "node:assert";
+import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
 
-const authControllers = require("../src/controllers/authControllers.ts");
-
-// import authControllers from "../src/controllers/authControllers.js";
+import authControllers from "../src/controllers/authControllers";
 
 const app = express();
 app.use(express.json());
 app.use("/test/auth/register", authControllers.register);
+
+let mongoServer: MongoMemoryServer;
+
+before(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  const uri = mongoServer.getUri();
+
+  await mongoose.connect(uri);
+});
+
+after(async () => {
+  await mongoose.disconnect();
+  await mongoServer.stop();
+});
 
 describe("Register", () => {
   it("should return 200 if user is registered", async () => {
@@ -17,13 +31,14 @@ describe("Register", () => {
       first_name: "John",
       last_name: "Doe",
       email: "XxJqK@example.com",
-      password: "password123",
+      password: "Password123.",
     });
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body.message).toBe(
+    assert.strictEqual(response.statusCode, 200); // Using assert
+    assert.strictEqual(
+      response.body.message,
       "Registration successful. Please verify your email.",
-    );
+    ); // Using assert
   });
 
   it("should return 400 if user already exists", async () => {
@@ -34,8 +49,11 @@ describe("Register", () => {
       password: "password123",
     });
 
-    expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe("User with this email already exists.");
+    assert.strictEqual(response.statusCode, 400); // Using assert
+    assert.strictEqual(
+      response.body.message,
+      "User with this email already exists.",
+    ); // Using assert
   });
 
   it("should return 400 if password is missing", async () => {
@@ -45,7 +63,7 @@ describe("Register", () => {
       email: "XxJqK@example.com",
     });
 
-    expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe("Password is required.");
+    assert.strictEqual(response.statusCode, 400); // Using assert
+    assert.strictEqual(response.body.message, "Password is required."); // Using assert
   });
 });
