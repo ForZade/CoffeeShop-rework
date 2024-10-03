@@ -57,7 +57,7 @@ const cartController = {
       }
 
       const existingItem = user.cart.items.find(
-        (item) => item.productId === productId,
+        (item) => item.productId === parseInt(productId),
       );
 
       if (existingItem) {
@@ -110,7 +110,7 @@ const cartController = {
       }
 
       const existingItem = user.cart.items.find(
-        (item) => item.productId === productId,
+        (item) => item.productId === parseInt(productId),
       );
 
       // if (!existingItem){
