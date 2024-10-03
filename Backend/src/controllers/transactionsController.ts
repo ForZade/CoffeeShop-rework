@@ -11,7 +11,8 @@ import toDecimal from "../utils/toDecimal";
 const transactionsController = {
   makeTransaction: async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.jwt;
-    // const { card_number, cvv, expiry_date, name } = req.body;
+    const { cvv } = req.body;
+    console.log(cvv);
 
     try {
       const decoded: TokenInterface = await verifyToken(token);
@@ -66,9 +67,9 @@ const transactionsController = {
     const token = req.cookies.jwt;
     try {
       const decoded: TokenInterface = await verifyToken(token!);
-      const transaction: TransactionInterface = await Transaction.findOne({
-        id: decoded.id,
-      });
+      const transaction = await Transaction.find({
+        user_id: decoded.id,
+      }).lean();
 
       if (!transaction) {
         return res.status(404).json({
