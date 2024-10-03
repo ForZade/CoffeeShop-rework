@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 export const cartItemSchema = new mongoose.Schema({
-  product: {
-    type: String,
+  productId: {
+    type: Number,
     required: true,
   },
   quantity: {
@@ -16,7 +16,7 @@ export const cartItemSchema = new mongoose.Schema({
 });
 
 export interface CartItemInterface {
-  product: string;
+  productId: number;
   quantity: number;
   total: mongoose.Types.Decimal128;
 }

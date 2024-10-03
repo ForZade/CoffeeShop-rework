@@ -10,9 +10,6 @@ import passport from "./config/passport";
 
 // Routes
 import allRoutes from "./routes/index";
-
-// Middlewares
-import handleError500 from "./middlewares/error500";
 //import handleError500 from "./middlewares/error500";
 import { loggerMiddleware } from "./middlewares/logger";
 import cookieParser from "cookie-parser";
@@ -40,9 +37,6 @@ async function startServer() {
     });
 
     app.use(express.json());
-    app.use(cookieParser());
-    app.use(passport.initialize());
-
     app.use(cookieParser());
     app.use(
       cors({

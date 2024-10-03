@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -78,7 +79,19 @@ userSchema.methods.verifyPassword = async function (
   return await bcrypt.compare(password, this.password);
 };
 
+userSchema.methods.verifyPassword = async function (
+  password: string,
+): Promise<boolean> {
+  return await bcrypt.compare(password, this.password);
+};
+
 export default mongoose.model("User", userSchema);
+
+export interface LockInterface {
+  attempts: number;
+  until: Date;
+  count: number;
+}
 
 export interface LockInterface {
   attempts: number;
@@ -93,6 +106,7 @@ export interface UserInterface extends mongoose.Document {
   email: string;
   password: string;
   lock: LockInterface;
+  lock: LockInterface;
   isVerified: boolean;
   isAdmin: boolean;
   roles: string[];
@@ -101,5 +115,6 @@ export interface UserInterface extends mongoose.Document {
   favorite?: number[];
   createdAt?: Date;
   updatedAt?: Date;
+  verifyPassword(password: string): Promise<boolean>;
   verifyPassword(password: string): Promise<boolean>;
 }

@@ -5,7 +5,7 @@ dotenv.config();
 
 export function generateToken(email: string, id: number, roles: string[]) {
   return jwt.sign({ email, id, roles }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "7d",
   });
 }
 
