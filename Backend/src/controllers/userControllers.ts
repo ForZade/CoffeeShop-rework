@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import User, { UserInterface } from "../models/userModel";
-import Product, { ProductInterface } from "../models/productModel";
-import { verifyToken, TokenInterface } from "../utils/token";
 
 const userControllers = {
   getUsers: async (_req: Request, res: Response, next: NextFunction) => {
@@ -56,52 +54,81 @@ const userControllers = {
       next(err);
     }
   },
-
-  review: async (req: Request, res: Response, next: NextFunction) => {
-    const token: string = req.cookies.jwt;
-    const { productId }: { productId: number } = req.body;
+  
+  addAdmin: async (req: Request, res: Response, next: NextFunction) => {
+    const { identifier }: { identifier: string } = req.body;
 
     try {
-      const decoded: TokenInterface = verifyToken(token);
-      const user: UserInterface = await User.findOne({ id: decoded.id });
+      let user: UserInterface;
+
+      if (identifier.includes("@")) {
+        user = await User.findOne({ email: identifier });
+      } else {
+        user = await User.findOne({ id: identifier });
+      }
 
       if (!user) {
-        return res.status(404).json({
-          message: "User not found",
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (!user.isVerified) {
+        return res.status(400).json({
+          message: "User is not verified",
         });
       }
 
-      const product: ProductInterface = await Product.findOne({
-        id: productId,
-      });
-      if (!product) {
-        return res.status(404).json({
-          message: "Product not found",
+      if (user.roles.includes("Admin")) {
+        return res.status(400).json({
+          message: "User is already an admin",
         });
       }
 
-      if (user.favorite.includes(productId)) {
-        user.favorite = user.favorite.filter((id) => id !== productId);
-        product.liked--;
-
-        await user.save();
-        await product.save();
-
-        return res.status(200).json({
-          message: "Product unfavorited.",
-        });
-      }
-
-      user.favorite.push(productId);
-      product.liked++;
-
+      user.roles.push("Admin");
       await user.save();
-      await product.save();
 
       res.status(200).json({
-        message: "Product favorited.",
+        message: "User added to administrator role successfully"
       });
-    } catch (err: unknown) {
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  removeAdmin: async (req: Request, res: Response, next: NextFunction) => {
+    const { identifier }: { identifier: string } = req.body;
+
+    try {
+      let user: UserInterface;
+
+      if (identifier.includes("@")) {
+        user = await User.findOne({ email: identifier });
+      } else {
+        user = await User.findOne({ id: identifier });
+      }
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (!user.roles.includes("Admin")) {
+        return res.status(400).json({
+          message: "User is not an admin",
+        });
+      }
+
+      if (user.isVerified === false) {
+        return res.status(400).json({
+          message: "User is not verified",
+        });
+      }
+
+      user.roles = user.roles.filter((role: string) => role !== "Admin");
+      await user.save();
+
+      res.json({
+        message: "User removed from administrator role successfully",
+      });
+    } catch (err) {
       next(err);
     }
   },

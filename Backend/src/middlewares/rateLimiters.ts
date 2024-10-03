@@ -19,6 +19,15 @@ const rateLimiters = {
     legacyHeaders: false,
   }),
 
+  //^ 5 requests per 30 minutes
+  resendVerificationLimiter: rateLimit({
+    windowMs: 30 * 60 * 1000,
+    max: 5,
+    message: "Too many requests from this IP, please try again after 1 hour",
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+
   //^ 1 request per 10 seconds
   defaultLimiter: rateLimit({
     windowMs: 10 * 1000,

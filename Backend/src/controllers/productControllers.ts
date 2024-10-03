@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import Product, { ProductInterface } from "../models/productModel";
+import User, { UserInterface } from "../models/userModel";
 import { generateProductId } from "../utils/idgen";
+import { verifyToken, TokenInterface } from "../utils/token";
 
 const productControllers = {
   // ^ POST /api/v1/products - Create product (creates product)
@@ -89,6 +91,55 @@ const productControllers = {
       });
     } catch (err: unknown) {
       res.status(500).json({ error: err });
+    }
+  },
+
+  review: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+    const { productId }: { productId: number } = req.body;
+
+    try {
+      const decoded: TokenInterface = verifyToken(token);
+      const user: UserInterface = await User.findOne({ id: decoded.id });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+
+      const product: ProductInterface = await Product.findOne({
+        id: productId,
+      });
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      if (user.favorite.includes(productId)) {
+        user.favorite = user.favorite.filter((id) => id !== productId);
+        product.liked--;
+
+        await user.save();
+        await product.save();
+
+        return res.status(200).json({
+          message: "Product unfavorited.",
+        });
+      }
+
+      user.favorite.push(productId);
+      product.liked++;
+
+      await user.save();
+      await product.save();
+
+      res.status(200).json({
+        message: "Product favorited.",
+      });
+    } catch (err: unknown) {
+      next(err);
     }
   },
 };
