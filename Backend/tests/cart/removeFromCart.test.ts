@@ -7,7 +7,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import cartController from "../../src/controllers/cartController";
 import User from "../../src/models/userModel";
 import Product from "../../src/models/productModel";
-import { signToken } from "../../src/utils/token";
+import { generateToken } from "../../src/utils/token";
 
 const app = express();
 app.use(express.json());
@@ -27,7 +27,8 @@ before(async () => {
     last_name: "Doe",
     email: "test@example.com",
     password: "Password123.",
-    cart: { items: [], total: 0 },
+    cart: { items: [{ productId: 101, quantity: 2, total: 100 }], total: 100 },
+    roles: ["user"],
   });
   await user.save();
 
@@ -38,7 +39,8 @@ before(async () => {
   });
   await product.save();
 
-  token = signToken({ id: 1 });
+  // Generate token for the mock user
+  token = generateToken("test@example.com", 1, ["user"]);
 });
 
 after(async () => {
@@ -46,7 +48,7 @@ after(async () => {
   await mongoServer.stop();
 });
 
-describe("Remove from Cart", () => {
+describe("Remove From Cart", () => {
   it("should remove an item from the cart", async () => {
     const response = await request(app)
       .post("/test/cart/remove")
@@ -65,5 +67,16 @@ describe("Remove from Cart", () => {
 
     assert.strictEqual(response.statusCode, 400);
     assert.strictEqual(response.body.message, "Product not found");
+  });
+
+  it("should return 400 if user is not found", async () => {
+    const invalidToken = generateToken("invalid@example.com", 999, ["user"]);
+    const response = await request(app)
+      .post("/test/cart/remove")
+      .set("Cookie", [`jwt=${invalidToken}`])
+      .send({ productId: 101 });
+
+    assert.strictEqual(response.statusCode, 400);
+    assert.strictEqual(response.body.message, "User not found");
   });
 });

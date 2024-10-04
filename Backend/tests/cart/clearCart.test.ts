@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import cartController from "../../src/controllers/cartController";
 import User from "../../src/models/userModel";
-import { signToken } from "../../src/utils/token";
+import { generateToken } from "../../src/utils/token";
 
 const app = express();
 app.use(express.json());
@@ -26,11 +26,13 @@ before(async () => {
     last_name: "Doe",
     email: "test@example.com",
     password: "Password123.",
-    cart: { items: [], total: 0 },
+    cart: { items: [{ productId: 101, quantity: 2, total: 100 }], total: 100 },
+    roles: ["user"],
   });
   await user.save();
 
-  token = signToken({ id: 1 });
+  // Generate token for the mock user
+  token = generateToken("test@example.com", 1, ["user"]);
 });
 
 after(async () => {
@@ -39,7 +41,7 @@ after(async () => {
 });
 
 describe("Clear Cart", () => {
-  it("should clear the cart", async () => {
+  it("should clear the user's cart", async () => {
     const response = await request(app)
       .post("/test/cart/clear")
       .set("Cookie", [`jwt=${token}`]);
@@ -48,11 +50,11 @@ describe("Clear Cart", () => {
     assert.strictEqual(response.body.message, "Cart cleared");
   });
 
-  it("should return 400 if user not found", async () => {
-    const badToken = signToken({ id: 999 }); // Non-existent user
+  it("should return 400 if user is not found", async () => {
+    const invalidToken = generateToken("invalid@example.com", 999, ["user"]);
     const response = await request(app)
       .post("/test/cart/clear")
-      .set("Cookie", [`jwt=${badToken}`]);
+      .set("Cookie", [`jwt=${invalidToken}`]);
 
     assert.strictEqual(response.statusCode, 400);
     assert.strictEqual(response.body.message, "User not found");

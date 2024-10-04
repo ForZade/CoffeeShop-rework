@@ -7,6 +7,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import cartController from "../../src/controllers/cartController";
 import User from "../../src/models/userModel";
 import Product from "../../src/models/productModel";
+import { generateToken } from "../../src/utils/token";
 
 const app = express();
 app.use(express.json());
@@ -20,7 +21,6 @@ before(async () => {
   const uri = mongoServer.getUri();
   await mongoose.connect(uri);
 
-  // Create a mock user and product
   const user = new User({
     id: 1,
     first_name: "John",
@@ -28,6 +28,7 @@ before(async () => {
     email: "test@example.com",
     password: "Password123.",
     cart: { items: [], total: 0 },
+    roles: ["user"],
   });
   await user.save();
 
@@ -37,6 +38,9 @@ before(async () => {
     price: 50.0,
   });
   await product.save();
+
+  // Generate token for the mock user
+  token = generateToken("test@example.com", 1, ["user"]);
 });
 
 after(async () => {
