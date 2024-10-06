@@ -10,5 +10,6 @@ router.delete("/", isAdmin, productController.deleteProduct);
 router.get("/all", requireAuth, productController.getAllProducts);
 router.get("/", requireAuth, productController.getProductById);
 router.patch("/", isAdmin, productController.patchProduct);
+router.post("/review", requireAuth, productController.review);
 
 export default router;

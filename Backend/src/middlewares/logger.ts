@@ -1,9 +1,6 @@
 import { createLogger, format, transports } from "winston";
 import path from "path";
 import { Request, Response, NextFunction } from "express";
-import { createLogger, format, transports } from "winston";
-import path from "path";
-import { Request, Response, NextFunction } from "express";
 
 const infoLogPath = path.join(__dirname, "../logs", "info.log");
 const errorLogPath = path.join(__dirname, "../logs", "error.log");
@@ -57,7 +54,6 @@ const loggerMiddleware = (
 
   res.on("finish", () => {
     if (res.statusCode >= 400) {
-      logger.error("Error occurred", {
       logger.error("Error occurred", {
         status: res.statusCode,
         message: res.statusMessage,

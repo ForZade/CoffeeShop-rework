@@ -1,13 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import Users, { UserInterface } from "../models/userModel";
-
-import Product, { ProductInterface } from "../models/productModel";
-import { verifyToken } from "../utils/token";
+import User, { UserInterface } from "../models/userModel";
 
 const userControllers = {
-  getUsers: async (req: Request, res: Response, next: NextFunction) => {
+  getUsers: async (_req: Request, res: Response, next: NextFunction) => {
     try {
-      const users = await Users.find();
+      const users: UserInterface[] = await User.find();
       res.status(200).json({
         status: "success",
         message: "All Users successfully retrieved",
@@ -19,9 +16,9 @@ const userControllers = {
   },
   getUserById: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const getUserId = await Users.findOne({ id: parseInt(req.params.id) });
+      const user = await User.findOne({ id: parseInt(req.params.id) });
 
-      if (!getUserId) {
+      if (!user) {
         return res.status(404).json({
           status: "error",
           message: "User ID not found",
@@ -31,7 +28,7 @@ const userControllers = {
       res.status(200).json({
         status: "success",
         message: "User retrieved by ID successfully",
-        data: getUserId,
+        data: user,
       });
     } catch (err: unknown) {
       next(err);
@@ -39,9 +36,9 @@ const userControllers = {
   },
   getUserByEmail: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const getUserEmail = await Users.findOne({ email: req.params.email });
+      const user = await User.findOne({ email: req.params.email });
 
-      if (!getUserEmail) {
+      if (!user) {
         return res.status(404).json({
           status: "error",
           message: "User email not found",
@@ -51,9 +48,87 @@ const userControllers = {
       res.status(200).json({
         status: "success",
         message: "User retrieved by email successfully",
-        data: getUserEmail,
+        data: user,
       });
     } catch (err: unknown) {
+      next(err);
+    }
+  },
+  
+  addAdmin: async (req: Request, res: Response, next: NextFunction) => {
+    const { identifier }: { identifier: string } = req.body;
+
+    try {
+      let user: UserInterface;
+
+      if (identifier.includes("@")) {
+        user = await User.findOne({ email: identifier });
+      } else {
+        user = await User.findOne({ id: identifier });
+      }
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (!user.isVerified) {
+        return res.status(400).json({
+          message: "User is not verified",
+        });
+      }
+
+      if (user.roles.includes("Admin")) {
+        return res.status(400).json({
+          message: "User is already an admin",
+        });
+      }
+
+      user.roles.push("Admin");
+      await user.save();
+
+      res.status(200).json({
+        message: "User added to administrator role successfully"
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  removeAdmin: async (req: Request, res: Response, next: NextFunction) => {
+    const { identifier }: { identifier: string } = req.body;
+
+    try {
+      let user: UserInterface;
+
+      if (identifier.includes("@")) {
+        user = await User.findOne({ email: identifier });
+      } else {
+        user = await User.findOne({ id: identifier });
+      }
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (!user.roles.includes("Admin")) {
+        return res.status(400).json({
+          message: "User is not an admin",
+        });
+      }
+
+      if (user.isVerified === false) {
+        return res.status(400).json({
+          message: "User is not verified",
+        });
+      }
+
+      user.roles = user.roles.filter((role: string) => role !== "Admin");
+      await user.save();
+
+      res.json({
+        message: "User removed from administrator role successfully",
+      });
+    } catch (err) {
       next(err);
     }
   },

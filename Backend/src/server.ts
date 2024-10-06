@@ -6,15 +6,12 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 
 import StartDB from "./Database/MongoDB";
-import passport from "./config/passport";
 
 // Routes
 import allRoutes from "./routes/index";
 
 // Middlewares
-// import handleError500 from "./middlewares/error500";
 import { loggerMiddleware } from "./middlewares/logger";
-import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT || 3000;
 
@@ -23,7 +20,7 @@ const app = express();
 async function initializeDatabase() {
   try {
     await StartDB();
-  } catch (err) {
+  } catch (err: unknown) {
     console.log(err);
   }
 }
@@ -49,12 +46,10 @@ async function startServer() {
 
     app.use(loggerMiddleware);
 
-    // app.use(handleError500);
-
     app.use("/api/v1", allRoutes);
 
     // app.use(handleError500);
-  } catch (err) {
+  } catch (err: unknown) {
     console.log(err);
   }
 }

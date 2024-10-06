@@ -3,7 +3,7 @@ import { verifyToken, TokenInterface } from "../utils/token";
 
 export async function isAdmin(req: Request, res: Response, next: NextFunction) {
   try {
-    const token = req.cookies.jwt;
+    const token: string = req.cookies.jwt;
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });

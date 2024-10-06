@@ -78,7 +78,7 @@ userSchema.methods.verifyPassword = async function (
   return await bcrypt.compare(password, this.password);
 };
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model<UserInterface>("User", userSchema);
 
 export interface LockInterface {
   attempts: number;

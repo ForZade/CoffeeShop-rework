@@ -1,7 +1,7 @@
 import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 
-const authValidation = {
+const authValidator = {
   register: [
     body("email") // Validates email
       .isEmail()
@@ -82,4 +82,4 @@ const authValidation = {
   ],
 };
 
-export default authValidation;
+export default authValidator;
