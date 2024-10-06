@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "node --test --require ts-node/register ./tests/*.test.ts",
+    "test": "node --test --require ts-node/register ./tests/**/*.test.ts",
     "dev": "nodemon ./src/server.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -22,7 +22,7 @@
     "eslint": "^9.11.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "globals": "^15.9.0",
+    "globals": "^15.9.0",č
     "jest": "^29.7.0",
     "mongodb-memory-server": "^10.0.1",
     "nodemon": "^3.1.7",

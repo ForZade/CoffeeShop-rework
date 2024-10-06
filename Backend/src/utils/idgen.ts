@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import Transaction, { TransactionInterface } from "../models/transactionModel";
 
 export async function generateUserId() {
-  const id: string = Math.floor(10000000 + Math.random() * 90000000).toString();
+  const id = Math.floor(10000000 + Math.random() * 90000000).toString();
 
   const existingUser: UserInterface = await User.findOne({ id: id });
 

@@ -5,9 +5,9 @@ const authValidator = {
   register: [
     body("email") // Validates email
       .isEmail()
-      .withMessage("Invalid email format")
+      .withMessage("Invalid email format.")
       .notEmpty()
-      .withMessage("Email must not be empty"),
+      .withMessage("Email must not be empty."),
 
     body("password") // Validates password
       .isStrongPassword({
@@ -17,13 +17,15 @@ const authValidator = {
         minNumbers: 1,
         minSymbols: 1,
       })
-      .withMessage("Password does not match strength requirements"),
+      .withMessage("Password does not match strength requirements.")
+      .notEmpty()
+      .withMessage("Password must not be empty."),
 
     body("first_name") // Validates first name
       .notEmpty()
-      .withMessage("First name must not be empty")
+      .withMessage("First name must not be empty.")
       .matches(/^[A-Za-z]+$/)
-      .withMessage("First name cannot contain any symbols"),
+      .withMessage("First name cannot contain any symbols."),
 
     body("last_name") // Validates last name
       .notEmpty()

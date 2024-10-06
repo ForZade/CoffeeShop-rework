@@ -40,11 +40,11 @@ const authControllers = {
     const { first_name, last_name, email, password }: RegisterInterface = req.body;
 
     try {
-      if (!password) {
-        return res.status(400).json({
-          message: "Password is required.",
-        });
-      }
+      // if (!password) {
+      //   return res.status(400).json({
+      //     message: "Password is required.",
+      //   });
+      // }
 
       // Check if user already exists
       const existingUser: UserInterface = await User.findOne({ email });
@@ -67,7 +67,7 @@ const authControllers = {
         password: hashedPassword,
       });
 
-      newUser.save();
+      await newUser.save();
 
       // Generate JWT token / Send verification email to users email
       const token: string = await generateToken(email, newUser.id, newUser.roles);
@@ -107,9 +107,13 @@ const authControllers = {
       if (!user.verifyPassword(password)) {
         user.lock.attempts++;
 
-        if (user.lock.attempts >= maxLockAttempts) {
+        if (user.lock.attempts >= maxLockAttempts || user.lock.until <= new Date()) {
           user.lock.until = new Date(Date.now() + lockTime);
           user.lock.count++;
+
+          return res.status(401).json({
+            message: "Too many login attempts. Please try again later.",
+          })
         }
 
         return res.status(401).json({
