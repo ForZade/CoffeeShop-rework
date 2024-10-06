@@ -1,16 +1,17 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 import StartDB from "./Database/MongoDB";
 
-//Routes
+// Routes
 import allRoutes from "./routes/index";
-//import handleError500 from "./middlewares/error500";
+
+// Middlewares
 import { loggerMiddleware } from "./middlewares/logger";
-import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT || 3000;
 
@@ -19,7 +20,7 @@ const app = express();
 async function initializeDatabase() {
   try {
     await StartDB();
-  } catch (err) {
+  } catch (err: unknown) {
     console.log(err);
   }
 }
@@ -29,8 +30,11 @@ async function startServer() {
     await initializeDatabase();
 
     app.listen(PORT, () => {
-      console.log(`[express] Server is running on port: ${PORT}`);
+      console.log(
+        `[express] Server is running on port: http://localhost:${PORT}`,
+      );
     });
+
     app.use(express.json());
     app.use(cookieParser());
     app.use(
@@ -45,7 +49,7 @@ async function startServer() {
     app.use("/api/v1", allRoutes);
 
     // app.use(handleError500);
-  } catch (err) {
+  } catch (err: unknown) {
     console.log(err);
   }
 }

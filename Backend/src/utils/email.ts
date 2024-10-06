@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendVerificationEmail(email: string, token: string) {
-  const verificationLink = `${process.env.BASE_URL}/api/v1/auth/verify-email?token=${token}`;
+  const verificationLink: string = `${process.env.BASE_URL}/api/v1/auth/verify-email?token=${token}`;
 
   const mailOptions = {
     from: process.env.MAIL_USER,
@@ -38,13 +38,14 @@ export async function sendVerificationEmail(email: string, token: string) {
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
-  const resetLink = `${process.env.BASE_URL}/api/v1/auth/reset-password?token=${token}`;
+  const resetLink: string = `${process.env.BASE_URL}/api/v1/auth/reset-password?token=${token}`;
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Password Reset",
     html: `
+          <h1>Reset your password</h1>
           <p>Click the button below to reset your password:</p>
           <a href="${resetLink}" style="
             background-color: #007bff; 

@@ -6,7 +6,7 @@ function getRandomNumber(
   max: number = 1500,
   decimals: number = 2,
 ): number {
-  const random = Math.random() * (max - min) + min;
+  const random: number = Math.random() * (max - min) + min;
   return parseFloat(random.toFixed(decimals));
 }
 

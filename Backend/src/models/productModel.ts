@@ -31,7 +31,7 @@ const productSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export default mongoose.model("Product", productSchema);
+export default mongoose.model<ProductInterface>("Product", productSchema);
 
 export interface ProductInterface extends mongoose.Document {
   id: number;
@@ -39,6 +39,7 @@ export interface ProductInterface extends mongoose.Document {
   description: string;
   price: mongoose.Types.Decimal128;
   image: string;
+  liked: number;
   options?: string[];
   createdAt?: Date;
   updatedAt?: Date;

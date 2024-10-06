@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema(
         type: [cartItemSchema],
       },
       total: {
-        type: mongoose.Types.Decimal128,
+        type: mongoose.Schema.Types.Decimal128,
       },
     },
     favorite: {
@@ -78,7 +78,7 @@ userSchema.methods.verifyPassword = async function (
   return await bcrypt.compare(password, this.password);
 };
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model<UserInterface>("User", userSchema);
 
 export interface LockInterface {
   attempts: number;
@@ -98,6 +98,7 @@ export interface UserInterface extends mongoose.Document {
   roles: string[];
   wallet?: number;
   cart?: CartInterface;
+  favorite?: number[];
   createdAt?: Date;
   updatedAt?: Date;
   verifyPassword(password: string): Promise<boolean>;
