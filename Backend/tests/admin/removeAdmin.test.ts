@@ -4,7 +4,7 @@ import { describe, it, before, after } from "node:test";
 import assert from "node:assert";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import adminController from "../../src/controllers/adminController";
+import adminController from "../../src/controllers/userControllers";
 
 import User, { UserInterface } from "../../src/models/userModel"; // Import the User model
 
@@ -37,8 +37,8 @@ before(async () => {
       email: "adminuser@example.com",
       password: "Password123.", // In practice, you should store hashed passwords
       isVerified: true,
-      roles: ["Admin"],
-    },
+      roles: ["Admin"], // This user should be an admin
+  },
     {
       id: 789012,
       first_name: "Unverified",
@@ -61,6 +61,10 @@ before(async () => {
 
   // Saving users to the in-memory database
   await User.insertMany(users);
+
+  // Logging to verify users in the database
+  const allUsers = await User.find();
+  console.log("Initial Users:", allUsers);
 });
 
 describe("Remove Admin", () => {
@@ -108,6 +112,9 @@ describe("Remove Admin", () => {
     const response = await request(app).post("/test/admin").send({
       identifier: "adminuser@example.com", // Valid email identifier for admin user
     });
+
+    console.log("Response Status:", response.statusCode);
+    console.log("Response Body:", response.body);
 
     assert.strictEqual(response.statusCode, 200);
     assert.strictEqual(response.body.message, "User removed from administrator role successfully");
