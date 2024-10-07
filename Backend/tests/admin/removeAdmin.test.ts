@@ -57,6 +57,15 @@ before(async () => {
       isVerified: true,
       roles: ["User"], // Not an admin
     },
+    {
+      id: 987654,
+      first_name: "New Admin",
+      last_name: "User ",
+      email: "newadmin@example.com",
+      password: "Password123.",
+      isVerified: true,
+      roles: ["Admin"], // This user should be an admin
+    },
   ];
 
   // Saving users to the in-memory database
@@ -64,7 +73,6 @@ before(async () => {
 
   // Logging to verify users in the database
   const allUsers = await User.find();
-  console.log("Initial Users:", allUsers);
 });
 
 describe("Remove Admin", () => {
@@ -110,17 +118,14 @@ describe("Remove Admin", () => {
 
   it("should remove user as admin using email identifier", async () => {
     const response = await request(app).post("/test/admin").send({
-      identifier: "adminuser@example.com", // Valid email identifier for admin user
+      identifier: "newadmin@example.com", // Valid email identifier for new admin user
     });
-
-    console.log("Response Status:", response.statusCode);
-    console.log("Response Body:", response.body);
-
+  
     assert.strictEqual(response.statusCode, 200);
     assert.strictEqual(response.body.message, "User removed from administrator role successfully");
-
+  
     // Verifying the user is no longer an admin
-    const updatedUser = await User.findOne({ email: "adminuser@example.com" });
-    assert.ok(!updatedUser?.roles.includes("Admin"));
+    const updatedUser   = await User.findOne({ email: "newadmin@example.com" });
+    assert.ok(!updatedUser  ?.roles.includes("Admin"));
   });
 });
