@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import User, { UserInterface } from "../models/userModel";
+import Product, { ProductInterface } from "../models/productModel";
+import { TokenInterface, verifyToken } from "../utils/token";
+import toDecimal, { addDecimals, removeDecimals } from "../utils/toDecimal";
+import { sendContactEmail } from "../utils/email";
 
 const userControllers = {
   getUsers: async (_req: Request, res: Response, next: NextFunction) => {
@@ -14,40 +18,28 @@ const userControllers = {
       next(err);
     }
   },
-  getUserById: async (req: Request, res: Response, next: NextFunction) => {
+  getUser: async (req: Request, res: Response, next: NextFunction) => {
+    const param: string | number = req.params.identifier;
+    let user: UserInterface;
+
     try {
-      const user = await User.findOne({ id: parseInt(req.params.id) });
+      if (param.includes("@")) {
+        user = await User.findOne({ email: param });
+      }
+      else {
+        user = await User.findOne({ id: param });
+      }
 
       if (!user) {
         return res.status(404).json({
           status: "error",
-          message: "User ID not found",
+          message: "User not found",
         });
       }
 
       res.status(200).json({
         status: "success",
-        message: "User retrieved by ID successfully",
-        data: user,
-      });
-    } catch (err: unknown) {
-      next(err);
-    }
-  },
-  getUserByEmail: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const user = await User.findOne({ email: req.params.email });
-
-      if (!user) {
-        return res.status(404).json({
-          status: "error",
-          message: "User email not found",
-        });
-      }
-
-      res.status(200).json({
-        status: "success",
-        message: "User retrieved by email successfully",
+        message: "User retrieved successfully",
         data: user,
       });
     } catch (err: unknown) {
@@ -56,15 +48,15 @@ const userControllers = {
   },
   
   addAdmin: async (req: Request, res: Response, next: NextFunction) => {
-    const { identifier }: { identifier: string } = req.body;
+    const params: string | number = req.params.identifier;
 
     try {
       let user: UserInterface;
 
-      if (identifier.includes("@")) {
-        user = await User.findOne({ email: identifier });
+      if (params.includes("@")) {
+        user = await User.findOne({ email: params });
       } else {
-        user = await User.findOne({ id: identifier });
+        user = await User.findOne({ id: params });
       }
 
       if (!user) {
@@ -95,15 +87,15 @@ const userControllers = {
   },
 
   removeAdmin: async (req: Request, res: Response, next: NextFunction) => {
-    const { identifier }: { identifier: string } = req.body;
+    const params: string | number = req.params.identifier;
 
     try {
       let user: UserInterface;
 
-      if (identifier.includes("@")) {
-        user = await User.findOne({ email: identifier });
+      if (params.includes("@")) {
+        user = await User.findOne({ email: params });
       } else {
-        user = await User.findOne({ id: identifier });
+        user = await User.findOne({ id: params });
       }
 
       if (!user) {
@@ -132,6 +124,192 @@ const userControllers = {
       next(err);
     }
   },
+
+  getCart: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+
+    try {
+      const decoded: TokenInterface = await verifyToken(token);
+
+      const user: UserInterface = await User.findOne({
+        id: decoded.id,
+      });
+
+      if (!user) {
+        return res.status(400).json({
+          message: "User not found",
+        });
+      }
+
+      res.status(200).json({
+        message: "Succsefull",
+        data: user.cart,
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  addToCart: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+    const productId: number = parseInt(req.params.productId);
+
+    try {
+      const decoded: TokenInterface = await verifyToken(token);
+
+      const user: UserInterface = await User.findOne({
+        id: decoded.id,
+      });
+
+      if (!user) {
+        return res.status(400).json({
+          message: "User not found",
+        });
+      }
+
+      const product: ProductInterface = await Product.findOne({
+        id: productId,
+      });
+
+      if (!product) {
+        return res.status(400).json({
+          message: "Product not found",
+        });
+      }
+
+      const existingItem = user.cart.items.find(
+        (item) => item.productId === productId,
+      );
+
+      if (existingItem) {
+        existingItem.quantity++;
+        existingItem.total = addDecimals(existingItem.total, product.price);
+      } else {
+        user.cart.items.push({
+          productId,
+          quantity: 1,
+          total: product.price,
+        });
+      }
+      user.cart.total = addDecimals(user.cart.total, product.price);
+
+      await user.save();
+
+      res.status(200).json({
+        message: "item added to cart",
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  removeFromCart: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+    const productId: number = parseInt(req.params.productId);
+
+    try {
+      const decoded: TokenInterface = await verifyToken(token);
+
+      const user: UserInterface = await User.findOne({
+        id: decoded.id,
+      });
+
+      if (!user) {
+        return res.status(400).json({
+          message: "User not found",
+        });
+      }
+
+      const product: ProductInterface = await Product.findOne({
+        id: productId,
+      });
+
+      if (!product) {
+        return res.status(400).json({
+          message: "Product not found",
+        });
+      }
+
+      const existingItem = user.cart.items.find(
+        (item) => item.productId === productId,
+      );
+
+      if (existingItem.quantity > 1) {
+        existingItem.quantity--;
+        existingItem.total = removeDecimals(existingItem.total, product.price);
+      }
+
+      user.cart.items.filter((item) => item.productId !== productId);
+      user.cart.total = removeDecimals(user.cart.total, product.price);
+
+      await user.save();
+
+      res.status(200).json({
+        message: "item removed",
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  clearCart: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+
+    try {
+      const decoded: TokenInterface = await verifyToken(token);
+
+      const user: UserInterface = await User.findOne({
+        id: decoded.id,
+      });
+
+      if (!user) {
+        return res.status(400).json({
+          message: "User not found",
+        });
+      }
+
+      user.cart.items = [];
+
+      user.cart.total = toDecimal(0);
+
+      await user.save();
+      res.status(200).json({
+        message: "Cart cleared",
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+  contact: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+    const { subject, message } = req.body;
+    try {
+      let email: string;
+      let decoded: TokenInterface = {} as TokenInterface;
+
+      if(!token){
+        email = req.body.email;
+      }
+      else {
+        decoded = verifyToken(token);
+        email = decoded.email;
+      }
+
+      if (!email || !subject || !message) {
+        return res.status(400).json({
+          message: "All fields are required",
+        });
+      }
+
+      await sendContactEmail(email, subject, message);
+
+      res.status(200).json({
+        message: "Succsefull",
+      });
+    } catch (err: unknown) {
+      next(err);
+    }
+  }
 };
 
 export default userControllers;

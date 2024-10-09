@@ -6,11 +6,12 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
 import authControllers from "../../src/controllers/authControllers";
+import authValidator from "../../src/validations/authValidator";
 import User, { UserInterface } from "../../src/models/userModel";
 
 const app = express();
 app.use(express.json());
-app.use("/test/auth/register", authControllers.register);
+app.use("/test/auth/register", authValidator.register, authControllers.register);
 
 let mongoServer: MongoMemoryServer;
 
@@ -69,100 +70,4 @@ describe("Register", () => {
       "User with this email already exists.",
     );
   });
-
-  // //^ Test registration with invalid email format
-  // it("should return 400 if registration with invalid email format", async () => {
-  //   const response = await request(app).post("/test/auth/register").send({
-  //     first_name: "Jane",
-  //     last_name: "Doe",
-  //     email: "jane.doe.example.com",
-  //     password: "Password123.",
-  //   });
-
-  //   assert.strictEqual(response.statusCode, 400);
-  //   assert.strictEqual(
-  //     response.body.message,
-  //     "Invalid email format",
-  //   );
-  // });
-
-  // //^ Test registration with empty email
-  // it("should return 400 if registration with empty email", async () => {
-  //   const response = await request(app).post("/test/auth/register").send({
-  //     first_name: "Jane",
-  //     last_name: "Doe",
-  //     email: "",
-  //     password: "Password123.",
-  //   });
-
-  //   assert.strictEqual(response.statusCode, 400);
-  //   assert.strictEqual(
-  //     response.body.message,
-  //     "Email must not be empty",
-  //   );
-  // });
-
-  // //^ Test registration with invalid password
-  // it("should return 400 if registration with invalid password", async () => {
-  //   const response = await request(app).post("/test/auth/register").send({
-  //     first_name: "Jane",
-  //     last_name: "Doe",
-  //     email: "jane.doe@example.com",
-  //     password: "password",
-  //   });
-
-  //   assert.strictEqual(response.statusCode, 400);
-  //   assert.strictEqual(
-  //     response.body.message,
-  //     "Password must be at least 8 characters long",
-  //   );
-  // });
-
-  // //^ Test registration with empty password
-  // it("should return 400 if registration with empty password", async () => {
-  //   const response = await request(app).post("/test/auth/register").send({
-  //     first_name: "Jane",
-  //     last_name: "Doe",
-  //     email: "jane.doe@example.com",
-  //     password: "",
-  //   });
-
-  //   assert.strictEqual(response.statusCode, 400);
-  //   assert.strictEqual(
-  //     response.body.message,
-  //     "Password must not be empty",
-  //   );
-  // });
-
-  // //^ Test registration with invalid first name
-  // it("should return 400 if registration with invalid first name", async () => {
-  //   const response = await request(app).post("/test/auth/register").send({
-  //     first_name: "Jane Doe",
-  //     last_name: "Doe",
-  //     email: "jane.doe@example.com",
-  //     password: "Password123.",
-  //   });
-
-  //   assert.strictEqual(response.statusCode, 400);
-  //   assert.strictEqual(
-  //     response.body.message,
-  //     "First name must not be empty",
-  //   );
-  // });
-
-  // //^ Test registration with empty first name
-  // it("should return 400 if registration with empty first name", async () => {
-  //   const response = await request(app).post("/test/auth/register").send({
-  //     first_name: "",
-  //     last_name: "Doe",
-  //     email: "jane.doe@example.com",
-  //     password: "Password123.",
-  //   });
-
-  //   assert.strictEqual(response.statusCode, 400);
-  //   assert.strictEqual(
-  //     response.body.message,
-  //     "First name must not be empty",
-  //   );
-  // });
 });

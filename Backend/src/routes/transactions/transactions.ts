@@ -4,6 +4,6 @@ import { CARD_VALIDATOR } from "../../validations/cardValidator";
 const router = express.Router();
 
 router.post("/purchase", CARD_VALIDATOR, transactionController.makeTransaction);
-router.get("/", transactionController.getTransactions);
+router.get("/transactions", transactionController.getTransactions);
 
 export default router;

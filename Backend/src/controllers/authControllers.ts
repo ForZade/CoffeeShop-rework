@@ -89,22 +89,23 @@ const authControllers = {
     try {
       const user: UserInterface = await User.findOne({ email });
 
-      if (user.lock.until > new Date()) {
-        return res.status(401).json({
-          message: "Too many login attempts. Please try again later.",
-        });
-      }
-
       if (!user) {
         return res.status(401).json({
           message: "Invalid credentials: Provided email is not registered",
         });
       }
 
+      if (user.lock.until > new Date()) {
+        return res.status(401).json({
+          message: "Too many login attempts. Please try again later.",
+        });
+      }
+
       const maxLockAttempts: number = user.lock.count > 0 ? 3 : 5;
       const lockTime: number = user.lock.count > 0 ? 5 * 60 * 1000 : 30 * 60 * 1000;
 
-      if (!user.verifyPassword(password)) {
+      if (user.verifyPassword(password)) {
+        console.log('Wrong password');
         user.lock.attempts++;
 
         if (user.lock.attempts >= maxLockAttempts || user.lock.until <= new Date()) {
@@ -160,7 +161,7 @@ const authControllers = {
   //^ POST /api/v1/auth/verify-email - Verify Email Route (Verifies user email)
   verifyEmail: async (req: Request, res: Response, next: NextFunction) => {
     // Request user data
-    const { token } = req.query;
+    const token: string = req.params.token;
 
     try {
       // Check for token
