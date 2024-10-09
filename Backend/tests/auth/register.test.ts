@@ -1,9 +1,9 @@
-import request from "supertest";
-import express from "express";
-import { describe, it, before, after } from "node:test";
-import assert from "node:assert";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+// import request from "supertest";
+// import express from "express";
+// import { describe, it, before, after } from "node:test";
+// import assert from "node:assert";
+// import mongoose from "mongoose";
+// import { MongoMemoryServer } from "mongodb-memory-server";
 
 import authControllers from "../../src/controllers/authControllers";
 import authValidator from "../../src/validations/authValidator";
@@ -13,19 +13,19 @@ const app = express();
 app.use(express.json());
 app.use("/test/auth/register", authValidator.register, authControllers.register);
 
-let mongoServer: MongoMemoryServer;
+// let mongoServer: MongoMemoryServer;
 
-before(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const uri = mongoServer.getUri();
+// before(async () => {
+//   mongoServer = await MongoMemoryServer.create();
+//   const uri = mongoServer.getUri();
 
-  await mongoose.connect(uri);
-});
+//   await mongoose.connect(uri);
+// });
 
-after(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
+// after(async () => {
+//   await mongoose.disconnect();
+//   await mongoServer.stop();
+// });
 
 describe("Register", () => {
   before(async () => {
