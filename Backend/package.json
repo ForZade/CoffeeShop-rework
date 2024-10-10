@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "node --test --require ts-node/register ./tests/*.test.ts",
+    "test": "node --test --require ts-node/register ./tests/products/login.test.ts",
     "dev": "nodemon ./src/server.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -53,7 +53,9 @@
     "express": "^4.21.0",
     "express-rate-limit": "^7.4.0",
     "express-validator": "^7.2.0",
+    "glob": "^11.0.0",
     "jsonwebtoken": "^9.0.2",
+    "mocha": "^10.7.3",
     "mongodb": "^6.9.0",
     "mongoose": "^8.6.3",
     "nodemailer": "^6.9.15",

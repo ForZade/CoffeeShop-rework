@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.post("/", isAdmin, productController.createProduct);
 router.delete("/", isAdmin, productController.deleteProduct);
-router.get("/all", requireAuth, productController.getAllProducts);
-router.get("/", requireAuth, productController.getProductById);
+router.get("/all", productController.getAllProducts);
+router.get("/", productController.getProductById);
 router.patch("/", isAdmin, productController.patchProduct);
 router.post("/review", requireAuth, productController.review);
 
