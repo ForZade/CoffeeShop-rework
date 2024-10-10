@@ -11,7 +11,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 const routes = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<MainLayout />}>
-            <Route index element={<ContactsPage />} />
+            <Route index element={<HomePage />} />
+            <Route path="/contacts" element={<ContactsPage />} />
         </Route>
     )
 )
