@@ -15,6 +15,7 @@ interface RegisterInterface {
   last_name: string;
   email: string;
   password: string;
+  repeat_password: string;
 }
 
 interface LoginInterface {
@@ -37,7 +38,7 @@ const authControllers = {
   //^ POST /api/v1/auth/register - Register route (registers user)
   register: async (req: Request, res: Response, next: NextFunction) => {
     // Request user data
-    const { first_name, last_name, email, password }: RegisterInterface = req.body;
+    const { first_name, last_name, email, password, repeat_password }: RegisterInterface = req.body;
 
     try {
       // if (!password) {

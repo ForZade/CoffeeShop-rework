@@ -33,16 +33,16 @@ const authValidator = {
       .matches(/^[A-Za-z]+$/)
       .withMessage("Last name cannot contain any symbols"),
 
-    // body("repeat_password") // Validates repeat password
-    //   .notEmpty()
-    //   .withMessage("Repeat password must not be empty")
-    //   .custom((value, { req }) => {
-    //     console.log(value, req.body.password);
-    //     if (value !== req.body.password) {
-    //       throw new Error("Passwords must match");
-    //     }
-    //     return true;
-    //   }),
+    body("repeat_password") // Validates repeat password
+      .notEmpty()
+      .withMessage("Repeat password must not be empty")
+      .custom((value, { req }) => {
+        console.log(value, req.body.password);
+        if (value !== req.body.password) {
+          throw new Error("Passwords must match");
+        }
+        return true;
+      }),
 
     (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
