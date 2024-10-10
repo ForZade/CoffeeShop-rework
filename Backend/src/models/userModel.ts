@@ -87,7 +87,7 @@ export interface LockInterface {
 }
 
 export interface UserInterface extends mongoose.Document {
-  _id: number;
+  id: number;
   first_name: string;
   last_name: string;
   email: string;

@@ -1,7 +1,24 @@
+import { Route, RouterProvider, createRoutesFromElements, createBrowserRouter } from "react-router-dom";
+
+// Layouts
+import MainLayout from "./layouts/MainLayout";
+
+// Pages
+import HomePage from "./pages/HomePage";
+import { ThemeProvider } from "./contexts/ThemeContext";
+
+const routes = createBrowserRouter(
+    createRoutesFromElements(
+        <Route path="/" element={<MainLayout />}>
+            <Route index element={<HomePage />} />
+        </Route>
+    )
+)
+
 export default function app() {
     return (
-        <main className="w-screen h-screen grid place-items-center bg-zinc-800">
-            <h1 className="text-8xl uppercase font-black text-blue-400">Hello world!</h1>
-        </main>
+        <ThemeProvider>
+            <RouterProvider router={routes} />
+        </ThemeProvider>
     )
 }

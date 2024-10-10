@@ -6,5 +6,5 @@
     "sourceMap": true,
     "outDir": "dist"
   },
-  "include": ["src/**/*", "tests/**.test.ts", "tests/products/login.test.ts"]
+  "include": ["src/**/*", "tests/**/*"]
 }

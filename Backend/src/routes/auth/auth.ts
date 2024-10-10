@@ -8,10 +8,11 @@ const router = express.Router();
 
 router.post("/register", authValidator.register, authControllers.register);
 router.post("/login", authValidator.login, authControllers.login);
-router.post("/verify-email", authControllers.verifyEmail);
+router.post("/logout", requireAuth, authControllers.logout);
+router.post("/verify/:token", authControllers.verifyEmail);
 router.post("/resend-verify", rateLimiters.resendVerificationLimiter, authControllers.resendVerifyEmail);
-router.post("/request-password-reset", rateLimiters.requestPasswordLimiter, authControllers.requestPasswordReset);
-router.post("/password-reset", authControllers.passwordReset);
-router.post("/change-password", requireAuth, requireAuth, authControllers.changePassword);
+router.post("/password/request-reset", rateLimiters.requestPasswordLimiter, authControllers.requestPasswordReset);
+router.post("/password/reset", authControllers.passwordReset);
+router.post("/password/change", requireAuth, authControllers.changePassword);
 
 export default router;

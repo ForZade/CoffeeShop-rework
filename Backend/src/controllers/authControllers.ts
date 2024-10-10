@@ -40,11 +40,11 @@ const authControllers = {
     const { first_name, last_name, email, password }: RegisterInterface = req.body;
 
     try {
-      if (!password) {
-        return res.status(400).json({
-          message: "Password is required.",
-        });
-      }
+      // if (!password) {
+      //   return res.status(400).json({
+      //     message: "Password is required.",
+      //   });
+      // }
 
       // Check if user already exists
       const existingUser: UserInterface = await User.findOne({ email });
@@ -67,7 +67,7 @@ const authControllers = {
         password: hashedPassword,
       });
 
-      newUser.save();
+      await newUser.save();
 
       // Generate JWT token / Send verification email to users email
       const token: string = await generateToken(email, newUser.id, newUser.roles);
@@ -89,27 +89,32 @@ const authControllers = {
     try {
       const user: UserInterface = await User.findOne({ email });
 
-      if (user.lock.until > new Date()) {
-        return res.status(401).json({
-          message: "Too many login attempts. Please try again later.",
-        });
-      }
-
       if (!user) {
         return res.status(401).json({
           message: "Invalid credentials: Provided email is not registered",
         });
       }
 
+      if (user.lock.until > new Date()) {
+        return res.status(401).json({
+          message: "Too many login attempts. Please try again later.",
+        });
+      }
+
       const maxLockAttempts: number = user.lock.count > 0 ? 3 : 5;
       const lockTime: number = user.lock.count > 0 ? 5 * 60 * 1000 : 30 * 60 * 1000;
 
-      if (!user.verifyPassword(password)) {
+      if (user.verifyPassword(password)) {
+        console.log('Wrong password');
         user.lock.attempts++;
 
-        if (user.lock.attempts >= maxLockAttempts) {
+        if (user.lock.attempts >= maxLockAttempts || user.lock.until <= new Date()) {
           user.lock.until = new Date(Date.now() + lockTime);
           user.lock.count++;
+
+          return res.status(401).json({
+            message: "Too many login attempts. Please try again later.",
+          })
         }
 
         return res.status(401).json({
@@ -156,7 +161,7 @@ const authControllers = {
   //^ POST /api/v1/auth/verify-email - Verify Email Route (Verifies user email)
   verifyEmail: async (req: Request, res: Response, next: NextFunction) => {
     // Request user data
-    const { token } = req.query;
+    const token: string = req.params.token;
 
     try {
       // Check for token
