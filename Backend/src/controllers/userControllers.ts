@@ -304,7 +304,7 @@ const userControllers = {
       await sendContactEmail(email, subject, message);
 
       res.status(200).json({
-        message: "Succsefull",
+        message: "Succesfull",
       });
     } catch (err: unknown) {
       next(err);

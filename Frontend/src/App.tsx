@@ -5,12 +5,13 @@ import MainLayout from "./layouts/MainLayout";
 
 // Pages
 import HomePage from "./pages/HomePage";
+import ContactsPage from "./pages/ContactsPage";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 const routes = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<MainLayout />}>
-            <Route index element={<HomePage />} />
+            <Route index element={<ContactsPage />} />
         </Route>
     )
 )
