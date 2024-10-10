@@ -17,7 +17,7 @@ const authValidator = {
         minNumbers: 1,
         minSymbols: 1,
       })
-      .withMessage("Password does not match strength requirements.")
+      .withMessage("Password must meet the following requirements.",)
       .notEmpty()
       .withMessage("Password must not be empty."),
 
@@ -71,7 +71,7 @@ const authValidator = {
         minSymbols: 1,
       })
       .withMessage(
-        "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one symbol.",
+        "Password must meet the following requirements.",
       ),
 
     (req: Request, res: Response, next: NextFunction) => {
