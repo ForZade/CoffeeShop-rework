@@ -32,6 +32,7 @@ export default function RegistrationForm() {
       if (err.response?.data?.errors) {
         const errorMessages = err.response.data.errors.map((error: any) => error.msg).join(", ");
         setError(errorMessages);
+        console.log(err.response.data);
       } else {
         setError("An error occurred.");
       }
