@@ -1,7 +1,12 @@
 import { Outlet } from "react-router-dom";
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function MainLayout() {
+    const { theme } = useTheme();
+
     return (
-        <Outlet />
+        <main className={theme}>
+            <Outlet />
+        </main>
     )
 }

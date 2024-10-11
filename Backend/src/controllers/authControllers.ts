@@ -6,6 +6,7 @@ import {
   generateResetToken,
   verifyToken,
   TokenInterface,
+  generateVerifyToken,
 } from "../utils/token";
 import { generateUserId } from "../utils/idgen";
 import { sendVerificationEmail, sendPasswordResetEmail } from "../utils/email";
@@ -20,6 +21,7 @@ interface RegisterInterface {
 interface LoginInterface {
   email: string;
   password: string;
+  remember: boolean;
 }
 
 interface ResetPasswordInterface {
@@ -70,7 +72,7 @@ const authControllers = {
       await newUser.save();
 
       // Generate JWT token / Send verification email to users email
-      const token: string = await generateToken(email, newUser.id, newUser.roles);
+      const token: string = generateVerifyToken(email, newUser.id, newUser.isVerified);
       await sendVerificationEmail(email, token);
 
       res.status(200).json({
@@ -84,7 +86,7 @@ const authControllers = {
   //^ POST /api/v1/auth/login - Login route (authenticates user)
   login: async (req: Request, res: Response, next: NextFunction) => {
     // Request user data
-    const { email, password }: LoginInterface = req.body;
+    const { email, password, remember }: LoginInterface = req.body;
 
     try {
       const user: UserInterface = await User.findOne({ email });
@@ -101,41 +103,43 @@ const authControllers = {
         });
       }
 
-      const maxLockAttempts: number = user.lock.count > 0 ? 3 : 5;
-      const lockTime: number = user.lock.count > 0 ? 5 * 60 * 1000 : 30 * 60 * 1000;
+      const maxAttempts: number = user.lock.count > 0 ? 3 : 5;
+      const lockTime: number = user.lock.count > 0 ? 10 * 60 * 1000 : 30 * 60 * 1000;
 
-      if (user.verifyPassword(password)) {
-        console.log('Wrong password');
+      if (!(await user.verifyPassword(password))) {
         user.lock.attempts++;
 
-        if (user.lock.attempts >= maxLockAttempts || user.lock.until <= new Date()) {
+        if(user.lock.attempts >= maxAttempts) {
+          user.lock.attempts = 0;
           user.lock.until = new Date(Date.now() + lockTime);
           user.lock.count++;
+          await user.save();
 
           return res.status(401).json({
-            message: "Too many login attempts. Please try again later.",
-          })
+            message: "Invalid credentials: Too many login attempts. Please try again later.",
+          });
         }
 
+        await user.save();
+
         return res.status(401).json({
-          message: "Invalid credentials",
+          message: "Invalid credentials: Incorrect password",
         });
       }
 
-      user.lock.attempts = 0;
-      user.lock.until = new Date();
-      user.lock.count = 0;
-      await user.save();
-
-      const token: string = generateToken(email, user.id, user.roles);
+      const token: string = generateToken(email, user.id, user.roles, remember);
       const isProduction: boolean = process.env.NODE_ENV === "production";
 
       res.cookie("jwt", token, {
         httpOnly: true,
         secure: isProduction,
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: remember ? 30 * 24 * 60 * 60 * 1000 : 60 * 60 * 1000,
         sameSite: "strict",
       });
+
+      user.lock.count = 0;
+      user.lock.attempts = 0;
+      await user.save();
 
       res.status(200).json({
         message: "Login successful",
@@ -165,7 +169,7 @@ const authControllers = {
 
     try {
       // Check for token
-      const decoded: TokenInterface = await verifyToken(token as string);
+      const decoded: TokenInterface = verifyToken(token as string);
 
       if (!decoded) {
         return res.status(400).json({
@@ -226,7 +230,7 @@ const authControllers = {
       }
 
       // Generate JWT token and send it to users email
-      const token: string = await generateToken(email, user.id, user.roles);
+      const token: string = await generateVerifyToken(email, user.id, user.isVerified);
       await sendVerificationEmail(email, token);
 
       res.status(200).json({

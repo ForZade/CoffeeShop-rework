@@ -1,7 +1,9 @@
+import UserBubble from "../components/UserBubble";
+
 export default function HomePage() {
     return (
-        <h1 className="text-3xl font-bold underline text-blue-500">
-            Hello world!
-        </h1>
+        <main className="w-screen flex justify-end p-4">
+            <UserBubble roles={["User", "Admin"]}/>
+        </main>
     )
 }
