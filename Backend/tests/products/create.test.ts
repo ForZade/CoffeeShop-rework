@@ -15,7 +15,7 @@ import { generateToken } from "../../src/utils/token";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use("/test/products/review", productControllers.review);
+app.use("/test/products/create", productControllers.createProduct);
 
 let mongoServer: MongoMemoryServer;
 
@@ -31,7 +31,7 @@ after(async () => {
   await mongoServer.stop();
 });
 
-describe("Get product by id", () => {
+describe("create product by id", () => {
   let token: string;
   let cookie: string
   before(async () => {
@@ -59,18 +59,17 @@ describe("Get product by id", () => {
     cookie = `thisissofake`;
   });
 
-  it("should return 201 if product is returned", async () => {
-    const response = await request(app).get("/test/products/review").set("Cookie", cookie).send({
-    id: 5346,
+  it("should return 201 if product is created", async () => {
+    const response = await request(app).get("/test/products/create").set("Cookie", cookie).send({
+        id: 5346,
+        name: "tea",
+        description: "gud tea",
+        price: toDecimal(100),
+        image: "imgur.com",
   });
     assert.strictEqual(response.statusCode, 201); // Using assert
     assert.strictEqual(response.body.message, "Success"); // Using assert
+    console.log(response.body)
   });
-  it("should return 201 if product is returned", async () => {
-    const response = await request(app).get("/test/products/review").set("Cookie", cookie).send({
-    id: 5346,
-  });
-    assert.strictEqual(response.statusCode, 201); // Using assert
-    assert.strictEqual(response.body.message, "Success"); // Using assert
-  });
+
 });

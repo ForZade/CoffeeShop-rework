@@ -3,6 +3,7 @@ import Product, { ProductInterface } from "../models/productModel";
 import User, { UserInterface } from "../models/userModel";
 import { generateProductId } from "../utils/idgen";
 import { verifyToken, TokenInterface } from "../utils/token";
+const Decimal128 = require('mongodb').Decimal128;
 
 const productControllers = {
   // ^ POST /api/v1/products - Create product (creates product)
@@ -31,8 +32,13 @@ const productControllers = {
   // ^ GET /api/v1/products - Get all products (gets all products)
   getAllProducts: async (_req: Request, res: Response, next: NextFunction) => {
     try {
-      const data: ProductInterface[] = await Product.find({});
-
+      let data: ProductInterface[] = await Product.find({});
+      console.log(data, "Recieve");
+      Object.keys(data).forEach((key) => {
+       data[key].price = data[key].price.toString() 
+       console.log(data[key].price)
+      })
+      
       res.status(200).json({
         message: "Success",
         data,

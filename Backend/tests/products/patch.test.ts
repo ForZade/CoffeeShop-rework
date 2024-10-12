@@ -15,7 +15,7 @@ import { generateToken } from "../../src/utils/token";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use("/test/products/review", productControllers.review);
+app.use("/test/products/patch", productControllers.getProductById);
 
 let mongoServer: MongoMemoryServer;
 
@@ -31,7 +31,7 @@ after(async () => {
   await mongoServer.stop();
 });
 
-describe("Get product by id", () => {
+describe("patchd", () => {
   let token: string;
   let cookie: string
   before(async () => {
@@ -46,8 +46,8 @@ describe("Get product by id", () => {
     
     const product2 = new Products({
       id: 5346,
-      name: "tea",
-      description: "gud tea",
+      name: "badtea",
+      description: "gbad tea",
       price: toDecimal(100),
       liked: 1
     })
@@ -59,16 +59,13 @@ describe("Get product by id", () => {
     cookie = `thisissofake`;
   });
 
-  it("should return 201 if product is returned", async () => {
-    const response = await request(app).get("/test/products/review").set("Cookie", cookie).send({
-    id: 5346,
-  });
-    assert.strictEqual(response.statusCode, 201); // Using assert
-    assert.strictEqual(response.body.message, "Success"); // Using assert
-  });
-  it("should return 201 if product is returned", async () => {
-    const response = await request(app).get("/test/products/review").set("Cookie", cookie).send({
-    id: 5346,
+  it("should return 201 if product is editted", async () => {
+    const response = await request(app).get("/test/products/patch").set("Cookie", cookie).send({
+        id: 5346,
+        name: "btea",
+        description: "black tea",
+        price: toDecimal(100),
+        liked: 1
   });
     assert.strictEqual(response.statusCode, 201); // Using assert
     assert.strictEqual(response.body.message, "Success"); // Using assert
