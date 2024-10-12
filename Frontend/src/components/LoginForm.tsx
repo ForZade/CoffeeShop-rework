@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; //temp
+import { useNavigate, Link } from "react-router-dom";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -33,9 +33,8 @@ export default function LoginForm() {
             }
         } finally {
             setLoading(false);
-            // navigate("/");
+            navigate("/");
         }
-        
     };
 
     return (
@@ -85,6 +84,12 @@ export default function LoginForm() {
                 >
                     {loading ? "Logging in..." : "Login"}
                 </button>
+
+                <div className="text-right mt-4">
+                    <Link to="/reset-password" className="text-blue-500 hover:underline">
+                        Forgot Password?
+                    </Link>
+                </div>
             </form>
         </div>
     );

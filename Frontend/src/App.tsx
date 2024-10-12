@@ -6,6 +6,7 @@ import MainLayout from "./layouts/MainLayout";
 // Pages
 import HomePage from "./pages/HomePage";
 import LoginForm from "./components/LoginForm";
+import ResertPassword from "./components/ResetPassword";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 const routes = createBrowserRouter(
@@ -13,6 +14,7 @@ const routes = createBrowserRouter(
         <Route path="/" element={<MainLayout />}>
             <Route index element={<HomePage />} />
             <Route path="/login" element={<LoginForm />} />
+            <Route path="/reset-password" element={<ResertPassword />} />
         </Route>
     )
 )
