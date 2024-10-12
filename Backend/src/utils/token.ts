@@ -3,15 +3,21 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export function generateToken(email: string, id: number, roles: string[]) {
+export function generateToken(email: string, id: number, roles: string[], remember) {
   return jwt.sign({ email, id, roles }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
+    expiresIn: remember ? "30d" : "1h",
   });
 }
 
 export function verifyToken(token: string) {
   return jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload &
     TokenInterface;
+}
+
+export function generateVerifyToken(email: string, id: number, roles: string[]) {
+  return jwt.sign({ email: email, id: id, roles: roles }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
 }
 
 export function generateResetToken(email: string, id: number) {

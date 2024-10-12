@@ -5,7 +5,7 @@ import { isAdmin } from "../../middlewares/checkRoles";
 
 const router = express.Router();
 
-router.post("/", isAdmin, productController.createProduct);
+router.post("/", productController.createProduct);
 router.delete("/", isAdmin, productController.deleteProduct);
 router.get("/all", productController.getAllProducts);
 router.get("/", productController.getProductById);

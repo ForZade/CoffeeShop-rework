@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    image: {
+      type: String,
+      default: "",
+    },
     lock: {
       attempts: {
         type: Number,
@@ -40,21 +44,25 @@ const userSchema = new mongoose.Schema(
         default: 0,
       },
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
+    address: {
+      type: String,
+      default: "",
     },
-    isAdmin: {
-      type: Boolean,
-      default: false,
+    city: {
+      type: String,
+      default: "",
+    },
+    zip: {
+      type: Number,
+      default: "",
+    },
+    phone: {
+      type: String,
+      default: "",
     },
     roles: {
       type: [String],
-      default: ["user"],
-    },
-    wallet: {
-      type: Number,
-      default: 0,
+      default: [],
     },
     cart: {
       items: {
@@ -93,10 +101,7 @@ export interface UserInterface extends mongoose.Document {
   email: string;
   password: string;
   lock: LockInterface;
-  isVerified: boolean;
-  isAdmin: boolean;
   roles: string[];
-  wallet?: number;
   cart?: CartInterface;
   favorite?: number[];
   createdAt?: Date;

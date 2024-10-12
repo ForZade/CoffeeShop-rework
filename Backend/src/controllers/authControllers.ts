@@ -6,6 +6,7 @@ import {
   generateResetToken,
   verifyToken,
   TokenInterface,
+  generateVerifyToken,
 } from "../utils/token";
 import { generateUserId } from "../utils/idgen";
 import { sendVerificationEmail, sendPasswordResetEmail } from "../utils/email";
@@ -21,6 +22,7 @@ interface RegisterInterface {
 interface LoginInterface {
   email: string;
   password: string;
+  remember: boolean;
 }
 
 interface ResetPasswordInterface {
@@ -41,11 +43,6 @@ const authControllers = {
     const { first_name, last_name, email, password, repeat_password }: RegisterInterface = req.body;
 
     try {
-      // if (!password) {
-      //   return res.status(400).json({
-      //     message: "Password is required.",
-      //   });
-      // }
 
       // Check if user already exists
       const existingUser: UserInterface = await User.findOne({ email });
@@ -71,12 +68,21 @@ const authControllers = {
       await newUser.save();
 
       // Generate JWT token / Send verification email to users email
-      const token: string = await generateToken(email, newUser.id, newUser.roles);
+      const token: string = generateVerifyToken(email, newUser.id, newUser.roles);
       await sendVerificationEmail(email, token);
 
       res.status(200).json({
         message: "Registration successful. Please verify your email.",
       });
+
+      const isProduction: boolean = process.env.NODE_ENV === "production";
+
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        secure: isProduction,
+        maxAge: 60 * 60 * 1000,
+        sameSite: "strict",
+      })
     } catch (err: unknown) {
       next(err);
     }
@@ -85,7 +91,7 @@ const authControllers = {
   //^ POST /api/v1/auth/login - Login route (authenticates user)
   login: async (req: Request, res: Response, next: NextFunction) => {
     // Request user data
-    const { email, password }: LoginInterface = req.body;
+    const { email, password, remember }: LoginInterface = req.body;
 
     try {
       const user: UserInterface = await User.findOne({ email });
@@ -102,41 +108,43 @@ const authControllers = {
         });
       }
 
-      const maxLockAttempts: number = user.lock.count > 0 ? 3 : 5;
-      const lockTime: number = user.lock.count > 0 ? 5 * 60 * 1000 : 30 * 60 * 1000;
+      const maxAttempts: number = user.lock.count > 0 ? 3 : 5;
+      const lockTime: number = user.lock.count > 0 ? 10 * 60 * 1000 : 30 * 60 * 1000;
 
-      if (user.verifyPassword(password)) {
-        console.log('Wrong password');
+      if (!(await user.verifyPassword(password))) {
         user.lock.attempts++;
 
-        if (user.lock.attempts >= maxLockAttempts || user.lock.until <= new Date()) {
+        if(user.lock.attempts >= maxAttempts) {
+          user.lock.attempts = 0;
           user.lock.until = new Date(Date.now() + lockTime);
           user.lock.count++;
+          await user.save();
 
           return res.status(401).json({
-            message: "Too many login attempts. Please try again later.",
-          })
+            message: "Invalid credentials: Too many login attempts. Please try again later.",
+          });
         }
 
+        await user.save();
+
         return res.status(401).json({
-          message: "Invalid credentials",
+          message: "Invalid credentials: Incorrect password",
         });
       }
 
-      user.lock.attempts = 0;
-      user.lock.until = new Date();
-      user.lock.count = 0;
-      await user.save();
-
-      const token: string = generateToken(email, user.id, user.roles);
+      const token: string = generateToken(email, user.id, user.roles, remember);
       const isProduction: boolean = process.env.NODE_ENV === "production";
 
       res.cookie("jwt", token, {
         httpOnly: true,
         secure: isProduction,
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: remember ? 30 * 24 * 60 * 60 * 1000 : 60 * 60 * 1000,
         sameSite: "strict",
       });
+
+      user.lock.count = 0;
+      user.lock.attempts = 0;
+      await user.save();
 
       res.status(200).json({
         message: "Login successful",
@@ -159,6 +167,29 @@ const authControllers = {
     }
   },
 
+  status: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+
+    try {
+      if (!token) {
+        return res.status(401).json({
+          message: "Unauthorized",
+          authorization: false,
+        });
+      }
+
+      const decoded: TokenInterface = verifyToken(token);
+
+      res.status(200).json({
+        message: "Succesfull",
+        authorization: true,
+        data: decoded,
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   //^ POST /api/v1/auth/verify-email - Verify Email Route (Verifies user email)
   verifyEmail: async (req: Request, res: Response, next: NextFunction) => {
     // Request user data
@@ -166,7 +197,7 @@ const authControllers = {
 
     try {
       // Check for token
-      const decoded: TokenInterface = await verifyToken(token as string);
+      const decoded: TokenInterface = verifyToken(token as string);
 
       if (!decoded) {
         return res.status(400).json({
@@ -184,13 +215,13 @@ const authControllers = {
       }
 
       // Check if user is already verified, if not verify user
-      if (user.isVerified) {
+      if (user.roles.includes("User")) {
         return res.status(400).json({
           message: "Email is already verified",
         });
       }
 
-      user.isVerified = true;
+      user.roles.push("User");
       await user.save();
 
       res.status(200).json({
@@ -208,11 +239,13 @@ const authControllers = {
     next: NextFunction,
   ) => {
     // Request user data
-    const { email }: { email: string } = req.body;
+    const token: string = req.cookies.jwt;
 
     try {
+
+      const decoded: TokenInterface = verifyToken(token as string);
       // Find user anc check if user exists
-      const user: UserInterface = await User.findOne({ email });
+      const user: UserInterface = await User.findOne({ email: decoded.email });
       if (!user) {
         return res.status(404).json({
           message: "User not found",
@@ -220,15 +253,18 @@ const authControllers = {
       }
 
       // Check if user is already verified
-      if (user.isVerified) {
+      if (user.roles.includes("User")) {
         return res.status(400).json({
           message: "Email is already verified",
         });
       }
 
+      //delete jwt token
+      res.cookie("jwt", "", { maxAge: 0 });
+
       // Generate JWT token and send it to users email
-      const token: string = await generateToken(email, user.id, user.roles);
-      await sendVerificationEmail(email, token);
+      const newToken: string = await generateVerifyToken(user.email, user.id, user.roles);
+      await sendVerificationEmail(user.email, newToken);
 
       res.status(200).json({
         message: "Verification email sent",
