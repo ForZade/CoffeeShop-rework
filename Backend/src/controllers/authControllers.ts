@@ -42,11 +42,6 @@ const authControllers = {
     const { first_name, last_name, email, password }: RegisterInterface = req.body;
 
     try {
-      // if (!password) {
-      //   return res.status(400).json({
-      //     message: "Password is required.",
-      //   });
-      // }
 
       // Check if user already exists
       const existingUser: UserInterface = await User.findOne({ email });
@@ -72,12 +67,21 @@ const authControllers = {
       await newUser.save();
 
       // Generate JWT token / Send verification email to users email
-      const token: string = generateVerifyToken(email, newUser.id, newUser.isVerified);
+      const token: string = generateVerifyToken(email, newUser.id, newUser.roles);
       await sendVerificationEmail(email, token);
 
       res.status(200).json({
         message: "Registration successful. Please verify your email.",
       });
+
+      const isProduction: boolean = process.env.NODE_ENV === "production";
+
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        secure: isProduction,
+        maxAge: 60 * 60 * 1000,
+        sameSite: "strict",
+      })
     } catch (err: unknown) {
       next(err);
     }
@@ -162,6 +166,29 @@ const authControllers = {
     }
   },
 
+  status: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+
+    try {
+      if (!token) {
+        return res.status(401).json({
+          message: "Unauthorized",
+          authorization: false,
+        });
+      }
+
+      const decoded: TokenInterface = verifyToken(token);
+
+      res.status(200).json({
+        message: "Succesfull",
+        authorization: true,
+        data: decoded,
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   //^ POST /api/v1/auth/verify-email - Verify Email Route (Verifies user email)
   verifyEmail: async (req: Request, res: Response, next: NextFunction) => {
     // Request user data
@@ -187,13 +214,13 @@ const authControllers = {
       }
 
       // Check if user is already verified, if not verify user
-      if (user.isVerified) {
+      if (user.roles.includes("User")) {
         return res.status(400).json({
           message: "Email is already verified",
         });
       }
 
-      user.isVerified = true;
+      user.roles.push("User");
       await user.save();
 
       res.status(200).json({
@@ -211,11 +238,13 @@ const authControllers = {
     next: NextFunction,
   ) => {
     // Request user data
-    const { email }: { email: string } = req.body;
+    const token: string = req.cookies.jwt;
 
     try {
+
+      const decoded: TokenInterface = verifyToken(token as string);
       // Find user anc check if user exists
-      const user: UserInterface = await User.findOne({ email });
+      const user: UserInterface = await User.findOne({ email: decoded.email });
       if (!user) {
         return res.status(404).json({
           message: "User not found",
@@ -223,15 +252,18 @@ const authControllers = {
       }
 
       // Check if user is already verified
-      if (user.isVerified) {
+      if (user.roles.includes("User")) {
         return res.status(400).json({
           message: "Email is already verified",
         });
       }
 
+      //delete jwt token
+      res.cookie("jwt", "", { maxAge: 0 });
+
       // Generate JWT token and send it to users email
-      const token: string = await generateVerifyToken(email, user.id, user.isVerified);
-      await sendVerificationEmail(email, token);
+      const newToken: string = await generateVerifyToken(user.email, user.id, user.roles);
+      await sendVerificationEmail(user.email, newToken);
 
       res.status(200).json({
         message: "Verification email sent",

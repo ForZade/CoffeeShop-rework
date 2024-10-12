@@ -63,7 +63,7 @@ const userControllers = {
         return res.status(404).json({ error: "User not found" });
       }
 
-      if (!user.isVerified) {
+      if (!user.roles.includes("User")) {
         return res.status(400).json({
           message: "User is not verified",
         });
@@ -108,7 +108,7 @@ const userControllers = {
         });
       }
 
-      if (user.isVerified === false) {
+      if (!user.roles.includes("User")) {
         return res.status(400).json({
           message: "User is not verified",
         });

@@ -14,8 +14,8 @@ export function verifyToken(token: string) {
     TokenInterface;
 }
 
-export function generateVerifyToken(email: string, id: number, isVerified: boolean) {
-  return jwt.sign({ email: email, id: id, isVerified: isVerified }, process.env.JWT_SECRET, {
+export function generateVerifyToken(email: string, id: number, roles: string[]) {
+  return jwt.sign({ email: email, id: id, roles: roles }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
 }
