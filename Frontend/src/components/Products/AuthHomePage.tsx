@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import ProductCard from "../Components/ProductCard";
+import ProductCard, { ProductProps} from "./ProductCard";
 import axios from "axios";
-import { ProductProps } from  "../Components/ProductCard"
 
 export default function AuthHomePage() {
 
@@ -11,8 +10,7 @@ export default function AuthHomePage() {
   async function getProducts() {
         try{
             setLoading(true);
-            const response: any = await axios.get("http://localhost:7000/api/v1/products/all");
-            console.log(response.data.data);
+            const response = await axios.get("http://localhost:7000/api/v1/products/all");
             setData(response.data.data);
         }
         catch(err){

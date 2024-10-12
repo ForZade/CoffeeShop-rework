@@ -5,17 +5,20 @@ import MainLayout from "./layouts/MainLayout";
 
 // Pages
 import HomePage from "./pages/HomePage";
-import LoginForm from "./components/LoginForm";
-import ResertPassword from "./components/ResetPassword";
+import LoginForm from "./components/Forms/LoginForm";
+import ResertPassword from "./pages/ResetPasswordPage";
 import ContactsPage from "./pages/ContactsPage";
 import EmailVerified from "./pages/EmailVerified";
 import VerifyEmail from "./pages/VerifyEmail";
+import RegisterForm from "./components/Forms/RegisterForm";
+
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 const routes = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<MainLayout />}>
             <Route index element={<HomePage />} />
+            <Route path="/register" element={<RegisterForm />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/reset-password" element={<ResertPassword />} />
             <Route path="/contacts" element={<ContactsPage/>} />

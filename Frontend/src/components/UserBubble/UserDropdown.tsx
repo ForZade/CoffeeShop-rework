@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react"
-import Switch from "./Switch"
-import { useTheme } from "../contexts/ThemeContext"
+import Switch from "../Switch";
+import { useTheme } from "../../contexts/ThemeContext";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import UserDropdownItem from "./UserDropdownItem";

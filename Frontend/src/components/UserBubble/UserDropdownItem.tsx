@@ -15,7 +15,13 @@ interface UserDropdownItemProps {
 
 export default function UserDropdownItem({ type = "button", link = "", Side, click, text }: UserDropdownItemProps) {
     async function logout() {
-        await axios.get(`http://localhost:7000/api/v1/auth/logout`);
+        await axios.post(`http://localhost:7000/api/v1/auth/logout`).then((response) => {
+            if (response.status === 200) {
+                console.log("Success");
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
 
         window.location.reload();
     }

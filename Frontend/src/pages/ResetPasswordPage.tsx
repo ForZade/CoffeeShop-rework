@@ -34,7 +34,7 @@ export default function ResetPassword() {
       setSuccess("Password reset email has been sent. Please check your inbox.");
       console.log("Password reset email response: ", response.data);
     } catch (err: any) {
-      console.error("Error response:", err.response);
+      console.error("Error response:", err);
       if (err.response && err.response.status === 401) {
         setError("Unauthorized request. Please check your request.");
       } else {
@@ -72,8 +72,8 @@ export default function ResetPassword() {
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-    } catch (err: any) {
-      console.error("Error response:", err.response);
+    } catch (err: unknown) {
+      console.error("Error response:", err);
       setError("Failed to reset password. Please try again.");
     }
   };
