@@ -5,6 +5,8 @@ import MainLayout from "./layouts/MainLayout";
 
 // Pages
 import HomePage from "./pages/HomePage";
+import LoginForm from "./components/LoginForm";
+import ResertPassword from "./components/ResetPassword";
 import ContactsPage from "./pages/ContactsPage";
 import EmailVerified from "./pages/EmailVerified";
 import VerifyEmail from "./pages/VerifyEmail";
@@ -14,6 +16,8 @@ const routes = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<MainLayout />}>
             <Route index element={<HomePage />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/reset-password" element={<ResertPassword />} />
             <Route path="/contacts" element={<ContactsPage/>} />
             <Route path="/verified" element={<EmailVerified/>} />
             <Route path="/verify" element={<VerifyEmail/>} />
