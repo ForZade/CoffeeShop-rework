@@ -15,15 +15,18 @@ interface UserDropdownItemProps {
 
 export default function UserDropdownItem({ type = "button", link = "", Side, click, text }: UserDropdownItemProps) {
     async function logout() {
-        await axios.post(`http://localhost:7000/api/v1/auth/logout`, { withCredentials: true}).then((response) => {
+        try {
+            const response = await axios.post(`http://localhost:7000/api/v1/auth/logout`, {}, { withCredentials: true });
             if (response.status === 200) {
-                console.log("Success");
+                console.log("Logout successful");
+                // Optionally show a success message to the user
             }
-        }).catch((error) => {
-            console.log(error);
-        });
-
-        window.location.reload();
+        } catch (error) {
+            console.error("Logout error:", error);
+            // Optionally show an error message to the user
+        } finally {
+            window.location.reload(); // Consider redirecting instead of reloading
+        }
     }
 
         if (type.toLowerCase() === "link" || link) {

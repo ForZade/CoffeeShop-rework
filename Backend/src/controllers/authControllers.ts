@@ -157,7 +157,7 @@ const authControllers = {
   //^ POST /api/v1/auth/logout - Logout route (logs user out)
   logout: async (_req: Request, res: Response, next: NextFunction) => {
     try {
-      res.cookie("jwt", "", { maxAge: 0 });
+      res.clearCookie("jwt");
 
       res.status(200).json({
         message: "Logout successful",
