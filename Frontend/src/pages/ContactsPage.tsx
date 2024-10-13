@@ -13,7 +13,7 @@ export default function ContactsPage () {
         const token = Cookies.get('jwt');
         if (token) {
           try {
-            const decodedToken: any = jwtDecode(token);
+            const decodedToken: { email: string } = jwtDecode(token);
             setEmail(decodedToken.email);
             setDisabled(true); 
           } catch (error) {
@@ -30,7 +30,7 @@ export default function ContactsPage () {
               email,
               subject,
               message,
-            });
+            }, { withCredentials: true });
             
             setEmail('');
             setSubject('');

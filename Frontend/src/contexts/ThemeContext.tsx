@@ -18,14 +18,13 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme") || "light";
         setTheme(savedTheme);
-    }, []); // Empty dependency array ensures it runs only once.
+    }, []);
 
-    // Use useCallback to memoize the toggleTheme function
     const toggleTheme = useCallback(() => {
         const newTheme = theme === "light" ? "dark" : "light";
         setTheme(newTheme);
         localStorage.setItem("theme", newTheme);
-    }, [theme]); // Add theme as a dependency to recalculate when it changes.
+    }, [theme]);
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
@@ -36,4 +35,5 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
 const useTheme = () => useContext(ThemeContext);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { ThemeProvider, useTheme };

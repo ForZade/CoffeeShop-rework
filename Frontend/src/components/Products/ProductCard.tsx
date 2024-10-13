@@ -3,7 +3,7 @@ import AddToCart from "./AddToCart";
 export interface ProductProps {
   name: string;
   image: string
-  price: any
+  price: { $numberDecimal: string }
   description: string
   id: number
   liked: number
@@ -14,7 +14,7 @@ export interface CardInterface{
   loading: boolean
 }
 
-export default function ProductCard({ product, loading }: CardInterface) {
+export default function ProductCard({ product }: CardInterface) {
   return (
     <main className="flex flex-col items-center justify-center h-[100vh] w-[100vw]">{" "} {/* better view for testing */}
       <section

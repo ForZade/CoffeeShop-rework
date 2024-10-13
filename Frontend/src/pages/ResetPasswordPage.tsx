@@ -33,7 +33,7 @@ export default function ResetPassword() {
       const response = await axios.post("http://localhost:5000/api/v1/auth/password/request-reset", { email });
       setSuccess("Password reset email has been sent. Please check your inbox.");
       console.log("Password reset email response: ", response.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error response:", err);
       if (err.response && err.response.status === 401) {
         setError("Unauthorized request. Please check your request.");

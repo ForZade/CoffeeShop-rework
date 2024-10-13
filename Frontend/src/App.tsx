@@ -8,8 +8,8 @@ import HomePage from "./pages/HomePage";
 import LoginForm from "./components/Forms/LoginForm";
 import ResertPassword from "./pages/ResetPasswordPage";
 import ContactsPage from "./pages/ContactsPage";
-import EmailVerified from "./pages/EmailVerified";
-import VerifyEmail from "./pages/VerifyEmail";
+import EmailVerified from "./pages/EmailVerifiedPage";
+import VerifyEmail from "./pages/VerifyEmailPage";
 import RegisterForm from "./components/Forms/RegisterForm";
 
 import { ThemeProvider } from "./contexts/ThemeContext";

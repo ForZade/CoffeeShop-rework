@@ -16,13 +16,13 @@ export default function LoginForm() {
         setError(null);
 
         try {
-            const response = await axios.post("http://localhost:5000/api/v1/auth/login", { email, password });
+            const response = await axios.post("http://localhost:7000/api/v1/auth/login", { email, password }, { withCredentials: true });
             console.log("Login successful!", response.data);
         } catch (err: any) {
             if (err.response) {
                 console.error("Response error:", err.response.data);
                 if (err.response.data.errors) {
-                    const errorMessages = err.response.data.errors.map((error: any) => error.msg).join(", ");
+                    const errorMessages = err.response.data.errors.map((err: any) => err.msg).join(", ");
                     setError(errorMessages);
                 } else {
                     setError(err.response.data.message || "An error occurred.");

@@ -12,14 +12,16 @@ export default function UserBubble({ roles }: { roles: string[] }) {
 
         try {
             response = await axios.get(`http://localhost:7000/api/v1/auth/status`, { withCredentials: true });
-            if (response.status === 200 && response.data.authenticated) {
+            if (response.data.authorized) {
+                console.log(response.data.authorized);
                 setAuthenticated(true);
             }
-        }
-        catch(err: any) {
-            if(err.response.status === 401 && !authenticated) {
+            else {
                 setAuthenticated(false);
             }
+        }
+        catch(err: unknown) {
+            console.log(err);
         }   
     }
 

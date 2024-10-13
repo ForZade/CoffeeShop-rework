@@ -171,12 +171,11 @@ const authControllers = {
     const token: string = req.cookies.jwt;
 
     try {
-      console.log(token)
       // Check for token
       if (!token) {
         return res.status(401).json({
           message: "Unauthorized",
-          authorization: false,
+          authorized: false,
         });
       }
 
@@ -184,7 +183,7 @@ const authControllers = {
 
       res.status(200).json({
         message: "Succesfull",
-        authorization: true,
+        authorized: true,
         data: decoded,
       });
     } catch (err) {
