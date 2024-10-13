@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"; // Import useEffect for component lifecycle
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -11,16 +11,17 @@ export default function ResetPassword() {
   const [success, setSuccess] = useState<string | null>(null);
   const [isResetting, setIsResetting] = useState(false);
   const [hasToken, setHasToken] = useState(false); // State to track if a token exists
-  const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  // Check if token exists on component mount
+  // Check if token exists
   useEffect(() => {
     const storedToken = localStorage.getItem("token"); // Change 'token' to your actual token key
     setHasToken(!!storedToken); // Set hasToken to true if the token exists
   }, []);
 
-  // Regular expressions for password validation
+
+  //be sito neismeta kad .withMessage("Password must meet the following requirements.")
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   // Request password reset 
@@ -30,7 +31,7 @@ export default function ResetPassword() {
     setSuccess(null);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/v1/auth/password/request-reset", { email });
+      const response = await axios.post("http://localhost:7000/api/v1/auth/password/request-reset", { email });
       setSuccess("Password reset email has been sent. Please check your inbox.");
       console.log("Password reset email response: ", response.data);
     } catch (err: unknown) {
@@ -62,7 +63,7 @@ export default function ResetPassword() {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/v1/auth/password/reset", {
+      const response = await axios.post("http://localhost:7000/api/v1/auth/password/reset", {
         token,
         password,
         repeat_password: repeatPassword
@@ -90,7 +91,7 @@ export default function ResetPassword() {
         {!isResetting ? (
           <>
             {hasToken ? (
-              <div className="text-yellow-500 mb-4">You already have a token. Please reset your password.</div>
+              <div className="text-yellow-500 mb-4">You already have a token. Please reset your password.</div> 
             ) : (
               <form onSubmit={handlePasswordResetRequest}>
                 <div className="mb-4">
@@ -110,14 +111,6 @@ export default function ResetPassword() {
                   className="bg-blue-500 text-white py-2 px-4 rounded w-full"
                 >
                   Send Reset Email
-                </button>
-
-                <button
-                  type="button"
-                  className="mt-2 text-blue-500"
-                  onClick={() => setIsResetting(true)}
-                >
-                  Already have a reset token?
                 </button>
               </form>
             )}

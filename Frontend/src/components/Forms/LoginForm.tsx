@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 export default function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -16,8 +17,14 @@ export default function LoginForm() {
         setError(null);
 
         try {
-            const response = await axios.post("http://localhost:7000/api/v1/auth/login", { email, password }, { withCredentials: true });
+            const response = await axios.post("http://localhost:7000/api/v1/auth/login", { 
+                email, 
+                password, 
+                remember: rememberMe // Include rememberMe in the request
+            }, { withCredentials: true });
+
             console.log("Login successful!", response.data);
+            navigate("/");
         } catch (err: any) {
             if (err.response) {
                 console.error("Response error:", err.response.data);
@@ -33,7 +40,6 @@ export default function LoginForm() {
             }
         } finally {
             setLoading(false);
-            navigate("/");
         }
     };
 
@@ -75,6 +81,18 @@ export default function LoginForm() {
                             {showPassword ? "Hide" : "Show"}
                         </button>
                     </div>
+                </div>
+
+                {/* ka zinau pries ar po bet kol kas cia paliksim okej */}
+                <div className="mb-4 flex items-center">
+                    <input
+                        type="checkbox"
+                        id="rememberMe"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="mr-2"
+                    />
+                    <label htmlFor="rememberMe" className="text-gray-700">Remember Me</label>
                 </div>
 
                 <button
