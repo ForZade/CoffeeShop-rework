@@ -33,10 +33,8 @@ const productControllers = {
   getAllProducts: async (_req: Request, res: Response, next: NextFunction) => {
     try {
       let data: ProductInterface[] = await Product.find({});
-      console.log(data, "Recieve");
       Object.keys(data).forEach((key) => {
-       data[key].price = data[key].price.toString() 
-       console.log(data[key].price)
+       data[key].price = data[key].price.toString()
       })
       
       res.status(200).json({

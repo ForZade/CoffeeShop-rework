@@ -171,7 +171,8 @@ const authControllers = {
     const token: string = req.cookies.jwt;
 
     try {
-      console.log(token);
+      console.log(token)
+      // Check for token
       if (!token) {
         return res.status(401).json({
           message: "Unauthorized",
