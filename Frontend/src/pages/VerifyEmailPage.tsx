@@ -1,30 +1,45 @@
 import { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import Cookies from 'js-cookie';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function VerifyEmail() {
   const [email, setEmail] = useState<string>('');
+  const [role, setRole] = useState<string>('');
+  const navigate = useNavigate();
+
+  async function getEmail() {
+    try {
+      const response = await axios.get('http://localhost:7000/api/v1/auth/status', {
+        withCredentials: true
+      });
+
+      if (response.data.authorized) {
+        setEmail(response.data.data.email);
+        setRole(response.data.data.roles);
+        console.log(response.data.data.email);
+      }
+    } catch (error) {
+      console.error('Error fetching user status:', error);
+    }
+  }
 
   useEffect(() => {
-    const token = Cookies.get('jwt');
-    if (token) {
-      try {
-        const decodedToken: { email: string } = jwtDecode(token);
-        setEmail(decodedToken.email);
-      } catch (error) {
-        console.error('Error decoding token:', error);
-      }
+    if (role === 'user') {
+      navigate('/verified');
     }
+  }, [role, navigate]);
+
+  useEffect(() => {
+    getEmail();
   }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      await axios.post('http://localhost:7000/api/v1/auth/resend-verify', { email });
+      await axios.post('http://localhost:7000/api/v1/auth/resend-verify', { email }, { withCredentials: true });
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error resending verification email:', error);
     }
   };
 

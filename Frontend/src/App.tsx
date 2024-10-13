@@ -7,7 +7,7 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import LoginForm from "./components/Forms/LoginForm";
 import ResertPassword from "./pages/ResetPasswordPage";
-import ContactsPage from "./pages/ContactsPage";
+import ContactsForm from "./pages/ContactsPage";
 import EmailVerified from "./pages/EmailVerifiedPage";
 import VerifyEmail from "./pages/VerifyEmailPage";
 import RegisterForm from "./components/Forms/RegisterForm";
@@ -21,7 +21,7 @@ const routes = createBrowserRouter(
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/reset-password" element={<ResertPassword />} />
-            <Route path="/contacts" element={<ContactsPage/>} />
+            <Route path="/contacts" element={<ContactsForm/>} />
             <Route path="/verified" element={<EmailVerified/>} />
             <Route path="/verify" element={<VerifyEmail/>} />
 
