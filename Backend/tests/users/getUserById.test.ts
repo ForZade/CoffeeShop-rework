@@ -10,7 +10,7 @@ import User from "../../src/models/userModel";
 
 const app = express();
 app.use(express.json());
-app.use("/test/users/id/:id", userControllers.getUserById);
+app.use("/test/users/:identifier", userControllers.getUser);
 
 let mongoServer;
 

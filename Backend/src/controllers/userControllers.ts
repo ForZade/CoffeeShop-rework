@@ -191,6 +191,11 @@ const userControllers = {
           total: product.price,
         });
       }
+
+      if(!user.cart.total) {
+        user.cart.total = toDecimal(0);
+      }
+
       user.cart.total = addDecimals(user.cart.total, product.price);
 
       await user.save();
