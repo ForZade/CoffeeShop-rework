@@ -82,8 +82,11 @@ export default function LoginForm() {
                         </button>
                     </div>
                 </div>
-
-                {/* ka zinau pries ar po bet kol kas cia paliksim okej */}
+                <div className="text-right mt-4">
+                    <Link to="/reset-password" className="text-blue-500 hover:underline">
+                        Forgot Password?
+                    </Link>
+                </div>
                 <div className="mb-4 flex items-center">
                     <input
                         type="checkbox"
@@ -103,9 +106,13 @@ export default function LoginForm() {
                     {loading ? "Logging in..." : "Login"}
                 </button>
 
-                <div className="text-right mt-4">
-                    <Link to="/reset-password" className="text-blue-500 hover:underline">
-                        Forgot Password?
+
+
+                {/* Add the "Don't have an account?" section here */}
+                <div className="text-center mt-4">
+                    <span className="text-gray-600">Don't have an account? </span>
+                    <Link to="/register" className="text-blue-500 hover:underline">
+                        Make one
                     </Link>
                 </div>
             </form>
