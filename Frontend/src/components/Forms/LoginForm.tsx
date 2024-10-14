@@ -95,6 +95,7 @@ export default function LoginForm() {
                         onChange={(e) => setRememberMe(e.target.checked)}
                         className="mr-2"
                     />
+                    {/* galvojau padaryti atvirkscia nuo forgot password */}
                     <label htmlFor="rememberMe" className="text-gray-700">Remember Me</label>
                 </div>
 
@@ -108,7 +109,6 @@ export default function LoginForm() {
 
 
 
-                {/* Add the "Don't have an account?" section here */}
                 <div className="text-center mt-4">
                     <span className="text-gray-600">Don't have an account? </span>
                     <Link to="/register" className="text-blue-500 hover:underline">
