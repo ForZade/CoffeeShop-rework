@@ -1,4 +1,3 @@
-import React from 'react';
 import { CartItem } from '../../pages/PurchasePage'; // Import the CartItem type from PurchasePage
 
 type CartItemProps = {
@@ -7,7 +6,7 @@ type CartItemProps = {
   removeItem: (id: number) => void;
 };
 
-const CartItemComponent = ({ item, handleQuantityChange, removeItem }: CartItemProps) => (
+const CartItemComponent = ({ item, removeItem }: CartItemProps) => (
   <div className="border rounded-lg p-4 flex items-center">
     <img src={item.image} alt={item.name} className="w-16 h-16 object-cover mr-4" />
     <div className="flex-grow">
@@ -18,7 +17,6 @@ const CartItemComponent = ({ item, handleQuantityChange, removeItem }: CartItemP
           value={item.quantity}
           min="1"
           className="border rounded-lg p-1 w-16 text-center"
-          onChange={(e) => handleQuantityChange(item.productId, parseInt(e.target.value) || 1)}
         />
         <span className="ml-4">€{item.price.toFixed(2)} each</span>
         <span className="ml-2">Total: €{(item.price * item.quantity).toFixed(2)}</span>

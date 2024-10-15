@@ -1,5 +1,3 @@
-import React from 'react';
-
 type CartSummaryProps = {
   discountCode: string;
   setDiscountCode: (code: string) => void;
@@ -13,11 +11,8 @@ type CartSummaryProps = {
 const CartSummary = ({
   discountCode,
   setDiscountCode,
-  applyDiscount,
-  validCode,
   totalPrice,
   discountAmount,
-  finalTotal,
 }: CartSummaryProps) => (
   <div className="w-2/5 pl-4 flex flex-col">
     <div className="flex-grow flex flex-col justify-end border rounded-lg p-6 bg-gray-50 space-y-4">
@@ -48,7 +43,6 @@ const CartSummary = ({
       />
       <button
         className="bg-blue-500 text-white rounded-lg py-2 w-full hover:bg-blue-600"
-        onClick={applyDiscount}
       >
         Apply Discount
       </button>
