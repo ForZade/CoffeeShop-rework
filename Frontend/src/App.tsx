@@ -11,6 +11,7 @@ import ContactsPage from "./pages/ContactsPage";
 import EmailVerified from "./pages/EmailVerifiedPage";
 import VerifyEmail from "./pages/VerifyEmailPage";
 import RegisterForm from "./components/Forms/RegisterForm";
+import PurchasePage from "./pages/PurchasePage";
 
 import { ThemeProvider } from "./contexts/ThemeContext";
 
@@ -24,7 +25,7 @@ const routes = createBrowserRouter(
             <Route path="/contacts" element={<ContactsPage/>} />
             <Route path="/verified" element={<EmailVerified/>} />
             <Route path="/verify" element={<VerifyEmail/>} />
-
+            <Route path="/purchase" element={<PurchasePage/>}/>
         </Route>
     )
 )
