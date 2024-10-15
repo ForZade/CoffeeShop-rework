@@ -22,7 +22,7 @@ export default function LoginForm() {
         {
           email,
           password,
-          remember: rememberMe, // Include rememberMe in the request
+          remember: rememberMe,
         },
         { withCredentials: true }
       );
@@ -45,7 +45,7 @@ export default function LoginForm() {
         setError("An error occurred.");
       }
 
-      // resets the password if it's incorrect
+      // clears the input field if it's incorrect
       setPassword("");
     } finally {
       setLoading(false);
