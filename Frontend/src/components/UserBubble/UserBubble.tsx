@@ -1,31 +1,28 @@
 import UserDropdown from "./UserDropdown";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function UserBubble({ roles }: { roles: string[] }) {
     const [open, setOpen] = useState(false);
-    const [authenticated, setAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true); // State to manage loading
-
-    async function checkStatus() {
-        try {
-            const response = await axios.get(`http://localhost:7000/api/v1/auth/status`, { withCredentials: true });
-            if (response.data.authorized) {
-                setAuthenticated(true);
-            } else {
-                setAuthenticated(false);
-            }
-        } catch (err) {
-            console.log(err);
-            setAuthenticated(false); // Set authenticated to false in case of an error
-        } finally {
-            setLoading(false); // Set loading to false after check is done
-        }
-    }
+    const [loading, setLoading] = useState(true);
+    const { auth, checkAuth} = useAuth();
 
     useEffect(() => {
-        checkStatus();
+        const fetchData = async () => {
+            try {
+                await checkAuth();
+            }
+            catch (err) {
+                console.log(err);
+            }
+            finally {
+                setLoading(false);
+            }
+        }
+
+        fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     function handleClickOutside() {
@@ -37,7 +34,7 @@ export default function UserBubble({ roles }: { roles: string[] }) {
         <main className="relative w-min h-min">
             {loading ? (
                 <div>Loading...</div> // Optionally display a loading indicator
-            ) : authenticated ? (
+            ) : auth ? (
                 <>
                     <div className="w-12 h-12 rounded-full border bg-blue-500" onClick={() => setOpen(!open)}>
                         <img
