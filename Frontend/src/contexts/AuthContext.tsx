@@ -13,13 +13,14 @@ export interface UserProps {
 interface AuthContextProps {
     auth: boolean
     setAuth?: (status: boolean) => void;
-    checkAuth?: () => void;
+    checkAuth: () => Promise<void>;
     user?: UserProps;
     setUser?: (user: UserProps) => void;
 }
 
 const defaultContextValue: AuthContextProps = {
     auth: false,
+    checkAuth: async () => { },
 };
 
 export const AuthContext = createContext<AuthContextProps>(defaultContextValue);
@@ -29,7 +30,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<UserProps | undefined>(undefined);
 
 
-    const checkAuth = useCallback(async () => {
+    const checkAuth = useCallback(async (): Promise<void> => {
         try {
             const response = await axios.get('http://localhost:7000/api/v1/auth/status', { withCredentials: true });
             setAuth(response.data.authorized);
