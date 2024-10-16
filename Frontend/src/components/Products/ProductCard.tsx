@@ -45,7 +45,7 @@ export default function ProductCard({ product }: CardInterface) {
       </div>
       <div className="w-[100%] h-[10%] flex items-center flex-col">
         <p className="p-2">{product.price.$numberDecimal}€</p>
-        {auth && <AddToCart />}
+        {auth && <AddToCart productId={product.id}/>}
       </div>
     </Link>
   );
