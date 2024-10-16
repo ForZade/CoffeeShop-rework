@@ -314,6 +314,25 @@ const userControllers = {
     } catch (err: unknown) {
       next(err);
     }
+  },
+  getAdmins: async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const users: UserInterface[] = await User.find({
+        role: "admin",
+      });
+      if(!users) {
+        return res.status(400).json({
+          message: "No admins found",
+        });
+      }
+      res.status(200).json({
+        status: "success",
+        message: "All Admins successfully retrieved",
+        data: users,
+      });
+    } catch (err: unknown) {
+      next(err);
+    }
   }
 };
 
