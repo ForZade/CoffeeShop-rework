@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import AddToCart from "./AddToCart";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
-import { reverseEasing } from "framer-motion";
+import ReviewButton from "./ReviewButton";
+import { Link } from "react-router-dom";
 export interface ProductProps {
   name: string;
   image: string;
@@ -18,25 +19,22 @@ export interface CardInterface {
 }
 
 export default function ProductCard({ product }: CardInterface) {
-  const { auth, user } = useAuth()
+  const { auth} = useAuth();
+ 
 
-
-  const handleClick = () => {
-    //postReview();
-    setLiked(Liked + 1);
-    console.log(user)
-  };
+ 
 
   return (
-    <section
+    <Link
+      to={`/products/${product.id}`}
+      key={product.id}
       className="
             bg-red-500 h-[40vh] w-[15vw]
             rounded-3xl
             "
     >
       <div className="w-[100%] h-[33%] flex items-center flex-col">
-        {auth && ( )}
-
+      <ReviewButton  liked={product.liked} productId={product.id} />
         <img
           src="https://picsum.photos/200/300 "
           className="h-[90%] w-[66%] m-4 rounded-xl"
@@ -49,6 +47,6 @@ export default function ProductCard({ product }: CardInterface) {
         <p className="p-2">{product.price.$numberDecimal}€</p>
         {auth && <AddToCart />}
       </div>
-    </section>
+    </Link>
   );
 }
