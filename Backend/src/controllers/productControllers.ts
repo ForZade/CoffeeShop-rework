@@ -129,6 +129,7 @@ const productControllers = {
         await product.save();
 
         return res.status(200).json({
+          favorited: false,
           message: "Product unfavorited.",
         });
       }
@@ -140,6 +141,7 @@ const productControllers = {
       await product.save();
 
       res.status(200).json({
+        favorited: true,
         message: "Product favorited.",
       });
     } catch (err: unknown) {
