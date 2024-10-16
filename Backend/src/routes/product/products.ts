@@ -6,10 +6,10 @@ import { isAdmin } from "../../middlewares/checkRoles";
 const router = express.Router();
 
 router.post("/", productController.createProduct);
-router.delete("/", isAdmin, productController.deleteProduct);
+router.delete("/:id", isAdmin, productController.deleteProduct);
 router.get("/all", productController.getAllProducts);
-router.get("/", productController.getProductById);
-router.patch("/", isAdmin, productController.patchProduct);
+router.get("/:id", productController.getProductById);
+router.patch("/:id", isAdmin, productController.patchProduct);
 router.post("/review", requireAuth, productController.review);
 
 export default router;
