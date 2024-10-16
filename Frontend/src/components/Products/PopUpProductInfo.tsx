@@ -10,9 +10,9 @@ import { ProductProps, CardInterface} from  "./ProductCard"
     async function getProduct() {
         try{
             setLoading(true);
-            const response: any = await axios.get(`http://localhost:7000/api/v1/products/:6550}`);
-            console.log(response.data.data);
-            setData(response.data.data);
+            //const response: any = await axios.get(`http://localhost:7000/api/v1/products/:6550}`);
+       //     console.log(response.data.data);
+         //   setData(response.data.data);
         }
         catch(err){
             console.log(err);
@@ -27,6 +27,6 @@ import { ProductProps, CardInterface} from  "./ProductCard"
   }, [])
     
     return (
-      <p>{product.name}</p>
+      <p>"s"</p>
     );
   }

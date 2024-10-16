@@ -13,6 +13,7 @@ import VerifyEmail from "./pages/VerifyEmailPage";
 import RegisterForm from "./components/Forms/RegisterForm";
 
 import { ThemeProvider } from "./contexts/ThemeContext";
+import ShopPage from "./pages/ShopPage";
 
 const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -24,7 +25,7 @@ const routes = createBrowserRouter(
             <Route path="/contacts" element={<ContactsPage/>} />
             <Route path="/verified" element={<EmailVerified/>} />
             <Route path="/verify" element={<VerifyEmail/>} />
-
+            <Route path="/shop" element={<ShopPage />} />
         </Route>
     )
 )
