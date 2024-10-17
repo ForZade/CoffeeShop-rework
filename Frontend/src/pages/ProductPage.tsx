@@ -43,7 +43,7 @@ export default function ProductPage() {
     product && (
       <main className="w-full h-full bg flex flex-col md:flex-row items-center px-48 py-16 dark:text-white">
         <section className="w-full h-full bg-slate-200 dark:bg-zinc-800 rounded-3xl grid grid-cols-5 p-8 relative">
-          <aside className="w-full h-full bg-zinc-900 rounded-2xl col-span-2 relative grid place-items-center">
+          <aside className="w-full h-full bg-slate-50 dark:bg-zinc-900 rounded-2xl col-span-2 relative grid place-items-center">
             <img src="/jacobs.webp" alt="" className="object-contain max-h-[700px]"/>
           </aside>
 
@@ -57,7 +57,7 @@ export default function ProductPage() {
             <div className="flex flex-col gap-6">
               <h3 className="text-2xl font-bold">Packaging:</h3>
               <footer className="w-full flex items-center justify-between">
-                <div className="bg-red-400 px-6 py-2 rounded-md font-bold text-xl">
+                <div className="bg-gradient-to-br from-coffee-200 to-coffee-100 px-6 py-2 rounded-md font-bold text-xl">
                   200g
                 </div>
 

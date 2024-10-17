@@ -16,9 +16,9 @@ export default function UserBubble({ roles }: { roles: string[] }) {
         <main className="relative w-min h-min group">
             {auth ? (
                 <>
-                    <div className="w-12 h-12 rounded-full border bg-blue-500" onClick={() => setOpen(!open)}>
+                    <div className="w-12 h-12 rounded-full border-2 border-coffee-400" onClick={() => setOpen(!open)}>
                         <img
-                            src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50"
+                            src="https://i.pinimg.com/736x/dc/9c/61/dc9c614e3007080a5aff36aebb949474.jpg"
                             alt="User Avatar"
                             className="w-full h-full rounded-full aspect-square"
                         />

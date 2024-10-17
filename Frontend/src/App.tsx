@@ -11,10 +11,13 @@ import ContactsPage from "./pages/ContactsPage";
 import EmailVerified from "./pages/EmailVerifiedPage";
 import VerifyEmail from "./pages/VerifyEmailPage";
 import RegisterForm from "./components/Forms/RegisterForm";
-import ProductPage from "./pages/ProductPage";import PurchasePage from "./pages/PurchasePage";
+import ProductPage from "./pages/ProductPage";
+//import PurchasePage from "./pages/PurchasePage";
+import PageNotFound from "./pages/PageNotFound";
 
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ShopPage from "./pages/ShopPage";
+
 
 const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -29,7 +32,8 @@ const routes = createBrowserRouter(
             <Route path="/verify" element={<VerifyEmail/>} />
             <Route path="/products" element={<ShopPage />} />
             <Route path="/products/:id" element={<ProductPage />} />
-            <Route path="/purchase" element={<PurchasePage/>}/>
+            {/* <Route path="/purchase" element={<PurchasePage/>}/> */}
+            <Route path="*" element={<PageNotFound />} />
         </Route>
     )
 )
