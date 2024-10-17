@@ -3,6 +3,8 @@ import productController from "../../controllers/productControllers";
 import requireAuth from "../../middlewares/authMiddleware";
 import { isAdmin } from "../../middlewares/checkRoles";
 
+import "./products.docs";
+
 const router = express.Router();
 
 router.post("/", productController.createProduct);

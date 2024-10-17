@@ -3,6 +3,8 @@ import userControllers from "../../controllers/userControllers";
 import { isAdmin } from "../../middlewares/checkRoles";
 import requireAuth from "../../middlewares/authMiddleware";
 
+import "./users.docs";
+
 const router = express.Router();
 
 router.get("/cart", requireAuth, userControllers.getCart);
