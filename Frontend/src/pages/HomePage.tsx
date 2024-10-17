@@ -1,9 +1,7 @@
-import AuthHomePage from '../components/Products/AuthHomePage';
-
 export default function HomePage() {
     return (
-        <>
-            <AuthHomePage/>
-        </>
+        <h1 className="text-3xl font-bold underline text-black">
+            Home
+        </h1>
     );
 }

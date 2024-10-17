@@ -1,8 +1,6 @@
-import React, { useState } from "react";
 import AddToCart from "./AddToCart";
-import axios from "axios";
-import { useAuth } from "../../contexts/AuthContext";
 import ReviewButton from "./ReviewButton";
+import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 export interface ProductProps {
   name: string;
@@ -19,34 +17,38 @@ export interface CardInterface {
 }
 
 export default function ProductCard({ product }: CardInterface) {
-  const { auth} = useAuth();
+  const { auth } = useAuth();
  
-
- 
-
   return (
-    <Link
-      to={`/products/${product.id}`}
+    <section
+      // to={`/products/${product.id}`}
       key={product.id}
-      className="
-            bg-red-500 h-[40vh] w-[15vw]
-            rounded-3xl
-            "
+      className="h-min w-full grid place-items-center"
     >
-      <div className="w-[100%] h-[33%] flex items-center flex-col">
-      <ReviewButton  liked={product.liked} productId={product.id} />
-        <img
-          src="https://picsum.photos/200/300 "
-          className="h-[90%] w-[66%] m-4 rounded-xl"
-        />
-      </div>
-      <div className="w-[100%] h-[44%] flex justify-center">
-        <p>{product.name}</p>
-      </div>
-      <div className="w-[100%] h-[10%] flex items-center flex-col">
-        <p className="p-2">{product.price.$numberDecimal}€</p>
-        {auth && <AddToCart productId={product.id}/>}
-      </div>
-    </Link>
+      <Link to={`/products/${product.id}`} className="h-min w-full flex flex-col justify-end group hover:scale-105 transition-transform">
+        <div className=" w-full flex px-12 py-3 -mb-12 z-10">
+          <img src="/jacobs.webp" alt="" draggable="false"/>
+        </div>
+
+        <div className={`w-full h-min rounded-3xl bg-slate-200 dark:bg-zinc-800 dark:text-white px-6 py-4 flex flex-col justify-end gap-4 relative shadow group-hover:shadow-lg transition-shadow ${auth ? "h-48" : "h-24"}`}>
+            {/* {
+              auth && <ReviewButton liked={product.liked} productId={product.id} />
+            } */}
+          <header className="flex flex-col">
+            <div className=" h-min flex justify-between items-center">
+              <h1 className="text-lg font-bold">{product.name}</h1>
+              {
+                auth && <ReviewButton liked={product.liked} productId={product.id} />
+              }
+            </div>
+            <p className="w-full text-sm  truncate line-clamp-1 text-wrap">{product.description}</p>
+          </header>
+          
+          {
+            auth && <AddToCart productId={product.id} />
+          }
+        </div>       
+      </Link> 
+    </section>
   );
 }

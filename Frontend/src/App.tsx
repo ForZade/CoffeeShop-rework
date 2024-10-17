@@ -25,7 +25,7 @@ const routes = createBrowserRouter(
             <Route path="/contacts" element={<ContactsPage/>} />
             <Route path="/verified" element={<EmailVerified/>} />
             <Route path="/verify" element={<VerifyEmail/>} />
-            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/products" element={<ShopPage />} />
             <Route path="/products/:id" element={<ProductPage />} />
         </Route>
     )
