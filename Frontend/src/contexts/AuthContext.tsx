@@ -8,19 +8,21 @@ export interface UserProps {
     email: string
     roles: string[],
     image?: string
+    favorite: number[]
 }
 
 interface AuthContextProps {
     auth: boolean
     setAuth?: (status: boolean) => void;
     checkAuth: () => Promise<void>;
-    user?: UserProps;
+    user: UserProps | undefined;
     setUser?: (user: UserProps) => void;
 }
 
 const defaultContextValue: AuthContextProps = {
     auth: false,
     checkAuth: async () => { },
+    user: undefined,
 };
 
 export const AuthContext = createContext<AuthContextProps>(defaultContextValue);

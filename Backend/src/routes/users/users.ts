@@ -16,8 +16,11 @@ router.post("/contact", userControllers.contact);
 
 router.post("/admin/:identifier", isAdmin, userControllers.addAdmin);
 router.delete("/admin/:identifier", isAdmin, userControllers.removeAdmin);
+router.get(`/admins`, isAdmin, userControllers.getAdmins);// Untested, dont have cookie - Jaunius
 
 router.get("/", userControllers.getUsers); //retrieves the entire user list
 router.get("/:identifier", userControllers.getUser); //retrieves a user by id or email
+
+
 
 export default router;

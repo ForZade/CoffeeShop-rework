@@ -11,9 +11,10 @@ import ContactsPage from "./pages/ContactsPage";
 import EmailVerified from "./pages/EmailVerifiedPage";
 import VerifyEmail from "./pages/VerifyEmailPage";
 import RegisterForm from "./components/Forms/RegisterForm";
-import PurchasePage from "./pages/PurchasePage";
+import ProductPage from "./pages/ProductPage";import PurchasePage from "./pages/PurchasePage";
 
 import { ThemeProvider } from "./contexts/ThemeContext";
+import ShopPage from "./pages/ShopPage";
 
 const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -26,7 +27,8 @@ const routes = createBrowserRouter(
             <Route path="/contacts" element={<ContactsPage/>} />
             <Route path="/verified" element={<EmailVerified/>} />
             <Route path="/verify" element={<VerifyEmail/>} />
-            <Route path="/purchase" element={<PurchasePage/>}/>
+            <Route path="/products" element={<ShopPage />} />
+            <Route path="/products/:id" element={<ProductPage />} />            <Route path="/purchase" element={<PurchasePage/>}/>
         </Route>
     )
 )
