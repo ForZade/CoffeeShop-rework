@@ -19,7 +19,7 @@ export default function ShopPage() {
                 console.log(err);
             }
             finally{
-                setLoading(false);
+                setTimeout(() => setLoading(false), 5000);
             }
         }
         getProducts();
