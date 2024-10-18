@@ -182,10 +182,12 @@ const authControllers = {
 
       const decoded: TokenInterface = verifyToken(token);
 
+      const user: UserInterface = await User.findOne({ email: decoded.email });
+
       res.status(200).json({
         message: "Succesfull",
         authorized: true,
-        data: decoded,
+        data: user,
       });
     } catch (err) {
       next(err);
