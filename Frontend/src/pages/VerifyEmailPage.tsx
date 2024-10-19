@@ -1,44 +1,26 @@
-import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from '../contexts/AuthContext'
+import { useEffect } from 'react';
 export default function VerifyEmail() {
-
-  const [email, setEmail] = useState<string>('');
-  const [role, setRole] = useState<string>('');
-  const navigate = useNavigate();
-
-  async function getEmail() {
-    try {
-      const response = await axios.get('http://localhost:7000/api/v1/auth/status', {
-        withCredentials: true
-      });
-
-      if (response.data.authorized) {
-        setEmail(response.data.data.email);
-        setRole(response.data.data.roles);
-        console.log(response.data.data.email);
-      }
-    } catch (error) {
-      console.error('Error fetching user status:', error);
-    }
+const {checkAuth, user} = useAuth();
+const loadPage = async () => {
+  try {
+    await checkAuth() 
+  } catch (error) {
+    console.log(error)
   }
+} 
 
-  useEffect(() => {
-    if (role === 'user') {
-      navigate('/verified');
-    }
-  }, [role, navigate]);
-
-  useEffect(() => {
-    getEmail();
-  }, []);
-
+useEffect(() => {
+  loadPage()
+}, [])
+  
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      await axios.post('http://localhost:7000/api/v1/auth/resend-verify', { email }, { withCredentials: true });
+      console.log(user?.email)
+      await axios.post('http://localhost:7000/api/v1/auth/resend-verify', { email: user?.email }, { withCredentials: true });
     } catch (error) {
       console.error('Error resending verification email:', error);
     }
