@@ -12,7 +12,8 @@ export default function ReviewButton({ liked, productId }: ReviewProps) {
 
     async function postReview(event: React.MouseEvent<HTMLButtonElement>) {
         try {
-        event.stopPropagation();
+          event.stopPropagation();  // Prevent the parent <Link> from handling this click
+          console.log("Review Button Clicked!");
           await axios.post("http://localhost:7000/api/v1/products/review", { productId } ,{
             withCredentials: true,
           });
