@@ -2,8 +2,9 @@ import axios from "axios";
 
 export default function AddToCart({productId}: {productId: number}) {
    
-    const addToCart = async () => {
+    const addToCart = async (event: React.MouseEvent<HTMLButtonElement>) => {
         try {
+            event.stopPropagation();
             await axios.post("http://localhost:7000/api/v1/cart", {productId}, {withCredentials: true});
         } catch (err) {
             console.log(err);
