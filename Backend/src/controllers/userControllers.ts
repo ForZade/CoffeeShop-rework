@@ -8,13 +8,15 @@ import mongoose from "mongoose";
 import Discount, { DiscountInterface } from "../models/discountModel";
 import { rCode } from "../utils/idgen"; // r stands for random
 
-// Delete after review -> Discount system will be on line (398)-(484)
-// Delete after review -> Discount system will be on line (398)-(484)
-// Delete after review -> Discount system will be on line (398)-(484)
-// Delete after review -> IMPORTS ON LINE 8, 9
-// Delete after review -> READ COMMENTS DROPPED ON LINE 406, 410, 411
-/* Delete after review -> CHECK VALIDATOR OF DISCOUNT */ import { DISCOUNT_VALIDATOR } from "../validations/discountValidator" // <- i left easy access, this is useless import
-// Delete after review -> LUKAI BLET
+// Delete after review (discounts task) -> Discount system will be on line (398)-(484)
+// Delete after review (discounts task) -> Discount system will be on line (398)-(484)
+// Delete after review (discounts task) -> Discount system will be on line (398)-(484)
+// Delete after review (discounts task) -> IMPORTS ON LINE 8, 9
+// Delete after review (discounts task) -> READ COMMENTS DROPPED ON LINE 406, 410, 411
+/* Delete after review (discounts task) -> CHECK VALIDATOR OF DISCOUNT */ import { DISCOUNT_VALIDATOR } from "../validations/discountValidator" // <- i left easy access, this is useless import
+// Delete after review (discounts task)-> LUKAI BLET
+
+// Delete after review (patchUser task) -> patchUser system will be on lie (72 - 94)
 
 interface CartTotalInterface {
   total: mongoose.Types.Decimal128;
@@ -61,6 +63,29 @@ const userControllers = {
         data: user,
       });
     } catch (err: unknown) {
+      next(err);
+    }
+  },
+
+  updateUser: async (req: Request, res: Response, next: NextFunction) => {
+    const params: string | number = req.params.identifier;
+    const body: UserInterface = req.body; 
+
+    try {
+      if (params.includes("@")) {
+        await User.findOneAndUpdate({ email: params }, body);
+      }
+      else {
+        await User.findOneAndUpdate({ id: params }, body);
+      }
+
+      res.status(200).json({
+        status: "success",
+        message: "User updated successfully",
+        data: body, 
+      })
+      }
+    catch (err: unknown) {
       next(err);
     }
   },
@@ -404,7 +429,7 @@ const userControllers = {
   },
 
   addDiscount: async (req: Request, res: Response, next: NextFunction) => {
-    const discountCode = req.query.code || rCode() // TEST POSTS WITH POSSIBLE QUERY = NULL || UNDEFINED || "" || 0
+    const discountCode = req.params.code  || rCode() // TEST POSTS WITH POSSIBLE QUERY = NULL || UNDEFINED || "" || 0
     const discountData = req.body;
 
     try{
@@ -439,7 +464,7 @@ const userControllers = {
     }
   },
   deleteDiscount: async (req: Request, res: Response, next: NextFunction) => {
-    const discountCode = req.query.code;
+    const discountCode = req.params.code 
 
     try{
       await Discount.deleteOne({ code: discountCode });
@@ -452,7 +477,7 @@ const userControllers = {
     }
   },
   editDiscount: async (req: Request, res: Response, next: NextFunction) => {
-    const discountCode = req.query.code 
+    const discountCode = req.params.code 
     const discountData = req.body;
 
     try{

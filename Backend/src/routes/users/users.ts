@@ -21,6 +21,7 @@ router.get(`/admin/discount/:code`, isAdmin, DISCOUNT_VALIDATOR, userControllers
 
 router.get("/", userControllers.getUsers); //retrieves the entire user list
 router.get("/:identifier", userControllers.getUser); //retrieves a user by id or email
+router.patch("/:identifier", requireAuth, userControllers.updateUser);
 
 
 
