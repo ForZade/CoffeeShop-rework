@@ -4,6 +4,8 @@ import requireAuth from "../../middlewares/authMiddleware";
 import authValidator from "../../validations/authValidator";
 import rateLimiters from "../../middlewares/rateLimiters";
 
+import "./auth.docs";
+
 const router = express.Router();
 
 router.post("/register", authValidator.register, authControllers.register);

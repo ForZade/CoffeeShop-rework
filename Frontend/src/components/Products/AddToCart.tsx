@@ -11,8 +11,8 @@ export default function AddToCart({productId}: {productId: number}) {
     }
 
     return (
-        <h1 className="text-xl font-bold bg-green-500 h-9 w-48 rounded-2xl flex justify-center items-center" onClick={addToCart}>
-            ADD TO CART
-        </h1>
+        <button className="bg-blue-500 text-white rounded-lg py-2 w-full hover:bg-blue-600" onClick={addToCart}>
+          Add to Cart
+        </button>
     )
 }
