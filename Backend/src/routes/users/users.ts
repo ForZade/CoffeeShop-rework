@@ -14,7 +14,7 @@ router.delete("/cart/clear", requireAuth, userControllers.clearCart);
 
 router.post("/contact", userControllers.contact);
 
-router.get(`/admin/discounts`, userControllers.getDiscountCodes);
+router.get(`/admin/discounts`,isAdmin, userControllers.getDiscountCodes);
 router.post("/admin/:identifier", isAdmin, userControllers.addAdmin);
 router.delete("/admin/:identifier", isAdmin, userControllers.removeAdmin);
 router.get(`/admins`, isAdmin, userControllers.getAdmins);// Untested, dont have cookie - Jaunius
