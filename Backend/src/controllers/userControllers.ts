@@ -6,6 +6,15 @@ import toDecimal, { addDecimals, divideDecimals, multiplyDecimals, subtractDecim
 import { sendContactEmail } from "../utils/email";
 import mongoose from "mongoose";
 import Discount, { DiscountInterface } from "../models/discountModel";
+import { rCode } from "../utils/idgen"; // r stands for random
+
+// Delete after review -> Discount system will be on line (398)-(484)
+// Delete after review -> Discount system will be on line (398)-(484)
+// Delete after review -> Discount system will be on line (398)-(484)
+// Delete after review -> IMPORTS ON LINE 8, 9
+// Delete after review -> READ COMMENTS DROPPED ON LINE 406, 410, 411
+/* Delete after review -> CHECK VALIDATOR OF DISCOUNT */ import { DISCOUNT_VALIDATOR } from "../validations/discountValidator" // <- i left easy access, this is useless import
+// Delete after review -> LUKAI BLET
 
 interface CartTotalInterface {
   total: mongoose.Types.Decimal128;
@@ -388,6 +397,96 @@ const userControllers = {
         status: "success",
         message: "All Admins successfully retrieved",
         data: users,
+      });
+    } catch (err: unknown) {
+      next(err);
+    }
+  },
+
+  addDiscount: async (req: Request, res: Response, next: NextFunction) => {
+    const discountCode = req.query.code || rCode() // TEST POSTS WITH POSSIBLE QUERY = NULL || UNDEFINED || "" || 0
+    const discountData = req.body;
+
+    try{
+      if(await Discount.findOne({ code: discountCode })){ // TEST IF THIS FUNCTIONS IS DOING ITS JOB PROPERLY (also rCode() checks before generating if code exist,
+        return res.status(400).json({                     // but also check out if those dont cross eachother)
+          message: "Discount code already in Use",
+        });
+      }
+      if(!discountData.percentage){
+        return res.status(400).json({
+          message: "Percentage discount is required",
+        });
+      }
+      if(!discountData.expires){
+        return res.status(400).json({
+          message: "expirity date is required",
+        });
+      }
+      const discount = new Discount({
+        code: discountCode,
+        percentage: discountData.percentage,
+        expires: discountData.expires,
+      });
+      await discount.save();
+      res.status(200).json({
+        message: "Succesfull",
+        discount: discount
+      });
+    }
+    catch (err: unknown) {
+      next(err);
+    }
+  },
+  deleteDiscount: async (req: Request, res: Response, next: NextFunction) => {
+    const discountCode = req.query.code;
+
+    try{
+      await Discount.deleteOne({ code: discountCode });
+      res.status(200).json({
+        message: "Succesfull",
+      });
+    }
+    catch (err: unknown) {
+      next(err);
+    }
+  },
+  editDiscount: async (req: Request, res: Response, next: NextFunction) => {
+    const discountCode = req.query.code 
+    const discountData = req.body;
+
+    try{
+      if(!discountData.percentage){
+        return res.status(400).json({
+          message: "Precentage discount is required",
+        });
+      }
+      if(!discountData.expires){
+        return res.status(400).json({
+          message: "expirity date is required",
+        });
+      }
+      await Discount.updateOne({ code: discountCode }, discountData);
+      res.status(200).json({
+        message: "Succesfull",
+      });
+  }
+    catch (err: unknown) {
+      next(err);
+    }
+  },
+  getDiscountCodes: async function ( req: Request, res: Response, next: NextFunction) {
+    try {
+      const discounts: DiscountInterface[] = await Discount.find();
+      if(!discounts) {
+        return res.status(400).json({
+          message: "No discounts found",
+        });
+      }
+      res.status(200).json({
+        status: "success",
+        message: "All discounts successfully retrieved",
+        data: discounts,
       });
     } catch (err: unknown) {
       next(err);
