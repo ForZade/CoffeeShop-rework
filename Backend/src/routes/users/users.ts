@@ -14,10 +14,13 @@ router.delete("/cart/clear", requireAuth, userControllers.clearCart);
 
 router.post("/contact", userControllers.contact);
 
+router.get(`/admin/discounts`, userControllers.getDiscountCodes);
 router.post("/admin/:identifier", isAdmin, userControllers.addAdmin);
 router.delete("/admin/:identifier", isAdmin, userControllers.removeAdmin);
 router.get(`/admins`, isAdmin, userControllers.getAdmins);// Untested, dont have cookie - Jaunius
-router.get(`/admin/discount/:code`, isAdmin, DISCOUNT_VALIDATOR, userControllers.addDiscount); // Unested, dont have cookie - Jaunius
+router.post(`/admin/discount/:code` , DISCOUNT_VALIDATOR, userControllers.addDiscount); // Unested, dont have cookie - Jaunius
+router.delete(`/admin/discount/:code` , userControllers.deleteDiscount);
+router.patch(`/admin/discount/:code`, DISCOUNT_VALIDATOR, userControllers.editDiscount);
 
 router.get("/", userControllers.getUsers); //retrieves the entire user list
 router.get("/:identifier", userControllers.getUser); //retrieves a user by id or email
