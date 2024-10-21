@@ -284,9 +284,18 @@ const userControllers = {
         (item) => item.productId === productId,
       );
 
+      if (!existingItem) {
+        return res.status(400).json({
+          message: "Item not found in cart",
+        });
+      }
+
       if (existingItem.quantity > 1) {
         existingItem.quantity--;
         existingItem.total = subtractDecimals(existingItem.total, product.price);
+      }
+      else if (existingItem.quantity === 1) {
+        user.cart.items = user.cart.items.filter((item) => item.productId !== productId);
       }
 
       user.cart.items.filter((item) => item.productId !== productId);

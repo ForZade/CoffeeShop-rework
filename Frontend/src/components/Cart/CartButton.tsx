@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 
 const CartButton = () => {
-  const [totalItems, setTotalItems] = useState(0);
+  const [totalItems, setTotalItems] = useState("0");
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const { auth } = useAuth();
 
@@ -13,11 +13,14 @@ const CartButton = () => {
     const fetchCartItems = async () => {
       try {
         const response = await axios.get('http://localhost:7000/api/v1/users/cart', {withCredentials: true});
-        if (response.data.data.items.length > 0 && response.data.data.items.length < 100) {
-          setTotalItems(response.data.data.items.length);
-        } 
+        
+        const itemCount = response.data.data.items.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
+
+        if(itemCount > 99) {
+          setTotalItems("99+");
+        }
         else {
-          setTotalItems(99);
+          setTotalItems(itemCount.toString());
         }
       } catch (error) {
         console.error('Error fetching cart items:', error);

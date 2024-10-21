@@ -2,9 +2,9 @@ import { createContext, useContext, useState, useCallback } from "react";
 import axios from "axios";
 
 interface CartDetails {
-    total: number;
-    subtotal: number;
-    discountAmount: number;
+    total: number | string;
+    subtotal: number | string;
+    discountAmount: number | string;
     discountPercentage: number;
     count: number;
 }
@@ -68,12 +68,14 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
             const discountAmt = (parseFloat(total.$numberDecimal) * cartDetails.discountPercentage) / 100;
             const finalTotal = parseFloat(total.$numberDecimal) - discountAmt;
 
+            const itemCount = items.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
+
             setCartDetails({
                 ...cartDetails,
-                count: items.length,
-                subtotal: parseFloat(total.$numberDecimal),
-                discountAmount: discountAmt,
-                total: finalTotal,
+                count: itemCount,
+                subtotal: parseFloat(total.$numberDecimal).toFixed(2),
+                discountAmount: discountAmt.toFixed(2),
+                total: finalTotal.toFixed(2),
             });
         } catch (err) {
             console.log(err);
@@ -86,16 +88,21 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 const response = await axios.get('http://localhost:7000/api/v1/users/cart', { withCredentials: true });
                 console.log(response.data.data);
 
-                let total: number = 0;
+                let total: number | string = 0;
 
                 if(response.data.data.total) {
-                    total = parseFloat(response.data.data.total.$numberDecimal)
+                    total = parseFloat(response.data.data.total.$numberDecimal).toFixed(2)
                 }
+
+                const itemCount = response.data.data.items.reduce(
+                    (acc: number, item: { quantity: number }) => acc + item.quantity,
+                    0
+                );
 
                 setCartDetails((prevDetails) => ({
                     ...prevDetails,
                     total,
-                    count: response.data.data.items.length,
+                    count: itemCount,
                 }));
                 calculateTotals();
             } catch (err) {
