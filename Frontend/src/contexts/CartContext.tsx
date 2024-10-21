@@ -1,64 +1,113 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import axios from "axios";
 
-interface CartContextProps {
-    total: number
-    subtotal: number
-    discount: number
-    percentage: number
-    count: number
+interface CartDetails {
+    total: number;
+    subtotal: number;
+    discountAmount: number;
+    discountPercentage: number;
+    count: number;
+}
 
-    setTotal?: () => void
-    setSubtotal?: () => void
-    setDiscount?: () => void
-    setPercentage?: () => void
-    setCount?: () => void
+interface CartContextProps {
+    cartDetails: CartDetails;
+    calculateTotals: () => void;
+    cart: {
+        get: () => void;
+        add: (productId: number) => void;
+        remove: (productId: number) => void;
+        clear: () => void;
+    };
+    discounts: {
+        add: () => void;
+        remove: () => void;
+        get: () => Promise<number | undefined>;
+        set: (percentage: number) => void;
+    };
 }
 
 const defaultContextValue: CartContextProps = {
-    total: 0,
-    subtotal: 0,
-    discount: 0,
-    percentage: 0,
-    count: 0,
-
-    setTotal: () => {},
-    setSubtotal: () => {},
-    setDiscount: () => {},
-    setPercentage: () => {},
-    setCount: () => {},
+    cartDetails: {
+        total: 0,
+        subtotal: 0,
+        discountAmount: 0,
+        discountPercentage: 0,
+        count: 0,
+    },
+    calculateTotals: () => {},
+    cart: {
+        get: () => {},
+        add: () => {},
+        remove: () => {},
+        clear: () => {},
+    },
+    discounts: {
+        add: () => {},
+        remove: () => {},
+        get: async () => undefined,
+        set: () => {},
+    },
 };
 
 export const CartContext = createContext<CartContextProps>(defaultContextValue);
 
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [count, setCount] = useState<number>(0); // number of items in cart
-    const [total, setTotal] = useState<number>(0); // total - total after adjustments
-    const [subtotal, setSubtotal] = useState<number>(0); // subtotal - total before adjustments
-    const [discount, setDiscount] = useState<number>(0); // discount amount
-    const [percentage, setPercentage] = useState<number>(0); // discount percentage
+const CartProvider = ({ children }: { children: React.ReactNode }) => {
+    const [cartDetails, setCartDetails] = useState<CartDetails>({
+        total: 0,
+        subtotal: 0,
+        discountAmount: 0,
+        discountPercentage: 0,
+        count: 0,
+    });
+
+    const calculateTotals = async () => {
+        try {
+            const response = await axios.get('http://localhost:7000/api/v1/users/cart', { withCredentials: true });
+            const { items, total } = response.data.data;
+
+            const discountAmt = (parseFloat(total.$numberDecimal) * cartDetails.discountPercentage) / 100;
+            const finalTotal = parseFloat(total.$numberDecimal) - discountAmt;
+
+            setCartDetails({
+                ...cartDetails,
+                count: items.length,
+                subtotal: parseFloat(total.$numberDecimal),
+                discountAmount: discountAmt,
+                total: finalTotal,
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     const cart = {
         get: useCallback(async () => {
             try {
-                const response = await axios.get('http://localhost:7000/api/v1/users/cart/total', { withCredentials: true });
-                setTotal(response.data.data.total);
-                setCount(response.data.data.items.length);
-                setSubtotal(response.data.data.total);
-                setDiscount(0);
-                setPercentage(0);
-            }
-            catch (err) {
+                const response = await axios.get('http://localhost:7000/api/v1/users/cart', { withCredentials: true });
+                console.log(response.data.data);
+
+                let total: number = 0;
+
+                if(response.data.data.total) {
+                    total = parseFloat(response.data.data.total.$numberDecimal)
+                }
+
+                setCartDetails((prevDetails) => ({
+                    ...prevDetails,
+                    total,
+                    count: response.data.data.items.length,
+                }));
+                calculateTotals();
+            } catch (err) {
                 console.log(err);
             }
         }, []),
 
         add: useCallback(async (productId: number) => {
             try {
-                await axios.post(`http://localhost:7000/api/v1/users/cart/${productId}`, { withCredentials: true });
-                cart.get()
-            }
-            catch (err) {
+                await axios.post(`http://localhost:7000/api/v1/users/cart/${productId}`, {}, { withCredentials: true });
+                calculateTotals();
+            } catch (err) {
                 console.log(err);
             }
         }, []),
@@ -66,9 +115,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         remove: useCallback(async (productId: number) => {
             try {
                 await axios.delete(`http://localhost:7000/api/v1/users/cart/${productId}`, { withCredentials: true });
-                cart.get()
-            }
-            catch (err) {
+                calculateTotals();
+            } catch (err) {
                 console.log(err);
             }
         }, []),
@@ -76,13 +124,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         clear: useCallback(async () => {
             try {
                 await axios.delete('http://localhost:7000/api/v1/users/cart/clear', { withCredentials: true });
-                setTotal(0);
-                setCount(0);
-                setSubtotal(0);
-                setDiscount(0);
-                setPercentage(0);
-            }
-            catch (err) {
+                setCartDetails({
+                    total: 0,
+                    subtotal: 0,
+                    discountAmount: 0,
+                    discountPercentage: 0,
+                    count: 0,
+                });
+            } catch (err) {
                 console.log(err);
             }
         }, []),
@@ -91,33 +140,57 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const discounts = {
         add: useCallback(async () => {
             try {
-                await axios.post(`http://localhost:7000/api/v1/users/discount/`, {}, { withCredentials: true });
-            }
-            catch (err) {
+                await axios.post('http://localhost:7000/api/v1/users/discounts', {}, { withCredentials: true });
+            } catch (err) {
                 console.log(err);
             }
         }, []),
 
         remove: useCallback(async () => {
             try {
-                await axios.delete(`http://localhost:7000/api/v1/users/discount/`, { withCredentials: true });
-            }
-            catch (err) {
+                await axios.delete('http://localhost:7000/api/v1/users/discounts', { withCredentials: true });
+            } catch (err) {
                 console.log(err);
             }
         }, []),
 
-        
+        get: useCallback(async () => {
+            try {
+                const response = await axios.get('http://localhost:7000/api/v1/users/discounts', { withCredentials: true });
+                return response.data.discounts;
+            } catch (err) {
+                console.log(err);
+            }
+        }, []),
+
+        set: useCallback(async (percentage: number) => {
+            try {
+                await axios.post(`http://localhost:7000/api/v1/users/discounts/${percentage}`, {}, { withCredentials: true });
+                setCartDetails((prevDetails) => ({
+                    ...prevDetails,
+                    discountPercentage: percentage,
+                }));
+                calculateTotals();
+            } catch (err) {
+                console.log(err);
+            }
+        }, []),
     };
 
     return (
-        <CartContext.Provider value={{ total, subtotal, discount, percentage, count }}>
+        <CartContext.Provider
+            value={{
+                cartDetails,
+                calculateTotals,
+                cart,
+                discounts,
+            }}
+        >
             {children}
         </CartContext.Provider>
     );
 };
 
-const useAuth = () => useContext(CartContext);
+const useCart = () => useContext(CartContext);
 
-// eslint-disable-next-line react-refresh/only-export-components
-export { AuthProvider, useAuth };
+export { CartProvider, useCart };

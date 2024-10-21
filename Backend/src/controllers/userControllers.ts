@@ -526,9 +526,29 @@ const userControllers = {
       res.status(200).json({
         status: "success",
         message: "All discounts successfully retrieved",
-        data: discounts,
+        discounts: discounts,
       });
     } catch (err: unknown) {
+      next(err);
+    }
+  },
+
+  checkDiscount: async (req: Request, res: Response, next: NextFunction) => {
+    const discountCode = req.params.code
+
+    try {
+      const discount = await Discount.findOne({ code: discountCode });
+      if(!discount) {
+        return res.status(400).json({
+          status: "Discount code not found",
+        });
+      }
+      res.status(200).json({
+        status: "Discount code applied!",
+        discounts: discount
+      });
+    }
+    catch (err: unknown) {
       next(err);
     }
   }

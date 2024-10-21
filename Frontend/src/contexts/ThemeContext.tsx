@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { AuthProvider } from "./AuthContext";
+import { CartProvider } from "./CartContext";
 
 interface ThemeContextProps {
     theme: string;
@@ -30,7 +31,9 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
             <AuthProvider>
-                {children}
+                <CartProvider>
+                    {children}
+                </CartProvider>
             </AuthProvider>
         </ThemeContext.Provider>
     );
