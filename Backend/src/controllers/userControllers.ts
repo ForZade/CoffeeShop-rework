@@ -6,6 +6,17 @@ import toDecimal, { addDecimals, divideDecimals, multiplyDecimals, subtractDecim
 import { sendContactEmail } from "../utils/email";
 import mongoose from "mongoose";
 import Discount, { DiscountInterface } from "../models/discountModel";
+import { generateDiscountCode } from "../utils/idgen"; // r stands for random
+
+// Delete after review (discounts task) -> Discount system will be on line (398)-(484)
+// Delete after review (discounts task) -> Discount system will be on line (398)-(484)
+// Delete after review (discounts task) -> Discount system will be on line (398)-(484)
+// Delete after review (discounts task) -> IMPORTS ON LINE 8, 9
+// Delete after review (discounts task) -> READ COMMENTS DROPPED ON LINE 406, 410, 411
+/* Delete after review (discounts task) -> CHECK VALIDATOR OF DISCOUNT */ import { DISCOUNT_VALIDATOR } from "../validations/discountValidator" // <- i left easy access, this is useless import
+// Delete after review (discounts task)-> LUKAI BLET
+
+// Delete after review (patchUser task) -> patchUser system will be on lie (72 - 94)
 
 interface CartTotalInterface {
   total: mongoose.Types.Decimal128;
@@ -52,6 +63,31 @@ const userControllers = {
         data: user,
       });
     } catch (err: unknown) {
+      next(err);
+    }
+  },
+
+  updateUser: async (req: Request, res: Response, next: NextFunction) => {
+    const token:string = req.cookies.jwt; 
+    const body = req.body;
+    try {
+      const decoded = await verifyToken(token);
+      
+      if(body.password){
+        return res.status(400).json({
+          status: "error",
+          message: "You cannot change your password using this route",
+        })
+      }
+      const user: UserInterface = await User.findOneAndUpdate({ id: decoded.id }, body);
+      
+      res.status(200).json({
+        status: "success",
+        message: "User updated successfully",
+        data: body, 
+      })
+      }
+    catch (err: unknown) {
       next(err);
     }
   },
@@ -388,6 +424,109 @@ const userControllers = {
         status: "success",
         message: "All Admins successfully retrieved",
         data: users,
+      });
+    } catch (err: unknown) {
+      next(err);
+    }
+  },
+
+  addDiscount: async (req: Request, res: Response, next: NextFunction) => {
+    const discountCode = req.params.code  || generateDiscountCode() // TEST POSTS WITH POSSIBLE QUERY = NULL || UNDEFINED || "" || 0
+    const discountData = req.body;
+
+    try{
+      if(await Discount.findOne({ code: discountCode })){ // TEST IF THIS FUNCTIONS IS DOING ITS JOB PROPERLY (also rCode() checks before generating if code exist,
+        return res.status(400).json({                     // but also check out if those dont cross eachother)
+          status: "Discount code already in Use",
+        });
+      }
+      if(!discountData.percentage){
+        return res.status(400).json({
+          status: "Percentage discount is required",
+        });
+      }
+      if(!discountData.expires){
+        return res.status(400).json({
+          status: "Expiry date is required",
+        });
+      }
+      const discount = new Discount({
+        code: discountCode,
+        percentage: discountData.percentage,
+        expires: discountData.expires,
+      });
+      await discount.save();
+      res.status(200).json({
+        status: "success",
+        discount: discount
+      });
+    }
+    catch (err: unknown) {
+      next(err);
+    }
+  },
+  deleteDiscount: async (req: Request, res: Response, next: NextFunction) => {
+    const discountCode = req.params.code 
+
+    try{
+      const discount = await Discount.deleteOne({ code: discountCode });
+
+      if(discount.deletedCount === 0) {
+        return res.status(400).json({
+          status: "Discount code not found",
+        });
+      }
+      res.status(200).json({
+        status: "success",
+      });
+    }
+    catch (err: unknown) {
+      next(err);
+    }
+  },
+  editDiscount: async (req: Request, res: Response, next: NextFunction) => {
+    const discountCode = req.params.code 
+    const discountData = req.body;
+    console.log(discountData);
+    try{
+      if(!discountData.percentage){
+        return res.status(403).json({
+          status: "Precentage discount is required",
+        });
+      }
+      if(!discountData.expires){
+        return res.status(402).json({
+          status: "expiry date is required",
+        });
+      }
+      const discount = await Discount.updateOne({ code: discountCode }, discountData);
+
+      if(discount.modifiedCount === 0) {
+        return res.status(401).json({
+          status: "Discount code not found",
+        });
+      }
+      res.status(200).json({
+        status: "success",
+        discount: discountData
+      });
+  }
+    catch (err: unknown) {
+      next(err);
+    }
+  },
+  getDiscountCodes: async function ( _req: Request, res: Response, next: NextFunction) {
+    try {
+      const discounts: DiscountInterface[] = await Discount.find();
+      if(!discounts) {
+        return res.status(400).json({
+          status: "No discounts found",
+        });
+      }
+      res.status(200).json({
+        status: "success",
+        message: "All discounts successfully retrieved",
+        data: discounts,
       });
     } catch (err: unknown) {
       next(err);

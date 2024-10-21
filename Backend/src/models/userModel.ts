@@ -104,6 +104,10 @@ export interface UserInterface extends mongoose.Document {
   email: string;
   password: string;
   lock: LockInterface;
+  address?: string;
+  city?: string;
+  zip?: number;
+  phone?: string;
   roles: string[];
   cart?: CartInterface;
   favorite?: number[];

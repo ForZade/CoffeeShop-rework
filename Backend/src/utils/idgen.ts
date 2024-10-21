@@ -2,7 +2,7 @@ import User, { UserInterface } from "../models/userModel";
 import Product, { ProductInterface } from "../models/productModel";
 import { v4 as uuidv4 } from "uuid";
 import Transaction, { TransactionInterface } from "../models/transactionModel";
-
+import discount from "../models/discountModel";
 export async function generateUserId() {
   const id = Math.floor(10000000 + Math.random() * 90000000).toString();
 
@@ -37,4 +37,17 @@ export default async function generateTransactionId() {
   }
 
   return id;
+}
+
+export async function generateDiscountCode(length = 8) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let result = '';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  if(await discount.findOne({ code: result })) {
+    return generateDiscountCode();
+  }
+  return result;
 }
