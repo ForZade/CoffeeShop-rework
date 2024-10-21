@@ -39,7 +39,7 @@ export default async function generateTransactionId() {
   return id;
 }
 
-export async function rCode(length = 8) {
+export async function generateDiscountCode(length = 8) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let result = '';
   const charactersLength = characters.length;
@@ -47,7 +47,7 @@ export async function rCode(length = 8) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   if(await discount.findOne({ code: result })) {
-    return rCode();
+    return generateDiscountCode();
   }
   return result;
 }

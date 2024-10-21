@@ -6,7 +6,7 @@ import toDecimal, { addDecimals, divideDecimals, multiplyDecimals, subtractDecim
 import { sendContactEmail } from "../utils/email";
 import mongoose from "mongoose";
 import Discount, { DiscountInterface } from "../models/discountModel";
-import { rCode } from "../utils/idgen"; // r stands for random
+import { generateDiscountCode } from "../utils/idgen"; // r stands for random
 
 // Delete after review (discounts task) -> Discount system will be on line (398)-(484)
 // Delete after review (discounts task) -> Discount system will be on line (398)-(484)
@@ -431,7 +431,7 @@ const userControllers = {
   },
 
   addDiscount: async (req: Request, res: Response, next: NextFunction) => {
-    const discountCode = req.params.code  || rCode() // TEST POSTS WITH POSSIBLE QUERY = NULL || UNDEFINED || "" || 0
+    const discountCode = req.params.code  || generateDiscountCode() // TEST POSTS WITH POSSIBLE QUERY = NULL || UNDEFINED || "" || 0
     const discountData = req.body;
 
     try{
