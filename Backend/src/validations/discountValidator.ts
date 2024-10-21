@@ -2,7 +2,7 @@ import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 
 export const DISCOUNT_VALIDATOR = [
-  body("expiry") // FORMAT IS YYYY-MM-DD (ISO 8601)
+  body("expires") // FORMAT IS YYYY-MM-DD (ISO 8601)
     .custom((value) => {
             const inputDate = new Date(value); // Convert input string to Date object
             const today = new Date(); // Get today's date

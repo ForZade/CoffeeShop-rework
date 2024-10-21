@@ -71,7 +71,7 @@ const userControllers = {
     const token:string = req.cookies.jwt; 
     const body = req.body;
     try {
-      const decoded = await verifyToken(token);
+      const decoded = verifyToken(token);
       
       if(body.password){
         return res.status(400).json({
@@ -79,6 +79,7 @@ const userControllers = {
           message: "You cannot change your password using this route",
         })
       }
+
       const user: UserInterface = await User.findOneAndUpdate({ id: decoded.id }, body);
       
       res.status(200).json({
@@ -340,55 +341,6 @@ const userControllers = {
     }
   },
 
-  cartTotal: async (req: Request, res: Response, next: NextFunction) => {
-    const token: string = req.cookies.jwt;
-
-    try {
-      let data: CartTotalInterface = {
-        total: toDecimal(0),
-        subtotal: toDecimal(0),
-        discount: toDecimal(0),
-        percentage: 0,
-      };
-
-      const decoded: TokenInterface = await verifyToken(token);
-
-      const user: UserInterface = await User.findOne({
-        id: decoded.id,
-      });
-
-      if (!user) {
-        return res.status(400).json({
-          message: "User not found",
-        });
-      }
-
-      data.subtotal = user.cart.total;
-
-      const discountCode: DiscountInterface = await Discount.findOne({ code: user.cart.code });
-
-      if (!discountCode) {
-        discountCode.percentage = 0;
-      }
-
-      if (discountCode.percentage > 0) {
-        const num = divideDecimals(toDecimal(discountCode.percentage), toDecimal(100));
-        const discount = multiplyDecimals(data.subtotal, num);
-        data.discount = discount;
-        data.percentage = discountCode.percentage;
-        data.total = subtractDecimals(data.subtotal, discount);
-      }
-
-      res.status(200).json({
-        message: "Succsefull",
-        data: data
-      });
-    }
-    catch (err) {
-      next(err);
-    }
-  },
-
   contact: async (req: Request, res: Response, next: NextFunction) => {
     const token: string = req.cookies.jwt;
     const { subject, message } = req.body;
@@ -422,13 +374,17 @@ const userControllers = {
   getAdmins: async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const users: UserInterface[] = await User.find({
-        role: "admin",
+        roles: { $in: ["Admin"] }
       });
-      if(!users) {
+
+      console.log(typeof users);
+    
+      if(!users.length) {
         return res.status(400).json({
           message: "No admins found",
         });
       }
+      
       res.status(200).json({
         status: "success",
         message: "All Admins successfully retrieved",
@@ -440,33 +396,41 @@ const userControllers = {
   },
 
   addDiscount: async (req: Request, res: Response, next: NextFunction) => {
-    const discountCode = req.params.code  || generateDiscountCode() // TEST POSTS WITH POSSIBLE QUERY = NULL || UNDEFINED || "" || 0
-    const discountData = req.body;
+    let code: any = req.body.code
+    let {percentage, expires} = req.body;
 
     try{
-      if(await Discount.findOne({ code: discountCode })){ // TEST IF THIS FUNCTIONS IS DOING ITS JOB PROPERLY (also rCode() checks before generating if code exist,
-        return res.status(400).json({                     // but also check out if those dont cross eachother)
+      if(!code){
+        code = (await generateDiscountCode()).toString();
+      }
+
+      const existingCode = await Discount.findOne({ code });
+
+      if(existingCode) {
+        return res.status(400).json({
           status: "Discount code already in Use",
         });
       }
-      if(!discountData.percentage){
+
+      if(!percentage){
         return res.status(400).json({
-          status: "Percentage discount is required",
+          status: "Discount percentage is required",
         });
       }
-      if(!discountData.expires){
-        return res.status(400).json({
-          status: "Expiry date is required",
-        });
+
+      if(!expires){
+        expires = new Date(Date.now() + 7 *24 * 60 * 60 * 1000);
       }
+
       const discount = new Discount({
-        code: discountCode,
-        percentage: discountData.percentage,
-        expires: discountData.expires,
+        code: code.toUpperCase(),
+        percentage,
+        expires,
       });
+
       await discount.save();
       res.status(200).json({
-        status: "success",
+        status: "Discount added successfully",
         discount: discount
       });
     }
@@ -475,10 +439,10 @@ const userControllers = {
     }
   },
   deleteDiscount: async (req: Request, res: Response, next: NextFunction) => {
-    const discountCode = req.params.code 
+    const code = req.params.code.toUpperCase()
 
     try{
-      const discount = await Discount.deleteOne({ code: discountCode });
+      const discount = await Discount.deleteOne({ code });
 
       if(discount.deletedCount === 0) {
         return res.status(400).json({
@@ -486,7 +450,7 @@ const userControllers = {
         });
       }
       res.status(200).json({
-        status: "success",
+        status: "Discount code deleted successfully",
       });
     }
     catch (err: unknown) {
@@ -494,30 +458,33 @@ const userControllers = {
     }
   },
   editDiscount: async (req: Request, res: Response, next: NextFunction) => {
-    const discountCode = req.params.code 
-    const discountData = req.body;
-    console.log(discountData);
-    try{
-      if(!discountData.percentage){
-        return res.status(403).json({
-          status: "Precentage discount is required",
-        });
-      }
-      if(!discountData.expires){
-        return res.status(402).json({
-          status: "expiry date is required",
-        });
-      }
-      const discount = await Discount.updateOne({ code: discountCode }, discountData);
+    const code = req.params.code.toUpperCase()
+    const {new_code, percentage, expires} = req.body;
 
-      if(discount.modifiedCount === 0) {
-        return res.status(401).json({
+    try{
+      const discount = await Discount.findOne({ code });
+
+      if (!discount) {
+        return res.status(400).json({
           status: "Discount code not found",
         });
       }
+
+      if(new_code){
+        discount.code = new_code.toUpperCase();
+      }
+      if(percentage){
+        discount.percentage = percentage;
+      }
+      if(expires){
+        discount.expires = expires;
+      }
+
+      await discount.save();
+
       res.status(200).json({
         status: "success",
-        discount: discountData
+        discount: discount
       });
   }
     catch (err: unknown) {
@@ -526,14 +493,15 @@ const userControllers = {
   },
   getDiscountCodes: async function ( _req: Request, res: Response, next: NextFunction) {
     try {
-      const discounts: DiscountInterface[] = await Discount.find();
+      const discounts: DiscountInterface[] = await Discount.find({});
+
       if(!discounts) {
         return res.status(400).json({
           status: "No discounts found",
         });
       }
+
       res.status(200).json({
-        status: "success",
         message: "All discounts successfully retrieved",
         discounts: discounts,
       });
@@ -543,7 +511,7 @@ const userControllers = {
   },
 
   checkDiscount: async (req: Request, res: Response, next: NextFunction) => {
-    const discountCode = req.params.code
+    const discountCode = req.params.code.toUpperCase();
 
     try {
       const discount = await Discount.findOne({ code: discountCode });
@@ -553,7 +521,7 @@ const userControllers = {
         });
       }
       res.status(200).json({
-        status: "Discount code applied!",
+        status: "Discount code exists!",
         discounts: discount
       });
     }
