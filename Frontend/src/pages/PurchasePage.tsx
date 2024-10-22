@@ -1,15 +1,17 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useCart } from "../contexts/CartContext"
 import { useAuth } from "../contexts/AuthContext";
 
 export default function PurchasePage() {
-  const { cartDetails, cart } = useCart() 
+  const { cartDetails, cart, discounts} = useCart();
   const { checkAuth } = useAuth();
+  const [ items, setItems ] = useState(undefined);
 
   const loadPage = async () => {
     try {
       await checkAuth();
-      cart.get()
+      const newCart = cart.get();
+      setItems(newCart);
     }
     catch (error) {
       console.error('Error:', error);

@@ -106,7 +106,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 }));
                 calculateTotals();
 
-                return response.data.data;
+                return response.data.data.items;
             } catch (err) {
                 console.log(err);
             }
