@@ -4,7 +4,7 @@ import { describe, it, before, after } from "node:test";
 import assert from "node:assert";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import userControllers from "../../src/controllers/userControllers";
+import cartController from "../../src/controllers/cartController";
 import User from "../../src/models/userModel";
 import { generateToken } from "../../src/utils/token";
 import cookieParser from "cookie-parser"; // Add this import
@@ -12,7 +12,7 @@ import cookieParser from "cookie-parser"; // Add this import
 const app = express();
 app.use(cookieParser()); // Add cookie-parser middleware
 app.use(express.json());
-app.use("/test/cart/clear", userControllers.clearCart);
+app.use("/test/cart/clear", cartController.clearCart);
 
 let mongoServer: MongoMemoryServer;
 let token: string;

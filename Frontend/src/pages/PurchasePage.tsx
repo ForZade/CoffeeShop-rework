@@ -1,32 +1,32 @@
 import { useEffect } from "react"
-import { useCart } from "../contexts/CartContext"
 import { useAuth } from "../contexts/AuthContext";
+import { useCart } from "../contexts/CartContext";
 
-export default function PurchasePage() {
-  const { cartDetails, cart } = useCart() 
+export default function PurchasePage() { 
   const { checkAuth } = useAuth();
-
-  const loadPage = async () => {
-    try {
-      await checkAuth();
-      cart.get()
-    }
-    catch (error) {
-      console.error('Error:', error);
-    }
-  }
+  const { getCart, cart } = useCart();
 
   useEffect(() => {
+    const loadPage = async () => {
+      try {
+        await checkAuth();
+        await getCart();
+      }
+      catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
     loadPage();
   }, [])
 
   return (
     <div>
-      <h1>Total: {cartDetails.total}</h1>
-      <h1>Subtotal: {cartDetails.subtotal}</h1>
-      <h1>Discount: {cartDetails.discountAmount}</h1>
-      <h1>Discount Percentage: {cartDetails.discountPercentage}</h1>
-      <h1>Count: {cartDetails.count}</h1>
+      <h1>Total: {cart.total}</h1>
+      <h1>Subtotal: {cart.subtotal}</h1>
+      <h1>Discount: {cart.discount}</h1>
+      <h1>Discount Percentage: {cart.percentage}</h1>
+      <h1>Count: {cart.count}</h1>
     </div>
   )
 }
