@@ -17,7 +17,7 @@ const authValidator = {
         minNumbers: 1,
         minSymbols: 1,
       })
-      .withMessage("Password must meet the following requirements.",)
+      .withMessage("Password must meet the following requirements.")
       .notEmpty()
       .withMessage("Password must not be empty."),
 
@@ -52,7 +52,37 @@ const authValidator = {
       next();
     },
   ],
+  passwordReset: [
+    body("password")
+      .isStrongPassword({
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage("Password must meet the required criteria.")
+      .notEmpty()
+      .withMessage("Password must not be empty."),
 
+    body("repeat_password")
+      .notEmpty()
+      .withMessage("Repeat password must not be empty.")
+      .custom((value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("Passwords must match");
+        }
+        return true;
+      }),
+
+    (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    },
+  ],
   login: [
     body("email") // Validates email
       .isEmail()
@@ -70,9 +100,7 @@ const authValidator = {
         minNumbers: 1,
         minSymbols: 1,
       })
-      .withMessage(
-        "Password must meet the following requirements.",
-      ),
+      .withMessage("Password must meet the following requirements."),
 
     (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
