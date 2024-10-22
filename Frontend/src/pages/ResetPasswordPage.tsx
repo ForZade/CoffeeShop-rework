@@ -21,23 +21,21 @@ export default function ResetPassword() {
     setHasToken(!!storedToken);
   }, []);
 
-  // be sito neismeta missing requirements
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
   // Request password reset
   const handlePasswordResetRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
+    setEmail("");
+
     try {
       const response = await axios.post("http://localhost:7000/api/v1/auth/password/request-reset", { email });
       setSuccess("Password reset email has been sent. Please check your inbox.");
       console.log("Password reset email response: ", response.data);
-    } catch (err: unknown) {
+    } catch (err: any) {
       console.error("Error response:", err);
       if (err.response) {
-        // Handle specific error codes
         if (err.response.status === 404) {
           setError("Email not found. Please check the email address and try again.");
         } else if (err.response.status === 401) {
@@ -51,6 +49,8 @@ export default function ResetPassword() {
         setError("Failed to send password reset email.");
       }
     }
+
+    setEmail(""); // du kartus setEmail(""), nes kitaip kazkas netaip veikia(nepamenu kodel :pp)
   };
 
   // Reset password
@@ -65,12 +65,6 @@ export default function ResetPassword() {
       return;
     }
 
-    // Check if the new password meets the required strong password criteria
-    if (!passwordRegex.test(password)) {
-      setError("Password must meet the following requirements.");
-      return;
-    }
-
     try {
       const response = await axios.post(`http://localhost:7000/api/v1/auth/password/reset/${token}`, {
         password,
@@ -82,12 +76,14 @@ export default function ResetPassword() {
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-    } catch (err: unknown) {
+    } catch (err: any) {
       console.error("Error response:", err);
       if (err.response) {
         if (err.response.status === 429) {
-          // Handle the timeout error (Too Many Requests)  //kazkodel is authControllers negalejau paimti/rasti
           setError("Too many requests. Please try again later.");
+        } else if (err.response.status === 400 && err.response.data.errors) {
+          const backendErrors = err.response.data.errors.map((error: any) => error.msg).join(", ");
+          setError(`Password reset failed: ${backendErrors}`);
         } else {
           setError("Failed to reset password. Please try again.");
         }
