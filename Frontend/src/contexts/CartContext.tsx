@@ -2,67 +2,63 @@ import { createContext, useContext, useState } from "react";
 import axios from "axios";
 
 interface CartDetails {
-    total: number | string;
-    subtotal: number | string;
-    discountAmount: number | string;
-    discountPercentage: number;
+    items: {
+        productId: number;
+        quantity: number;
+        price: { $numberDecimal: string };
+    }[]
+    total: string;
+    subtotal: string;
+    discount: string;
+    percentage: number;
     count: number;
 }
 
 interface CartContextProps {
-    cartDetails: CartDetails;
-    calculateTotals: () => void;
+    cart: CartDetails;
+    getCart: () => Promise<void>;
 }
 
 const defaultContextValue: CartContextProps = {
-    cartDetails: {
-        total: 0,
-        subtotal: 0,
-        discountAmount: 0,
-        discountPercentage: 0,
+    cart: {
+        items: [],
+        total: "0",
+        subtotal: "0",
+        discount: "0",
+        percentage: 0,
         count: 0,
     },
-    calculateTotals: () => {},
+    getCart: async () => {},
 };
 
 export const CartContext = createContext<CartContextProps>(defaultContextValue);
 
 const CartProvider = ({ children }: { children: React.ReactNode }) => {
-    const [cartDetails, setCartDetails] = useState<CartDetails>({
-        total: 0,
-        subtotal: 0,
-        discountAmount: 0,
-        discountPercentage: 0,
-        count: 0,
-    });
+    const [cart, setCart] = useState<CartDetails>(defaultContextValue.cart);
 
-    const calculateTotals = async () => {
+    const getCart = async () => {
         try {
             const response = await axios.get('http://localhost:7000/api/v1/users/cart', { withCredentials: true });
-            const { items, total } = response.data.data;
-
-            const discountAmt = (parseFloat(total.$numberDecimal) * cartDetails.discountPercentage) / 100;
-            const finalTotal = parseFloat(total.$numberDecimal) - discountAmt;
-
-            const itemCount = items.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
-
-            setCartDetails({
-                ...cartDetails,
-                count: itemCount,
-                subtotal: parseFloat(total.$numberDecimal).toFixed(2),
-                discountAmount: discountAmt.toFixed(2),
-                total: finalTotal.toFixed(2),
+            setCart({
+                ...cart,
+                items: response.data.data.items,
+                total: response.data.data.total.$numberDecimal,
+                subtotal: response.data.data.subtotal.$numberDecimal,
+                discount: response.data.data.discount.$numberDecimal,
+                percentage: response.data.data.percentage,
+                count: response.data.data.count
             });
         } catch (err) {
             console.log(err);
         }
     };
 
+
     return (
         <CartContext.Provider
             value={{
-                cartDetails,
-                calculateTotals,
+                cart,
+                getCart,
             }}
         >
             {children}

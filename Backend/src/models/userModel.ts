@@ -71,8 +71,20 @@ const userSchema = new mongoose.Schema(
       code: {
         type: String,
       },
+      count: {
+        type: Number,
+      },
       total: {
         type: mongoose.Schema.Types.Decimal128,
+      },
+      subtotal: {
+        type: mongoose.Schema.Types.Decimal128,
+      },
+      discount: {
+        type: mongoose.Schema.Types.Decimal128,
+      },
+      percentage: {
+        type: Number,
       },
     },
     favorite: {
