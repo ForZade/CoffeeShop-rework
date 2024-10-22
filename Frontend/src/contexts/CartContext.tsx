@@ -1,58 +1,205 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import axios from "axios";
 
-interface CartContextProps {
-    total: number
-    subtotal: number
-    discount: number
-    percentage: number
+interface CartDetails {
+    total: number | string;
+    subtotal: number | string;
+    discountAmount: number | string;
+    discountPercentage: number;
+    count: number;
+}
 
-    setTotal?: () => void
-    setSubtotal?: () => void
-    setDiscount?: () => void
-    setPercentage?: () => void
+interface CartContextProps {
+    cartDetails: CartDetails;
+    calculateTotals: () => void;
+    cart: {
+        get: () => void;
+        add: (productId: number) => void;
+        remove: (productId: number) => void;
+        clear: () => void;
+    };
+    discounts: {
+        add: () => void;
+        remove: () => void;
+        get: () => Promise<number | undefined>;
+        set: (percentage: number) => void;
+    };
 }
 
 const defaultContextValue: CartContextProps = {
-    total: 0,
-    subtotal: 0,
-    discount: 0,
-    percentage: 0,
-
-    setTotal: () => {},
-    setSubtotal: () => {},
-    setDiscount: () => {},
-    setPercentage: () => {},
+    cartDetails: {
+        total: 0,
+        subtotal: 0,
+        discountAmount: 0,
+        discountPercentage: 0,
+        count: 0,
+    },
+    calculateTotals: () => {},
+    cart: {
+        get: () => {},
+        add: () => {},
+        remove: () => {},
+        clear: () => {},
+    },
+    discounts: {
+        add: () => {},
+        remove: () => {},
+        get: async () => undefined,
+        set: () => {},
+    },
 };
 
 export const CartContext = createContext<CartContextProps>(defaultContextValue);
 
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [items, setItems] = useState<any[]>([]);
-    const [count, setCount] = useState<number>(0);
-    const [total, setTotal] = useState<number>(0);
-    const [subtotal, setSubtotal] = useState<number>(0);
-    const [discount, setDiscount] = useState<number>(0);
-    const [percentage, setPercentage] = useState<number>(0);
+const CartProvider = ({ children }: { children: React.ReactNode }) => {
+    const [cartDetails, setCartDetails] = useState<CartDetails>({
+        total: 0,
+        subtotal: 0,
+        discountAmount: 0,
+        discountPercentage: 0,
+        count: 0,
+    });
 
-    const getCart = useCallback(async () => {
+    const calculateTotals = async () => {
         try {
-            const response = await axios.get('http://localhost:7000/api/v1/users/cart/total', { withCredentials: true });
-            setTotal(response.data.data.total);
-        }
-        catch (err) {
+            const response = await axios.get('http://localhost:7000/api/v1/users/cart', { withCredentials: true });
+            const { items, total } = response.data.data;
+
+            const discountAmt = (parseFloat(total.$numberDecimal) * cartDetails.discountPercentage) / 100;
+            const finalTotal = parseFloat(total.$numberDecimal) - discountAmt;
+
+            const itemCount = items.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
+
+            setCartDetails({
+                ...cartDetails,
+                count: itemCount,
+                subtotal: parseFloat(total.$numberDecimal).toFixed(2),
+                discountAmount: discountAmt.toFixed(2),
+                total: finalTotal.toFixed(2),
+            });
+        } catch (err) {
             console.log(err);
         }
-    }, []);
+    };
+
+    const cart = {
+        get: useCallback(async () => {
+            try {
+                const response = await axios.get('http://localhost:7000/api/v1/users/cart', { withCredentials: true });
+                console.log(response.data.data);
+
+                let total: number | string = 0;
+
+                if(response.data.data.total) {
+                    total = parseFloat(response.data.data.total.$numberDecimal).toFixed(2)
+                }
+
+                const itemCount = response.data.data.items.reduce(
+                    (acc: number, item: { quantity: number }) => acc + item.quantity,
+                    0
+                );
+
+                setCartDetails((prevDetails) => ({
+                    ...prevDetails,
+                    total,
+                    count: itemCount,
+                }));
+                calculateTotals();
+
+                return response.data.data;
+            } catch (err) {
+                console.log(err);
+            }
+        }, []),
+
+        add: useCallback(async (productId: number) => {
+            try {
+                await axios.post(`http://localhost:7000/api/v1/users/cart/${productId}`, {}, { withCredentials: true });
+                calculateTotals();
+            } catch (err) {
+                console.log(err);
+            }
+        }, []),
+
+        remove: useCallback(async (productId: number) => {
+            try {
+                await axios.delete(`http://localhost:7000/api/v1/users/cart/${productId}`, { withCredentials: true });
+                calculateTotals();
+            } catch (err) {
+                console.log(err);
+            }
+        }, []),
+
+        clear: useCallback(async () => {
+            try {
+                await axios.delete('http://localhost:7000/api/v1/users/cart/clear', { withCredentials: true });
+                setCartDetails({
+                    total: 0,
+                    subtotal: 0,
+                    discountAmount: 0,
+                    discountPercentage: 0,
+                    count: 0,
+                });
+            } catch (err) {
+                console.log(err);
+            }
+        }, []),
+    };
+
+    const discounts = {
+        add: useCallback(async () => {
+            try {
+                await axios.post('http://localhost:7000/api/v1/users/discounts', {}, { withCredentials: true });
+            } catch (err) {
+                console.log(err);
+            }
+        }, []),
+
+        remove: useCallback(async () => {
+            try {
+                await axios.delete('http://localhost:7000/api/v1/users/discounts', { withCredentials: true });
+            } catch (err) {
+                console.log(err);
+            }
+        }, []),
+
+        get: useCallback(async () => {
+            try {
+                const response = await axios.get('http://localhost:7000/api/v1/users/discounts', { withCredentials: true });
+                return response.data.discounts;
+            } catch (err) {
+                console.log(err);
+            }
+        }, []),
+
+        set: useCallback(async (percentage: number) => {
+            try {
+                await axios.post(`http://localhost:7000/api/v1/users/discounts/${percentage}`, {}, { withCredentials: true });
+                setCartDetails((prevDetails) => ({
+                    ...prevDetails,
+                    discountPercentage: percentage,
+                }));
+                calculateTotals();
+            } catch (err) {
+                console.log(err);
+            }
+        }, []),
+    };
 
     return (
-        <CartContext.Provider value={{ total, subtotal, discount, percentage, }}>
+        <CartContext.Provider
+            value={{
+                cartDetails,
+                calculateTotals,
+                cart,
+                discounts,
+            }}
+        >
             {children}
         </CartContext.Provider>
     );
 };
 
-const useAuth = () => useContext(CartContext);
+const useCart = () => useContext(CartContext);
 
-// eslint-disable-next-line react-refresh/only-export-components
-export { AuthProvider, useAuth };
+export { CartProvider, useCart };

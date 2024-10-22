@@ -45,7 +45,9 @@ export default function ProductCard({ product }: CardInterface) {
             </p>
           </header>
 
-          {auth && <AddToCart productId={product.id} />}
+          {auth &&
+              <AddToCart productId={product.id} />
+          }
         </div>
       </Link>
     </section>

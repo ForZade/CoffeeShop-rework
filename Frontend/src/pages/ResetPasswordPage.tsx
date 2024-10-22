@@ -7,7 +7,7 @@ export default function ResetPassword() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-  const [token, setToken] = useState(urlToken || ""); // Initialize token state with URL token
+  const [token] = useState(urlToken || ""); // Initialize token state with URL token
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isResetting, setIsResetting] = useState(!!urlToken); // Check if we are resetting password based on token presence

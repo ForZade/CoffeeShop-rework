@@ -12,20 +12,20 @@ router.post("/cart/:productId", requireAuth, userControllers.addToCart);
 router.delete("/cart/:productId", requireAuth, userControllers.removeFromCart);
 router.delete("/cart/clear", requireAuth, userControllers.clearCart);
 
-router.post("/contact", userControllers.contact);
+router.post("/contacts", userControllers.contact);
 
-router.get(`/admin/discounts`,isAdmin, userControllers.getDiscountCodes);
-router.post("/admin/:identifier", isAdmin, userControllers.addAdmin);
-router.delete("/admin/:identifier", isAdmin, userControllers.removeAdmin);
-router.get(`/admins`, isAdmin, userControllers.getAdmins);
-router.post(`/admin/discount/:code`, isAdmin , DISCOUNT_VALIDATOR, userControllers.addDiscount);
-router.delete(`/admin/discount/:code`, isAdmin , userControllers.deleteDiscount);
-router.patch(`/admin/discount/:code`, isAdmin, DISCOUNT_VALIDATOR, userControllers.editDiscount);
+router.post("/admins/:identifier", isAdmin, userControllers.addAdmin);
+router.delete("/admins/:identifier", isAdmin, userControllers.removeAdmin);
+router.get(`/admins`, isAdmin, userControllers.getAdmins);// Untested, dont have cookie - Jaunius
 
-router.get("/", userControllers.getUsers); //retrieves the entire user list
-router.get("/:identifier", userControllers.getUser); //retrieves a user by id or email
+router.get(`/discounts`,isAdmin, userControllers.getDiscountCodes);
+router.post(`/discounts`, isAdmin , DISCOUNT_VALIDATOR, userControllers.addDiscount);
+router.delete(`/discounts/:code`, isAdmin , userControllers.deleteDiscount);
+router.patch(`/discounts/:code`, isAdmin, DISCOUNT_VALIDATOR, userControllers.editDiscount);
+router.get(`/discounts/:code`, requireAuth, userControllers.checkDiscount);
+
+router.get("/", userControllers.getUsers);
+router.get("/:identifier", userControllers.getUser);
 router.patch("/:identifier", requireAuth, userControllers.updateUser);
-
-
 
 export default router;
