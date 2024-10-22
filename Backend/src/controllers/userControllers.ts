@@ -413,7 +413,7 @@ const userControllers = {
   getAdmins: async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const users: UserInterface[] = await User.find({
-        role: "admin",
+        role: ["admin"],
       });
       if(!users) {
         return res.status(400).json({
