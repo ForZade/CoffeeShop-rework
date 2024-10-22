@@ -17,8 +17,18 @@ export const DISCOUNT_VALIDATOR = [
         })
     .withMessage("DISCOUNT EXPIRY DATE MUST BE IN THE FUTURE"),
 
-
-  (req: Request, res: Response, next: NextFunction) => {
+  body("percentage")
+    .isNumeric()
+    .withMessage("DISCOUNT PERCENTAGE MUST BE A NUMBER")
+    .custom((value) => {
+      if (value < 0 || value > 100) {
+        return false;
+      }
+      return true;
+    })
+    .withMessage("DISCOUNT PERCENTAGE MUST BE BETWEEN 0 AND 100"),
+  
+    (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
