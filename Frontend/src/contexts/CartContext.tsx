@@ -22,7 +22,7 @@ interface CartContextProps {
         add: () => void;
         remove: () => void;
         get: () => Promise<number | undefined>;
-        set: (percentage: number) => void;
+        check: (code: string) => void;
     };
 }
 
@@ -45,7 +45,7 @@ const defaultContextValue: CartContextProps = {
         add: () => {},
         remove: () => {},
         get: async () => undefined,
-        set: () => {},
+        check: () => {},
     },
 };
 
@@ -172,12 +172,12 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
             }
         }, []),
 
-        set: useCallback(async (percentage: number) => {
+        check: useCallback(async (code: string) => {
             try {
-                await axios.post(`http://localhost:7000/api/v1/users/discounts/${percentage}`, {}, { withCredentials: true });
+                const response = await axios.get(`http://localhost:7000/api/v1/users/discounts/${code}`, { withCredentials: true });
                 setCartDetails((prevDetails) => ({
                     ...prevDetails,
-                    discountPercentage: percentage,
+                    discountPercentage: response.data.discount.percentage,
                 }));
                 calculateTotals();
             } catch (err) {

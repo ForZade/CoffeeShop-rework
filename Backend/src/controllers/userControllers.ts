@@ -522,7 +522,7 @@ const userControllers = {
       }
       res.status(200).json({
         status: "Discount code exists!",
-        discounts: discount
+        discount: discount
       });
     }
     catch (err: unknown) {
