@@ -25,11 +25,11 @@ export default function PurchasePage() {
 
   return (
     <div>
-      <h1>Total: {cartDetails.total}</h1>
-      <h1>Subtotal: {cartDetails.subtotal}</h1>
-      <h1>Discount: {cartDetails.discountAmount}</h1>
-      <h1>Discount Percentage: {cartDetails.discountPercentage}</h1>
-      <h1>Count: {cartDetails.count}</h1>
+      <h1>Total: {cart.total}</h1>
+      <h1>Subtotal: {cart.subtotal}</h1>
+      <h1>Discount: {cart.discount}</h1>
+      <h1>Discount Percentage: {cart.percentage}</h1>
+      <h1>Count: {cart.count}</h1>
     </div>
   )
 }
