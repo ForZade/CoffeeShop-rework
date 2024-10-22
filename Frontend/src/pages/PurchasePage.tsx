@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useCart } from "../contexts/CartContext"
 import { useAuth } from "../contexts/AuthContext";
-import CartItem, { CartItemProps } from "../components/Cart/CartItem";
+import CartItem from "../components/Cart/CartItem";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
@@ -23,6 +23,7 @@ export default function PurchasePage() {
     }
 
     loadPage();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export default function PurchasePage() {
 
   const clearCart = async () => {
     try {
-      const response = await axios.delete(`http://localhost:7000/api/v1/users/cart`, { withCredentials: true });
+      const response = await axios.delete(`http://localhost:7000/api/v1/users/cart/clear`, { withCredentials: true });
       console.log(response.data.data);
       await getCart();
     }
@@ -66,8 +67,8 @@ export default function PurchasePage() {
               productId={item.productId}
               quantity={item.quantity}
               pricePerItem={parseFloat(item.total.$numberDecimal)}
-              totalPrice={parseFloat(item.total.$numberDecimal) * item.quantity}
-            />
+              totalPrice={parseFloat(item.total.$numberDecimal) * item.quantity}         
+              />
           )
         })
       ) : (

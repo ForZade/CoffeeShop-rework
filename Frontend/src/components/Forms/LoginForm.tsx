@@ -53,17 +53,17 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-screen bg-slate-100 dark:bg-zinc-700">
       <form
         onSubmit={handleSubmit}
-        className="w-1/3 p-6 shadow-lg rounded bg-white"
+        className="w-1/3 p-6 shadow-lg rounded bg-slate-200 dark:bg-zinc-800"
       >
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
+        <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">Login</h2>
 
         {error && <div className="text-red-500 mb-4">{error}</div>}
 
         <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700">
+          <label htmlFor="email" className="block text-black dark:text-white">
             Email
           </label>
           <input
@@ -71,13 +71,13 @@ export default function LoginForm() {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 p-2 border border-gray-300 w-full"
+            className="mt-1 p-2 border border-slate-300 dark:border-zinc-900 bg-slate-100 dark:bg-zinc-900 w-full"
             required
           />
         </div>
 
         <div className="mb-4">
-          <label htmlFor="password" className="block text-gray-700">
+          <label htmlFor="password" className="block text-black dark:text-white">
             Password
           </label>
           <div className="relative">
@@ -86,7 +86,7 @@ export default function LoginForm() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 p-2 border border-gray-300 w-full"
+              className="mt-1 p-2 border border-slate-300 dark:border-zinc-900 bg-slate-100 dark:bg-zinc-900 w-full"
               required
             />
             <button

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 export default function RegistrationForm() {
   const [email, setEmail] = useState("");
@@ -43,55 +42,55 @@ export default function RegistrationForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-    <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-center">Register</h2>
+    <div className="flex items-center justify-center min-h-screen bg-slate-100 dark:bg-zinc-700">
+    <div className="w-full max-w-md p-8 space-y-6 bg-slate-200 dark:bg-zinc-800 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-center text-black dark:text-white">Register</h2>
 
       {/* Display error message */}
       {error && <div className="text-red-500 text-center">{error}</div>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">First Name:</label>
+          <label className="block text-sm font-medium text-black dark:text-white">First Name:</label>
           <input
             type="text"
             name="first_name"
             value={first_name}
             onChange={(event) => setFirsName(event.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+            className="mt-1 block w-full p-2 border border-slate-300 dark:border-zinc-950 bg-slate-50 dark:bg-zinc-900 text-black dark:text-white rounded-md focus:ring focus:ring-blue-300"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Last Name:</label>
+          <label className="block text-sm font-medium text-black dark:text-white">Last Name:</label>
           <input
             type="text"
             name="last_name"
             value={last_name}
             onChange={(event) => setLastName(event.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+            className="mt-1 block w-full p-2 border border-slate-300 dark:border-zinc-950 bg-slate-50 dark:bg-zinc-900 text-black dark:text-white rounded-md focus:ring focus:ring-blue-300"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Email:</label>
+          <label className="block text-sm font-medium text-black dark:text-white">Email:</label>
           <input
             type="email"
             name="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+            className="mt-1 block w-full p-2 border border-slate-300 dark:border-zinc-950 bg-slate-50 dark:bg-zinc-900 text-black dark:text-white rounded-md focus:ring focus:ring-blue-300"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Password:</label>
+          <label className="block text-sm font-medium text-black dark:text-white">Password:</label>
           <input
             type={showPassword ? 'text' : 'password'}
             name="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+            className="mt-1 block w-full p-2 border border-slate-300 dark:border-zinc-950 bg-slate-50 dark:bg-zinc-900 text-black dark:text-white rounded-md focus:ring focus:ring-blue-300"
             required
           />
           <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-sm text-blue-600 hover:underline">
@@ -99,13 +98,13 @@ export default function RegistrationForm() {
           </button>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Confirm Password:</label>
+          <label className="block text-sm font-medium text-black dark:text-white">Confirm Password:</label>
           <input
             type={showConfirmPassword ? 'text' : 'password'}
             name="confirmPassword"
             value={repeat_password}
             onChange={(event) => setCPassword(event.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+            className="mt-1 block w-full p-2 border border-slate-300 dark:border-zinc-950 bg-slate-50 dark:bg-zinc-900 text-black dark:text-white rounded-md focus:ring focus:ring-blue-300"
             required
           />
           <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="text-sm text-blue-600 hover:underline">

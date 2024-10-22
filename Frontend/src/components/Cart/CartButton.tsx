@@ -3,34 +3,38 @@ import { Icon } from '@iconify/react';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios'; 
 import { Link } from "react-router-dom";
+import { useCart } from '../../contexts/CartContext';
 
 const CartButton = () => {
   const [totalItems, setTotalItems] = useState("0");
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const { auth } = useAuth();
+  const { cart, getCart } = useCart();
 
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get('http://localhost:7000/api/v1/users/cart', {withCredentials: true});
-        
-        const itemCount = response.data.data.items.reduce((acc: number, item: { quantity: number }) => acc + item.quantity, 0);
-
-        if(itemCount > 99) {
-          setTotalItems("99+");
-        }
-        else {
-          setTotalItems(itemCount.toString());
-        }
+        await getCart(); // This updates the cart state directly
       } catch (error) {
         console.error('Error fetching cart items:', error);
       }
     };
-
+  
     if (auth) {
       fetchCartItems();
     }
   }, [auth]);
+  
+  useEffect(() => {
+    if (cart && cart.count) {
+      if (cart.count > 99) {
+        setTotalItems("99+");
+      } else {
+        setTotalItems(cart.count.toString());
+      }
+    }
+  }, [cart]); // This effect will run whenever the cart state is updated
+  
 
   if (!auth) return null; 
 

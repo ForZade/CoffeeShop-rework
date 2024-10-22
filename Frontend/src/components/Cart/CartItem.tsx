@@ -4,7 +4,7 @@ import axios from "axios";
 export interface CartItemProps {
     productId: number;
     quantity: number;
-    total: { $numberDecimal: string };
+    total?: { $numberDecimal: string };
     pricePerItem?: number;
     totalPrice?: number;
   }

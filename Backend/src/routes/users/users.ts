@@ -9,10 +9,9 @@ import "./users.docs";
 const router = express.Router();
 
 router.get("/cart", requireAuth, cartController.getCart);
-router.get("/cart/test", requireAuth, cartController.testCart);
 router.post("/cart/:productId", requireAuth, cartController.addToCart);
-router.delete("/cart/:productId", requireAuth, cartController.removeFromCart);
 router.delete("/cart/clear", requireAuth, cartController.clearCart);
+router.delete("/cart/:productId", requireAuth, cartController.removeFromCart);
 
 router.post("/contacts", userControllers.contact);
 

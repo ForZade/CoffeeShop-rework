@@ -146,10 +146,10 @@ const cartController = {
     
       clearCart: async (req: Request, res: Response, next: NextFunction) => {
         const token: string = req.cookies.jwt;
-    
+
         try {
           const decoded: TokenInterface = await verifyToken(token);
-    
+
           const user: UserInterface = await User.findOne({
             id: decoded.id,
           });
@@ -159,7 +159,6 @@ const cartController = {
               message: "User not found",
             });
           }
-
     
           user.cart.items = [];    
           user.cart.total = toDecimal(0);
@@ -177,29 +176,6 @@ const cartController = {
           next(err);
         }
       },
-
-      testCart: async (req: Request, res: Response, next: NextFunction) => {
-        const token: string = req.cookies.jwt;
-
-        try {
-          const decoded: TokenInterface = await verifyToken(token);
-
-          const user: UserInterface = await User.findOne({
-            id: decoded.id,
-          });
-
-          if (!user) {
-            return res.status(400).json({
-              message: "User not found",
-            });
-          }
-
-          calculateCart(decoded.id);
-        }
-        catch(err) {
-            console.log(err);
-        }
-      }
 }
 
 export default cartController;

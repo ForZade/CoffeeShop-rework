@@ -18,7 +18,7 @@ export default function ContactsForm () {
               console.log(response.data.data.email);
             }
         } catch (error) {
-          
+          console.error('Error:', error);
         }
     }
 
@@ -50,7 +50,7 @@ export default function ContactsForm () {
 
 
     return (
-        <section className="bg-white dark:bg-gray-900">
+        <section>
   <div className="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
       <form onSubmit={handleSubmit} className="space-y-8">
           <div className='border-2'>            
