@@ -7,6 +7,7 @@ interface CartDetails {
         quantity: number;
         price: { $numberDecimal: string };
     }[]
+    code: string;
     total: string;
     subtotal: string;
     discount: string;
@@ -22,6 +23,7 @@ interface CartContextProps {
 const defaultContextValue: CartContextProps = {
     cart: {
         items: [],
+        code: "",
         total: "0",
         subtotal: "0",
         discount: "0",
@@ -39,11 +41,13 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const getCart = async () => {
         try {
             const response = await axios.get('http://localhost:7000/api/v1/users/cart', { withCredentials: true });
+            console.log(response.data.data);
             setCart({
                 ...cart,
+                code: response.data.data.code,
                 items: response.data.data.items,
                 total: response.data.data.total.$numberDecimal,
-                subtotal: response.data.data.subtotal.$numberDecimal,
+                subtotal: response.data.data.subtotal.$numberDecimal ,
                 discount: response.data.data.discount.$numberDecimal,
                 percentage: response.data.data.percentage,
                 count: response.data.data.count

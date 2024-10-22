@@ -331,15 +331,38 @@ const userControllers = {
   },
 
   checkDiscount: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
     const discountCode = req.params.code.toUpperCase();
 
     try {
+      const decoded: TokenInterface = await verifyToken(token);
+
+      const user = await User.findOne({ id: decoded.id });
+
+      if (!user) {
+        return res.status(400).json({
+          status: "User not found",
+        });
+      }
+
       const discount = await Discount.findOne({ code: discountCode });
       if(!discount) {
         return res.status(400).json({
           status: "Discount code not found",
         });
       }
+
+      if (discount.expires < new Date()) {
+        return res.status(400).json({
+          status: "Discount code expired",
+        });
+      }
+
+      user.cart.code = discount.code;
+      user.cart.percentage = discount.percentage;
+
+      await user.save();
+
       res.status(200).json({
         status: "Discount code exists!",
         discount: discount

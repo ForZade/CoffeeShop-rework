@@ -8,7 +8,7 @@ const Decimal128 = require('mongodb').Decimal128;
 const productControllers = {
   // ^ POST /api/v1/products - Create product (creates product)
   createProduct: async (req: Request, res: Response, next: NextFunction) => {
-    const { name, description, price, image }: ProductInterface = req.body;
+    const { name, description, price, image, category, size }: ProductInterface = req.body;
     try {
       const id: number = await generateProductId();
       const newProduct: ProductInterface = new Product({
@@ -17,6 +17,8 @@ const productControllers = {
         description,
         price,
         image,
+        category,
+        size,
       });
 
       const savedProduct: ProductInterface = await newProduct.save();

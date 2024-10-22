@@ -22,7 +22,7 @@ const cartController = {
             });
           }
 
-          calculateCart(user.cart);
+          await calculateCart(decoded.id);
     
           res.status(200).json({
             message: "Succsefull",
@@ -194,7 +194,7 @@ const cartController = {
             });
           }
 
-          calculateCart(user.cart);
+          calculateCart(decoded.id);
         }
         catch(err) {
             console.log(err);

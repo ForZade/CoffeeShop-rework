@@ -4,8 +4,10 @@ export default function AddToCart({productId}: {productId: number}) {
    
     const addToCart = async (event: React.MouseEvent<HTMLButtonElement>) => {
         try {
+            event.preventDefault();
             event.stopPropagation();
-            await axios.post("http://localhost:7000/api/v1/cart", {productId}, {withCredentials: true});
+            console.log("clicked", productId);
+            await axios.post(`http://localhost:7000/api/v1/users/cart/${productId}`, {withCredentials: true});
         } catch (err) {
             console.log(err);
         }

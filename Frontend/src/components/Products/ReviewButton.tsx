@@ -15,16 +15,21 @@ export default function ReviewButton({ liked, productId, extraClass }: ReviewPro
 
     async function postReview(event: React.MouseEvent<HTMLButtonElement>) {
         try {
+          event.preventDefault();
           event.stopPropagation();
+
           const response = await axios.post("http://localhost:7000/api/v1/products/review", { productId } ,{ withCredentials: true });
 
           if (response.data.favorited) {
             setLikes(likes + 1);
+            console.log("added like");
           }
           else {
             setLikes(likes - 1);
+            console.log("removed like");
           }
           setClicked(!clicked);
+          console.log("clicked");
 
         } catch (err) {
           console.log(err);
