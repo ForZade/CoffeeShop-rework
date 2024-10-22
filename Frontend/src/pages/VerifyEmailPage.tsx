@@ -1,30 +1,28 @@
-import { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import Cookies from 'js-cookie';
 import axios from 'axios';
-
+import { useAuth } from '../contexts/AuthContext'
+import { useEffect } from 'react';
 export default function VerifyEmail() {
-  const [email, setEmail] = useState<string>('');
+const {checkAuth, user} = useAuth();
+const loadPage = async () => {
+  try {
+    await checkAuth() 
+  } catch (error) {
+    console.log(error)
+  }
+} 
 
-  useEffect(() => {
-    const token = Cookies.get('jwt');
-    if (token) {
-      try {
-        const decodedToken: { email: string } = jwtDecode(token);
-        setEmail(decodedToken.email);
-      } catch (error) {
-        console.error('Error decoding token:', error);
-      }
-    }
-  }, []);
-
+useEffect(() => {
+  loadPage()
+}, [])
+  
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      await axios.post('http://localhost:7000/api/v1/auth/resend-verify', { email });
+      console.log(user?.email)
+      await axios.post('http://localhost:7000/api/v1/auth/resend-verify', { email: user?.email }, { withCredentials: true });
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error resending verification email:', error);
     }
   };
 

@@ -30,7 +30,7 @@ const routes = createBrowserRouter(
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/contacts" element={<ContactsPage/>} />
-            <Route path="/verified" element={<EmailVerified/>} />
+            <Route path="/verify/:token" element={<EmailVerified/>} />
             <Route path="/verify" element={<VerifyEmail/>} />
             <Route path="/products" element={<ShopPage />} />
             <Route path="/products/:id" element={<ProductPage />} />
