@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendVerificationEmail(email: string, token: string) {
-  const verificationLink: string = `${process.env.Mail_URL}/verify/${token}`;
+  const verificationLink: string = `http://localhost:5173/verify/${token}`;
 
   const mailOptions = {
     from: process.env.MAIL_USER,
@@ -38,7 +38,7 @@ export async function sendVerificationEmail(email: string, token: string) {
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
-  const resetLink: string = `${process.env.MAIL_URL}/reset-password/${token}`;
+  const resetLink: string = `http://localhost:5173/reset-password/${token}`;
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -68,11 +68,12 @@ export async function sendContactEmail(email: string, subject: string, message: 
     from: email,
     to: process.env.MAIL_USER,
     subject: subject,
-    text: message,
+    text: `From: ${email}\n\n${message}`,
   };
   
   try {
     await transporter.sendMail(mailOptions);
+    console.log('Email ran')
   } catch (error) {
     console.error('Error sending email:', error);
   }

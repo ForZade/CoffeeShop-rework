@@ -162,20 +162,9 @@ const userControllers = {
   },
 
   contact: async (req: Request, res: Response, next: NextFunction) => {
-    const token: string = req.cookies.jwt;
-    const { subject, message } = req.body;
+    const { email, subject, message } = req.body;
+
     try {
-      let email: string;
-      let decoded: TokenInterface = {} as TokenInterface;
-
-      if(!token){
-        email = req.body.email;
-      }
-      else {
-        decoded = verifyToken(token);
-        email = decoded.email;
-      }
-
       if (!email || !subject || !message) {
         return res.status(400).json({
           message: "All fields are required",
