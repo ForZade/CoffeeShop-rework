@@ -2,11 +2,13 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import ProductCard, { ProductProps } from "../components/Products/ProductCard";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ShopPage() {
-    const { checkAuth } = useAuth();
+    const { checkAuth, user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<ProductProps[]>([]);
+    const navigate = useNavigate();
   
     useEffect(() => {
         async function getProducts() {
@@ -19,7 +21,10 @@ export default function ShopPage() {
                 console.log(err);
             }
             finally{
-                setTimeout(() => setLoading(false), 5000);
+                if (user?.email && !user?.roles.includes("user")) {
+                    navigate("/verify");
+                }
+                setLoading(false);
             }
         }
         getProducts();

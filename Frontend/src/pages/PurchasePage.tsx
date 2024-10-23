@@ -4,11 +4,13 @@ import { useAuth } from "../contexts/AuthContext";
 import CartItem from "../components/Cart/CartItem";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function PurchasePage() {
   const { cart, getCart } = useCart();
-  const { checkAuth } = useAuth();
+  const { checkAuth, user } = useAuth();
   const [code, setCode] = useState<string>("");
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -19,6 +21,11 @@ export default function PurchasePage() {
       }
       catch (error) {
         console.error('Error:', error);
+      }
+      finally {
+        if (user?.email && !user?.roles.includes("user")) {
+          navigate("/verify");
+        }
       }
     }
 

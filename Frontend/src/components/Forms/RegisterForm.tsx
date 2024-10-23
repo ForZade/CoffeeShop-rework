@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function RegistrationForm() {
   const [email, setEmail] = useState("");
@@ -11,6 +12,7 @@ export default function RegistrationForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); 
   const [first_name, setFirsName] = useState("");
   const [last_name, setLastName] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +28,7 @@ export default function RegistrationForm() {
         last_name 
       });
 
-      window.location.href = "/verify";
+      navigate("/login");
     } catch (err: any) {
       if (err.response?.data?.errors) {
         const errorMessages = err.response.data.errors.map((error: any) => error.msg).join(", ");

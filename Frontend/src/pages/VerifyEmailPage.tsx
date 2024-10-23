@@ -3,15 +3,18 @@ import { useAuth } from '../contexts/AuthContext'
 import { useEffect } from 'react';
 export default function VerifyEmail() {
 const {checkAuth, user} = useAuth();
-const loadPage = async () => {
-  try {
-    await checkAuth() 
-  } catch (error) {
-    console.log(error)
-  }
-} 
+
 
 useEffect(() => {
+  const loadPage = async () => {
+    try {
+      await checkAuth() 
+    } 
+    catch (error) {
+      console.log(error)
+    }
+  } 
+  
   loadPage()
 }, [])
   

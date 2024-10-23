@@ -9,13 +9,11 @@ export default function ContactsForm () {
 
     async function getEmail() {
         try {
-          const response = await axios.get('http://localhost:7000/api/v1/auth/status', {
-            withCredentials: true})
+          const response = await axios.get('http://localhost:7000/api/v1/auth/status', { withCredentials: true });
 
             if(response.data.authorized){
               setEmail(response.data.data.email);
               setDisabled(true);
-              console.log(response.data.data.email);
             }
         } catch (error) {
           console.error('Error:', error);
@@ -30,16 +28,16 @@ export default function ContactsForm () {
         event.preventDefault();
 
         try {
-            await axios.post('http://localhost:7000/api/v1/users/contact', {
+            await axios.post('http://localhost:7000/api/v1/users/contacts', {
               email,
               subject,
               message,
             }, { withCredentials: true });
             
+            alert("Message successful");
             setEmail('');
             setSubject('');
             setMessage('');
-            alert("Message successful");
             getEmail();
 
           } catch (error) {
