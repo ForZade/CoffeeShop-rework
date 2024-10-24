@@ -36,6 +36,11 @@ interface ChangePasswordInterface {
   newPassword: string;
 }
 
+interface ChangeSettingsPasswordInterface {
+  password: string;
+  newPassword: string;
+}
+
 const authControllers = {
   //^ POST /api/v1/auth/register - Register route (registers user)
   register: async (req: Request, res: Response, next: NextFunction) => {
@@ -365,6 +370,37 @@ const authControllers = {
       next(err);
     }
   },
+
+
+  changeSettingsPassword: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+    const { password, newPassword }: ChangeSettingsPasswordInterface = req.body;
+  
+    try {
+      const decoded: TokenInterface = verifyToken(token);
+      const user: UserInterface = await User.findOne({ email: decoded.email });
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // Verify the provided password
+      if (!(await user.verifyPassword(password))) {
+        return res.status(400).json({ message: "Old password is incorrect" });
+      }
+  
+      // Hash the new password
+      const hashedPassword: string = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+  
+      res.status(200).json({ message: "Password changed successfully" });
+    } catch (err: unknown) {
+      console.error(err); // Log the error for debugging
+      res.status(400).json({ message: "Error processing request", details: err });
+    }
+  },
+  
 };
 
 export default authControllers;

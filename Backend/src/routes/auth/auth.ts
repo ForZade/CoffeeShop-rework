@@ -17,5 +17,5 @@ router.post("/resend-verify", rateLimiters.resendVerificationLimiter, authContro
 router.post("/password/request-reset", rateLimiters.requestPasswordLimiter, authControllers.requestPasswordReset);
 router.post('/password/reset/:token', authValidator.passwordReset, authControllers.passwordReset);
 router.post("/password/change", requireAuth, authControllers.changePassword);
-
+router.post("/password/settings-change", requireAuth, authValidator.settingsPasswordReset ,authControllers.changeSettingsPassword);
 export default router;
