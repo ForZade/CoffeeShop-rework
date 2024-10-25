@@ -400,7 +400,63 @@ const authControllers = {
       res.status(400).json({ message: "Error processing request", details: err });
     }
   },
+
+  //^ DELETE /api/v1/auth/delete - Delete Account Route (Deletes user account)
+  deleteAccount: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+
+    try {
+      const decoded: TokenInterface = verifyToken(token);
+      
+      const user: UserInterface = await User.findOneAndDelete({ email: decoded.email });
+      
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+      
+      res.clearCookie("jwt");
+
+      res.status(200).json({
+        message: "Account deleted successfully",
+      });
+    } catch (err: unknown) {
+      next(err);
+    }
+  },
+
+    //^ POST /api/v1/auth/change-name - Change User Name Route
+    changeName: async (req: Request, res: Response, next: NextFunction) => {
+      const token: string = req.cookies.jwt;
+      const { first_name, last_name } = req.body;
   
+      try {
+        const decoded: TokenInterface = verifyToken(token);
+        const user: UserInterface = await User.findOne({ email: decoded.email });
+  
+        if (!user) {
+          return res.status(404).json({
+            message: "User not found",
+          });
+        }
+  
+        user.first_name = first_name;
+        user.last_name = last_name;
+  
+        await user.save();
+  
+        res.status(200).json({
+          message: "Name updated successfully",
+          data: {
+            first_name: user.first_name,
+            last_name: user.last_name,
+          },
+        });
+      } catch (err: unknown) {
+        next(err);
+      }
+    },
 };
 
 export default authControllers;

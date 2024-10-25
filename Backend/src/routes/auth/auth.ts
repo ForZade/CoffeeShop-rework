@@ -18,4 +18,6 @@ router.post("/password/request-reset", rateLimiters.requestPasswordLimiter, auth
 router.post('/password/reset/:token', authValidator.passwordReset, authControllers.passwordReset);
 router.post("/password/change", requireAuth, authControllers.changePassword);
 router.post("/password/settings-change", requireAuth, authValidator.settingsPasswordReset ,authControllers.changeSettingsPassword);
+router.post("/change-name", requireAuth, authValidator.changeName, authControllers.changeName);
+router.delete("/delete", requireAuth, authControllers.deleteAccount);
 export default router;

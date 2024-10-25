@@ -153,6 +153,28 @@ const authValidator = {
       next();
     },
   ],
+
+  changeName: [
+    body("first_name") // Validates first name
+      .notEmpty()
+      .withMessage("First name must not be empty.")
+      .matches(/^[A-Za-z]+$/)
+      .withMessage("First name cannot contain any symbols."),
+    
+    body("last_name") // Validates last name
+      .notEmpty()
+      .withMessage("Last name must not be empty")
+      .matches(/^[A-Za-z]+$/)
+      .withMessage("Last name cannot contain any symbols"),
+    
+    (req: Request, res: Response, next: NextFunction) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      next();
+    },
+  ],
 };
 
 export default authValidator;
