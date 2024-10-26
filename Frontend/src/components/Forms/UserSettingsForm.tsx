@@ -26,6 +26,7 @@ export default function UserSettingsForm() {
   const [passwordMessage, setPasswordMessage] = useState("");
   const [nameMessage, setNameMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+    const [lastNameChangeTime, setLastNameChangeTime] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -57,6 +58,18 @@ export default function UserSettingsForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Validate name fields to allow only letters
+    if (name === "first_name" || name === "last_name") {
+      const isValid = /^[A-Za-z]+$/.test(value);
+      if (!isValid && value !== "") {
+        setError("Names should contain letters only.");
+        return;
+      } else {
+        setError(""); // Clear error if the input is valid
+      }
+    }
+
     setUser((prevUser) => ({
       ...prevUser,
       [name]: value,
@@ -103,12 +116,20 @@ export default function UserSettingsForm() {
     setLoading(true);
     
     const { first_name, last_name, currentPassword, newPassword, confirmPassword } = user;
+    
+    const FIVE_MINUTES = 5 * 60 * 1000;
+    const currentTime = new Date().getTime();
 
     try {
       let nameChanged = false;
 
-      // Handle name change only if it has changed
       if (first_name !== initialUserData.first_name || last_name !== initialUserData.last_name) {
+        if (lastNameChangeTime && currentTime - lastNameChangeTime < FIVE_MINUTES) {
+          setError("Name change allowed once every 5 minutes. Please wait.");
+          setLoading(false);
+          return;
+        }
+        
         await axios.post(
           "http://localhost:7000/api/v1/auth/change-name",
           { first_name, last_name },
@@ -116,6 +137,8 @@ export default function UserSettingsForm() {
         );
         setNameMessage("Name changed successfully");
         nameChanged = true;
+        
+        setLastNameChangeTime(currentTime);
       } else {
         setNameMessage("New name is the same as the current name. No changes made.");
       }
@@ -279,5 +302,4 @@ export default function UserSettingsForm() {
       </div>
     </div>
   );
-  
 }
