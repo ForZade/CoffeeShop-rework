@@ -15,6 +15,7 @@ import PageNotFound from "./pages/PageNotFound";
 import ShopPage from "./pages/ShopPage";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
+import ConfirmationPage from "./pages/ConfirmationPage";
 
 
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -36,6 +37,7 @@ const routes = createBrowserRouter(
             <Route path="/products/:id" element={<ProductPage />} />
             <Route path="/purchase" element={<PurchasePage/>}/>
             <Route path="/checkout" element={<CheckoutPage/>}/>
+            <Route path="/confirmation" element={<ConfirmationPage />} />
             <Route path="*" element={<PageNotFound />} />
         </Route>
     )

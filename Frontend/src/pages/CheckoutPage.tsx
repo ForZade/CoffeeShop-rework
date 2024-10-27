@@ -5,6 +5,7 @@ import CartItem from "../components/Cart/CartItem";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+
 export default function CheckoutPage() {
   const { cart } = useCart();
   const { checkAuth, user } = useAuth();
@@ -14,6 +15,8 @@ export default function CheckoutPage() {
     apartment: "",
     zip: "",
   });
+  const [selectedShop, setSelectedShop] = useState(""); // State for selected shop
+  const [isUsingShippingAddress, setIsUsingShippingAddress] = useState(true); // New state to toggle between dropdown and shipping address
   const [paymentInfo, setPaymentInfo] = useState({
     cardNumber: "",
     expiryDate: "",
@@ -21,10 +24,25 @@ export default function CheckoutPage() {
     name: "",
   });
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [shippingCost] = useState(5.99);
+  const [shippingCost, setShippingCost] = useState(5.99); // Set initial shipping cost
   const [acceptTerms, setAcceptTerms] = useState(false);
   const navigate = useNavigate();
+
+  // List of shop addresses
+  const shopAddresses = [
+    "Molėtų pl. 8, 08426 Vilnius",
+    "Ukmergės g. 322, 06142 Vilnius",
+    "Vytauto Pociūno g. 8, 06264 Vilnius",
+    "Kalvarijų g. 206, 08314 Vilnius",
+    "Ozo g. 18, 08243 Vilnius",
+    "Ozo g. 25, 08217 Vilnius",
+    "Ulono g. 5, 08240 Vilnius",
+    "Gedimino pr. 9, 01105 Vilnius",
+    "Pilies g. 3, 01123 Vilnius",
+    "Gedimino pr. 51, 01504 Vilnius",
+    "Gedimino pr. 52, 01110 Vilnius",
+    "Gynėjų g. 16, 01108 Vilnius",
+  ];
 
   useEffect(() => {
     const loadPage = async () => {
@@ -85,6 +103,11 @@ export default function CheckoutPage() {
     }
   };
 
+    // Generate a unique order number
+    const generateOrderNumber = () => {
+      return `ORDER-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    };
+
   const handleCheckout = async () => {
     if (cart.items.length === 0) {
       setError("Cart is empty. Please add items to your cart before proceeding to checkout.");
@@ -96,18 +119,32 @@ export default function CheckoutPage() {
       return;
     }
 
+    const orderNumber = generateOrderNumber();
+
+    // Determine the selected address
+    const finalAddress = selectedShop || `${shippingAddress.street}, ${shippingAddress.apartment}, ${shippingAddress.zip}, ${shippingAddress.city}`;
+    
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:7000/api/v1/transactions",
         {
-          shippingAddress,
+          shippingAddress: finalAddress,
           paymentInfo,
           items: cart.items,
           total: (parseFloat(cart.total) + shippingCost).toFixed(2),
         },
         { withCredentials: true }
       );
-      setSuccessMessage(response.data.message);
+
+      // After successful checkout, navigate to the confirmation page with order details
+      navigate("/confirmation", {
+        state: {
+            orderNumber,
+            cartItems: cart.items,
+            total: (parseFloat(cart.total) + shippingCost).toFixed(2),
+            shippingCost,
+        },
+    });
     } catch (err) {
       setError("Checkout failed. Please check your payment information.");
       console.error(err);
@@ -117,6 +154,11 @@ export default function CheckoutPage() {
   const handleAcceptTerms = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAcceptTerms(e.target.checked);
   };
+
+  // Adjust shipping cost based on selection
+  useEffect(() => {
+    setShippingCost(isUsingShippingAddress ? 5.99 : 0); // Set shipping cost to 0 if using shop address
+  }, [isUsingShippingAddress]);
 
   return (
     <div className="flex space-x-8 p-8 h-full">
@@ -153,26 +195,46 @@ export default function CheckoutPage() {
         ) : (
           <>
             <h2 className="text-xl font-semibold mb-4">Shipping Address</h2>
-            <label htmlFor="street" className="text-xs">Street (Ex. 123 Main St)</label>
-            <input
-              type="text"
-              name="street"
-              placeholder="Street"
-              className="border p-2 mb-2 w-full"
-              value={shippingAddress.street}
-              onChange={handleShippingChange}
-            />
-            <label htmlFor="apartment" className="text-xs">Apartment (Ex. Apt 12)</label>
-            <input
-              type="text"
-              name="apartment"
-              placeholder="Apartment, building, floor"
-              className="border p-2 mb-2 w-full"
-              value={shippingAddress.apartment}
-              onChange={handleShippingChange}
-            />
-            <label htmlFor="zip" className="text-xs">ZIP Code (LT-XXXXX)</label>
-            <div className="flex space-x-2 mb-2">
+            
+            {/* Toggle between dropdown and shipping address inputs */}
+            <div className="flex mb-4">
+              <button
+                className={`flex-1 p-2 text-sm ${isUsingShippingAddress ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                onClick={() => setIsUsingShippingAddress(true)}
+              >
+                Use Shipping Address
+              </button>
+              <button
+                className={`flex-1 p-2 text-sm ${!isUsingShippingAddress ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                onClick={() => setIsUsingShippingAddress(false)}
+              >
+                Select Shop Address
+              </button>
+            </div>
+
+            {/* Show either the shipping address inputs or the dropdown */}
+            {isUsingShippingAddress ? (
+              <>
+                <label htmlFor="street" className="text-xs">Street (Ex. 123 Main St)</label>
+                <input
+                  type="text"
+                  name="street"
+                  placeholder="Street"
+                  className="border p-2 mb-2 w-full"
+                  value={shippingAddress.street}
+                  onChange={handleShippingChange}
+                />
+                <label htmlFor="apartment" className="text-xs">Apartment (Ex. Apt 12)</label>
+                <input
+                  type="text"
+                  name="apartment"
+                  placeholder="Apartment, building, etc."
+                  className="border p-2 mb-2 w-full"
+                  value={shippingAddress.apartment}
+                  onChange={handleShippingChange}
+                />
+                <label htmlFor="zip" className="text-xs">ZIP Code (LT-XXXXX)</label>
+                  <div className="flex space-x-2 mb-2">
               <span className="border p-2 bg-gray-200">LT-</span>
               <input
                 type="text"
@@ -184,16 +246,33 @@ export default function CheckoutPage() {
                 maxLength={5}
                 pattern="\d*"
               />
-            </div>
-            <label htmlFor="city" className="text-xs">City (Ex. Vilnius)</label>
-            <input
-              type="text"
-              name="city"
-              placeholder="City"
-              className="border p-2 mb-2 w-full"
-              value={shippingAddress.city}
-              onChange={handleShippingChange}
-            />
+                  </div>
+                <label htmlFor="city" className="text-xs">City (Ex. Vilnius)</label>
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="City"
+                  className="border p-2 mb-2 w-full"
+                  value={shippingAddress.city}
+                  onChange={handleShippingChange}
+                />
+              </>
+            ) : (
+              <>
+                <label htmlFor="shopSelect" className="text-xs">Select a Shop Address</label>
+                <select
+                  id="shopSelect"
+                  className="border p-2 mb-2 w-full"
+                  value={selectedShop}
+                  onChange={(e) => setSelectedShop(e.target.value)}
+                >
+                  <option value="">Select a shop...</option>
+                  {shopAddresses.map((shop, index) => (
+                    <option key={index} value={shop}>{shop}</option>
+                  ))}
+                </select>
+              </>
+            )}
 
             <h2 className="text-xl font-semibold mt-6 mb-4">Payment Information</h2>
             <label htmlFor="name" className="text-xs">Full Cardholder Name</label>
@@ -236,8 +315,8 @@ export default function CheckoutPage() {
               maxLength={3}
             />
 
-          {/* Summary Section */}
-          <h2 className="text-xl font-semibold mt-6 mb-4">Order Summary</h2>
+            {/* Summary Section */}
+            <h2 className="text-xl font-semibold mt-6 mb-4">Order Summary</h2>
             <div className="flex justify-between mb-2">
               <p>Subtotal:</p>
               <p>{cart.subtotal}€</p>
@@ -266,7 +345,6 @@ export default function CheckoutPage() {
 
             {/* Error message display */}
             {error && <p className="text-red-500">{error}</p>}
-            {successMessage && <p className="text-green-500">{successMessage}</p>}
 
             {/* Place Order Button */}
             <button
