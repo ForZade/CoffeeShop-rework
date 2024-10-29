@@ -26,7 +26,8 @@ export default function UserSettingsForm() {
   const [passwordMessage, setPasswordMessage] = useState("");
   const [nameMessage, setNameMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-    const [lastNameChangeTime, setLastNameChangeTime] = useState(null);
+  const [lastNameChangeTime, setLastNameChangeTime] = useState(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -56,17 +57,36 @@ export default function UserSettingsForm() {
     fetchUserData();
   }, [navigate]);
 
+  const isEqual = (obj1, obj2) => {
+    return (
+      obj1.first_name === obj2.first_name &&
+      obj1.last_name === obj2.last_name &&
+      obj1.email === obj2.email &&
+      !obj2.currentPassword &&
+      !obj2.newPassword &&
+      !obj2.confirmPassword
+    );
+  };
+
+  useEffect(() => {
+    setHasChanges(
+      !isEqual(user, { ...initialUserData, currentPassword: "", newPassword: "", confirmPassword: "" }) ||
+      user.currentPassword !== "" ||
+      user.newPassword !== "" ||
+      user.confirmPassword !== ""
+    );
+  }, [user, initialUserData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Validate name fields to allow only letters
     if (name === "first_name" || name === "last_name") {
       const isValid = /^[A-Za-z]+$/.test(value);
       if (!isValid && value !== "") {
         setError("Names should contain letters only.");
         return;
       } else {
-        setError(""); // Clear error if the input is valid
+        setError("");
       }
     }
 
@@ -114,9 +134,8 @@ export default function UserSettingsForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const { first_name, last_name, currentPassword, newPassword, confirmPassword } = user;
-    
     const FIVE_MINUTES = 5 * 60 * 1000;
     const currentTime = new Date().getTime();
 
@@ -143,7 +162,6 @@ export default function UserSettingsForm() {
         setNameMessage("New name is the same as the current name. No changes made.");
       }
 
-      // Handle password change
       if (newPassword) {
         if (newPassword !== confirmPassword) {
           return setError("New password and confirm password do not match.");
@@ -182,12 +200,10 @@ export default function UserSettingsForm() {
       {passwordMessage && <p className="text-green-500 flex justify-center">{passwordMessage}</p>}
       {nameMessage && <p className="text-green-500 flex justify-center">{nameMessage}</p>}
       
-      {/* Flex container for centering the form */}
       <div className="flex justify-center mt-4">
         <form className="w-1/3 max-w-sm p-6 shadow-lg rounded bg-slate-200 dark:bg-zinc-800" onSubmit={handleSubmit}>
           <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">User Settings</h2>
   
-          {/* First Name */}
           <div className="mb-4">
             <label className="block mb-2 text-black dark:text-white">First Name</label>
             <input
@@ -199,7 +215,6 @@ export default function UserSettingsForm() {
             />
           </div>
   
-          {/* Last Name */}
           <div className="mb-4">
             <label className="block mb-2 text-black dark:text-white">Last Name</label>
             <input
@@ -211,7 +226,6 @@ export default function UserSettingsForm() {
             />
           </div>
   
-          {/* Email */}
           <div className="mb-4">
             <label className="block mb-2 text-black dark:text-white">Email</label>
             <input
@@ -223,11 +237,9 @@ export default function UserSettingsForm() {
             />
           </div>
   
-          {/* Change Password Section */}
           <div className="space-y-3 mb-4">
             <label className="text-lg font-semibold text-black dark:text-white">Change Password</label>
   
-            {/* Current Password */}
             <div className="relative mb-4">
               <input
                 type={showPassword ? "text" : "password"}
@@ -239,14 +251,13 @@ export default function UserSettingsForm() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword((prevState) => !prevState)}
-                className="absolute inset-y-0 right-0 px-3 py-2 text-gray-600"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
   
-            {/* New Password */}
             <div className="relative mb-4">
               <input
                 type={showPassword ? "text" : "password"}
@@ -258,47 +269,57 @@ export default function UserSettingsForm() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword((prevState) => !prevState)}
-                className="absolute inset-y-0 right-0 px-3 py-2 text-gray-600"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
   
-            {/* Confirm Password */}
             <div className="relative mb-4">
               <input
                 type={showPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={user.confirmPassword}
                 onChange={handleChange}
-                placeholder="Confirm New Password"
+                placeholder="Confirm Password"
                 className="block w-full p-2 border border-slate-300 dark:border-zinc-900 bg-slate-100 dark:bg-zinc-900"
               />
               <button
                 type="button"
-                onClick={() => setShowPassword((prevState) => !prevState)}
-                className="absolute inset-y-0 right-0 px-3 py-2 text-gray-600"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
           </div>
   
-          {/* Submit Button for Password and Name Change */}
           <button
             type="submit"
-            className={`w-full p-2 bg-blue-500 text-white rounded ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-            disabled={loading}
+            disabled={!hasChanges || loading}
+            className={`mt-4 w-full p-2 font-semibold rounded ${
+              !hasChanges || loading ? "bg-gray-400 text-gray-600 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
           >
-            {loading ? "Updating..." : "Apply Changes"}
+            {loading ? "Saving..." : "Apply Changes"}
           </button>
         </form>
       </div>
-  
-      <div className="flex justify-center mt-4 space-x-4">
-        <button onClick={handleLogout} className="p-2 text-blue-600">Logout</button>
-        <button onClick={handleDeleteAccount} className="p-2 text-red-600">Delete Account</button>
+
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white px-4 py-2 rounded font-semibold hover:bg-red-600"
+        >
+          Logout
+        </button>
+        <button
+          onClick={handleDeleteAccount}
+          className="ml-4 bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700"
+        >
+          Delete Account
+        </button>
       </div>
     </div>
   );
