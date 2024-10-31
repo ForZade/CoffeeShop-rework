@@ -99,19 +99,19 @@ const userControllers = {
         return res.status(404).json({ error: "User not found" });
       }
 
-      if (!user.roles.includes("User")) {
+      if (!user.roles.includes("user")) {
         return res.status(400).json({
           message: "User is not verified",
         });
       }
 
-      if (user.roles.includes("Admin")) {
+      if (user.roles.includes("admin")) {
         return res.status(400).json({
           message: "User is already an admin",
         });
       }
 
-      user.roles.push("Admin");
+      user.roles.push("admin");
       await user.save();
 
       res.status(200).json({
@@ -138,19 +138,19 @@ const userControllers = {
         return res.status(404).json({ error: "User not found" });
       }
 
-      if (!user.roles.includes("Admin")) {
+      if (!user.roles.includes("admin")) {
         return res.status(400).json({
           message: "User is not an admin",
         });
       }
 
-      if (!user.roles.includes("User")) {
+      if (!user.roles.includes("user")) {
         return res.status(400).json({
           message: "User is not verified",
         });
       }
 
-      user.roles = user.roles.filter((role: string) => role !== "Admin");
+      user.roles = user.roles.filter((role: string) => role !== "admin");
       await user.save();
 
       res.json({
@@ -183,7 +183,7 @@ const userControllers = {
   getAdmins: async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const users: UserInterface[] = await User.find({
-        roles: { $in: ["Admin"] }
+        roles: { $in: ["admin"] }
       });
 
       console.log(typeof users);

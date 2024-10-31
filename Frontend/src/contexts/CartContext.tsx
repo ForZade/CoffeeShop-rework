@@ -41,7 +41,6 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const getCart = async () => {
         try {
             const response = await axios.get('http://localhost:7000/api/v1/users/cart', { withCredentials: true });
-            console.log(response.data.data);
             setCart({
                 ...cart,
                 code: response.data.data.code,

@@ -1,7 +1,6 @@
-import { useParams } from "react-router-dom";
+import { useLoaderData, LoaderFunctionArgs } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
-import { useEffect, useState } from "react";
 import AddToCart from "../components/Products/AddToCart";
 import ReviewButton from "../components/Products/ReviewButton";
 
@@ -17,37 +16,15 @@ interface ProductProps {
 }
 
 export default function ProductPage() {
-  const { id } = useParams();
-  const { checkAuth, auth } = useAuth();
-  const [product, setProduct] = useState<ProductProps | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await checkAuth();
-        const response = await axios.get(`http://localhost:7000/api/v1/products/${id}`, { withCredentials: true });
-        setProduct(response.data.data);
-      } 
-      catch (err) {
-        console.log(err);
-      } 
-      finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { auth } = useAuth();
+  const product = useLoaderData() as ProductProps;
 
   return (
     product && (
       <main className="w-full h-full bg flex flex-col md:flex-row items-center px-48 py-16 dark:text-white">
         <section className="w-full h-full bg-slate-200 dark:bg-zinc-800 rounded-3xl grid grid-cols-5 p-8 relative">
-          <aside className={`w-full h-full bg-slate-50 dark:bg-zinc-900 rounded-2xl col-span-2 relative grid place-items-center ${loading && "animate-pulse"}`}>
-            {
-              !loading && <img src="/jacobs.webp" alt="" className="object-contain max-h-[700px]"/> 
-            }
+          <aside className={`w-full h-full bg-slate-50 dark:bg-zinc-900 rounded-2xl col-span-2 relative grid place-items-center`}>
+            <img src="/jacobs.webp" alt="" className="object-contain max-h-[700px]"/> 
           </aside>
 
           <article className="w-full h-full col-span-3 px-8 py-6 flex flex-col justify-between relative">
@@ -83,4 +60,15 @@ export default function ProductPage() {
       </main>
     )
   );
+}
+
+export const ProductLoader = async ({ params }: LoaderFunctionArgs) => {
+  const { id } = params
+
+  try {
+    const response = await axios.get(`http://localhost:7000/api/v1/products/${id}`, { withCredentials: true });
+    return response.data.data;
+  } catch (err) {
+    console.log(err);
+  }
 }

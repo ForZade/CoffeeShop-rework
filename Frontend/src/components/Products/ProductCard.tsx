@@ -13,7 +13,6 @@ export interface ProductProps {
 
 export interface CardInterface {
   product: ProductProps;
-  loading: boolean;
 }
 
 export default function ProductCard({ product }: CardInterface) {

@@ -27,6 +27,6 @@ router.get(`/discounts/:code`, requireAuth, userControllers.checkDiscount);
 
 router.get("/", userControllers.getUsers);
 router.get("/:identifier", userControllers.getUser);
-router.patch("/:identifier", requireAuth, userControllers.updateUser);
+router.patch("/", requireAuth, userControllers.updateUser);
 
 export default router;
