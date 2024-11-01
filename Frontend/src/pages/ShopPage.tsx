@@ -49,7 +49,6 @@ export default function ShopPage() {
               size
             }, { withCredentials: true });
             
-            alert("Product added.");
             setName('');
             setDescription('');
             setPrice('');
