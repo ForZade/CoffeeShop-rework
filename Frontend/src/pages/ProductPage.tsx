@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import AddToCart from "../components/Products/AddToCart";
 import ReviewButton from "../components/Products/ReviewButton";
+import { useForm } from "react-hook-form";
 
 interface ProductProps {
   id: number;
@@ -16,6 +17,14 @@ interface ProductProps {
   liked: number;
 }
 
+interface FormData {
+  title: string;
+  description: string;
+  category: string;
+  price: string;
+  size: string;
+}
+
 export default function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -25,11 +34,8 @@ export default function ProductPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
-  const [size, setSize] = useState("");
+  // Initialize useForm and define validation
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,21 +46,19 @@ export default function ProductPage() {
         setProduct(productData);
 
         // Prefill form data
-        setTitle(productData.name);
-        setDescription(productData.description);
-        setCategory(productData.category);
-        setPrice(productData.price.$numberDecimal);
-        setSize(productData.size);
-      } 
-      catch (err) {
+        setValue("title", productData.name);
+        setValue("description", productData.description);
+        setValue("category", productData.category);
+        setValue("price", productData.price.$numberDecimal);
+        setValue("size", productData.size);
+      } catch (err) {
         console.log(err);
-      } 
-      finally {
+      } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [id, checkAuth]);
+  }, [id, checkAuth, setValue]);
 
   const handleDelete = async () => {
     try {
@@ -67,46 +71,32 @@ export default function ProductPage() {
     }
   };
 
-  const openEditModal = () => {
-    if (product) {
-      setTitle(product.name);
-      setDescription(product.description);
-      setCategory(product.category);
-      setPrice(product.price.$numberDecimal);
-      setSize(product.size);
-    }
-    setShowEditModal(true);
-  };
-
-  const handleSave = async (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
+  const handleSave = handleSubmit(async (data) => {
     try {
       const fieldsToUpdate = {
-        name: title,
-        description,
-        category,
-        price: { $numberDecimal: price }, // Correct price format
-        size,
+        name: data.title,
+        description: data.description,
+        category: data.category,
+        price: { $numberDecimal: data.price },
+        size: data.size,
       };
 
       await axios.patch(`http://localhost:7000/api/v1/products/${id}`, fieldsToUpdate, { withCredentials: true });
       setShowEditModal(false);
-      
-      // Create updated product object
-      const updatedProduct: ProductProps = {
-        ...product!, // Use current product properties (with non-null assertion)
-        name: title,
-        description,
-        category,
-        price: { $numberDecimal: price },
-        size,
-      };
-      
-      setProduct(updatedProduct); // Update state with new product details
+
+      // Update product state
+      setProduct((prevProduct) => ({
+        ...prevProduct!,
+        name: data.title,
+        description: data.description,
+        category: data.category,
+        price: { $numberDecimal: data.price },
+        size: data.size,
+      }));
     } catch (err) {
       console.error("Failed to update the product:", err);
     }
-  };
+  });
 
   return (
     product && (
@@ -152,7 +142,7 @@ export default function ProductPage() {
           {auth && (
             <button
               className="bg-violet-600 absolute top-8 right-64 scale-150 rounded-md text-sm p-1 w-16"
-              onClick={openEditModal}
+              onClick={() => setShowEditModal(true)}
             >
               Edit
             </button>
@@ -188,45 +178,45 @@ export default function ProductPage() {
                     <label className="block text-white mb-2">Title</label>
                     <input
                       type="text"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
+                      {...register("title", { required: "Title is required" })}
                       className="w-full px-4 py-2 rounded bg-zinc-700 text-white"
                     />
+                    {errors.title && <p className="text-red-500">{errors.title.message}</p>}
                   </div>
                   <div>
                     <label className="block text-white mb-2">Description</label>
                     <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
+                      {...register("description", { required: "Description is required" })}
                       className="w-full px-4 py-2 rounded bg-zinc-700 text-white h-24 resize-none"
                     ></textarea>
+                    {errors.description && <p className="text-red-500">{errors.description.message}</p>}
                   </div>
                   <div>
                     <label className="block text-white mb-2">Category</label>
                     <input
                       type="text"
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
+                      {...register("category", { required: "Category is required" })}
                       className="w-full px-4 py-2 rounded bg-zinc-700 text-white"
                     />
+                    {errors.category && <p className="text-red-500">{errors.category.message}</p>}
                   </div>
                   <div>
                     <label className="block text-white mb-2">Price</label>
                     <input
                       type="number"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
+                      {...register("price", { required: "Price is required" })}
                       className="w-full px-4 py-2 rounded bg-zinc-700 text-white"
                     />
+                    {errors.price && <p className="text-red-500">{errors.price.message}</p>}
                   </div>
                   <div>
                     <label className="block text-white mb-2">Size</label>
                     <input
                       type="text"
-                      value={size}
-                      onChange={(e) => setSize(e.target.value)}
+                      {...register("size", { required: "Size is required" })}
                       className="w-full px-4 py-2 rounded bg-zinc-700 text-white"
                     />
+                    {errors.size && <p className="text-red-500">{errors.size.message}</p>}
                   </div>
                   <div className="flex justify-end space-x-4 mt-6">
                     <button
