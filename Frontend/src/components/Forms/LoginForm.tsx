@@ -1,18 +1,21 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: { email: string; password: string; rememberMe: boolean }) => {
     setLoading(true);
     setError(null);
 
@@ -20,9 +23,9 @@ export default function LoginForm() {
       const response = await axios.post(
         "http://localhost:7000/api/v1/auth/login",
         {
-          email,
-          password,
-          remember: rememberMe,
+          email: data.email,
+          password: data.password,
+          remember: data.rememberMe,
         },
         { withCredentials: true }
       );
@@ -44,9 +47,6 @@ export default function LoginForm() {
         console.error("Error message:", err.message);
         setError("An error occurred.");
       }
-
-      // clears the input field if it's incorrect
-      setPassword("");
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,7 @@ export default function LoginForm() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-slate-100 dark:bg-zinc-700">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         className="w-1/3 p-6 shadow-lg rounded bg-slate-200 dark:bg-zinc-800"
       >
         <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">Login</h2>
@@ -69,11 +69,10 @@ export default function LoginForm() {
           <input
             type="email"
             id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("email", { required: "Email is required." })}
             className="mt-1 p-2 border border-slate-300 dark:border-zinc-900 bg-slate-100 dark:bg-zinc-900 w-full"
-            required
           />
+          {errors.email && <p className="text-red-500">{errors.email.message}</p>}
         </div>
 
         <div className="mb-4">
@@ -84,19 +83,18 @@ export default function LoginForm() {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...register("password", { required: "Password is required." })}
               className="mt-1 p-2 border border-slate-300 dark:border-zinc-900 bg-slate-100 dark:bg-zinc-900 w-full"
-              required
             />
             <button
               type="button"
-              onClick={() => setShowPassword((prevState) => !prevState)}
+              onClick={() => setShowPassword((prev) => !prev)}
               className="absolute inset-y-0 right-0 px-3 py-2 text-gray-600"
             >
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
+          {errors.password && <p className="text-red-500">{errors.password.message}</p>}
         </div>
 
         <div className="text-right mt-4">
@@ -109,8 +107,7 @@ export default function LoginForm() {
           <input
             type="checkbox"
             id="rememberMe"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
+            {...register("rememberMe")}
             className="mr-2"
           />
           <label htmlFor="rememberMe" className="text-gray-700">

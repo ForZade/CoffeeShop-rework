@@ -158,9 +158,7 @@ export default function UserSettingsForm() {
         nameChanged = true;
         
         setLastNameChangeTime(currentTime);
-      } else {
-        setNameMessage("New name is the same as the current name. No changes made.");
-      }
+      } 
 
       if (newPassword) {
         if (newPassword !== confirmPassword) {
