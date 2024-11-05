@@ -51,18 +51,14 @@ export default function CheckoutPage() {
         await checkAuth();
       } catch (error) {
         console.error("Error:", error);
-      } finally {
-        if (user?.email && !user?.roles.includes("user")) {
-          navigate("/verify");
-        }
       }
     };
     loadPage();
-  }, [checkAuth, navigate, user]);
+  }, [checkAuth, user]);
 
   useEffect(() => {
     if (cart.items.length === 0) {
-      setError("Cart is empty. Please add items to your cart before proceeding to checkout.");
+      setError("Cart is empty. Please add items to your cart before proceeding to checkout."); // Disable button
     }
   }, [cart.items]);
 
@@ -73,7 +69,7 @@ export default function CheckoutPage() {
     }
 
     if (!acceptTerms) {
-      setError("Please accept the terms and conditions before placing the order.");
+      setError("Please accept the terms and conditions before placing the order."); // Animation to display error
       return;
     }
 
@@ -84,29 +80,23 @@ export default function CheckoutPage() {
 
     try {
       await axios.post(
-        "http://localhost:7000/api/v1/transactions",
+        "http://localhost:7000/api/v1/purchase",
         {
-          shippingAddress: finalAddress,
-          paymentInfo: {
-            name: data.name,
-            cardNumber: data.cardNumber.replace(/\s+/g, ''), // Remove spaces before sending
-            expiryDate: data.expiryDate,
-            cvv: data.cvv,
-          },
-          items: cart.items,
-          total: (parseFloat(cart.total) + shippingCost).toFixed(2),
+         card_number: data.cardNumber,
+         cvv: data.cvv,
+         expiry_date: data.expiryDate,
         },
         { withCredentials: true }
       );
 
-      navigate("/confirmation", {
-        state: {
-          orderNumber,
-          cartItems: cart.items,
-          total: (parseFloat(cart.total) + shippingCost).toFixed(2),
-          shippingCost,
-        },
-      });
+      // navigate("/confirmation", {
+      //   state: {
+      //     orderNumber,
+      //     cartItems: cart.items,
+      //     total: (parseFloat(cart.total) + shippingCost).toFixed(2),
+      //     shippingCost,
+      //   },
+      // });
     } catch (err) {
       setError("Checkout failed. Please check your payment information.");
       console.error(err);
@@ -214,7 +204,7 @@ export default function CheckoutPage() {
                   {...register("street", { required: "Street is required." })}
                   type="text"
                   placeholder="Street"
-                  className="border p-2 mb-2 w-full"
+                  className="border p-2 mb-2 w-full text-black"
                 />
                 {errors.street && <p className="text-red-500">{(errors.street as any)?.message}</p>} {/* Safely access message */}
 
@@ -223,7 +213,7 @@ export default function CheckoutPage() {
                   {...register("apartment")}
                   type="text"
                   placeholder="Apartment"
-                  className="border p-2 mb-2 w-full"
+                  className="border p-2 mb-2 w-full text-black"
                 />
 
                 <label htmlFor="zip" className="text-xs">Zip Code</label>
@@ -243,7 +233,7 @@ export default function CheckoutPage() {
                     })}
                     type="text"
                     placeholder="Zip Code"
-                    className="border p-2 w-full"
+                    className="border p-2 w-full text-black"
                     maxLength={5} // Limit to 5 digits
                   />
                 </div>
@@ -255,7 +245,7 @@ export default function CheckoutPage() {
                   {...register("city", { required: "City is required." })}
                   type="text"
                   placeholder="City"
-                  className="border p-2 mb-2 w-full"
+                  className="border p-2 mb-2 w-full text-black"
                 />
                 {errors.city && <p className="text-red-500">{(errors.city as any)?.message}</p>} {/* Safely access message */}
               </>
@@ -278,7 +268,7 @@ export default function CheckoutPage() {
               {...register("name", { required: "Cardholder name is required." })}
               type="text"
               placeholder="Cardholder Name"
-              className="border p-2 mb-2 w-full"
+              className="border p-2 mb-2 w-full text-black"
             />
             {errors.name && <p className="text-red-500">{(errors.name as any)?.message}</p>} {/* Safely access message */}
 
@@ -287,7 +277,7 @@ export default function CheckoutPage() {
               {...register("cardNumber", { required: "Card number is required." })}
               type="text"
               placeholder="Card Number"
-              className="border p-2 mb-2 w-full"
+              className="border p-2 mb-2 w-full text-black"
               maxLength={19} // Allow max length for spaces
               onChange={handleCardNumberChange} // Format on change
             />
@@ -300,7 +290,7 @@ export default function CheckoutPage() {
                   {...register("expiryDate", { required: "Expiry date is required." })}
                   type="text"
                   placeholder="MM/YY"
-                  className="border p-2 mb-2 w-full"
+                  className="border p-2 mb-2 w-full text-black"
                   maxLength={7} // Allow MM/YY
                   onChange={handleExpiryDateChange} // Format on change
                 />
@@ -312,7 +302,7 @@ export default function CheckoutPage() {
                   {...register("cvv", { required: "CVV is required.", pattern: { value: /^\d{3}$/, message: "Invalid CVV." } })}
                   type="text"
                   placeholder="CVV"
-                  className="border p-2 mb-2 w-full"
+                  className="border p-2 mb-2 w-full text-black"
                   maxLength={3}
                 />
                 {errors.cvv && <p className="text-red-500">{(errors.cvv as any)?.message}</p>} {/* Safely access message */}
@@ -339,7 +329,7 @@ export default function CheckoutPage() {
                 type="checkbox"
                 checked={acceptTerms}
                 onChange={handleAcceptTerms}
-                className="mr-2"
+                className="mr-2 text-black"
               />
               <span>I accept the terms and conditions</span>
             </div>
