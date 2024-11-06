@@ -310,9 +310,21 @@ const userControllers = {
         });
       }
 
+      const validDiscounts = await Promise.all(
+        discounts.map(async discount => {
+          if (discount.expires < new Date()) {
+            await Discount.deleteOne({ code: discount.code });
+            return null;
+          }
+          return discount;
+        })
+      );
+  
+      const filteredDiscounts = validDiscounts.filter(discount => discount !== null);
+  
       res.status(200).json({
         message: "All discounts successfully retrieved",
-        discounts: discounts,
+        discounts: filteredDiscounts,
       });
     } catch (err: unknown) {
       next(err);

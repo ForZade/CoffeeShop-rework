@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from "rea
 import { AuthProvider } from "./AuthContext";
 import { CartProvider } from "./CartContext";
 import { PopupProvider } from "./PopupContext";
+import { DiscountProvider } from "./DiscountContext";
 
 interface ThemeContextProps {
     theme: string;
@@ -34,7 +35,9 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
             <AuthProvider>
                 <CartProvider>
                     <PopupProvider>
-                        {children}
+                        <DiscountProvider>
+                            {children}
+                        </DiscountProvider>
                     </PopupProvider>
                 </CartProvider>
             </AuthProvider>
