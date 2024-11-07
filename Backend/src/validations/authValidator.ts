@@ -110,6 +110,19 @@ const authValidator = {
       next();
     },
   ],
+  password : [
+    body("password") // Validates password
+    .isStrongPassword({
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+    })
+    .withMessage("Password must meet the following requirements.")
+    .notEmpty()
+    .withMessage("Password must not be empty."),
+  ]
 };
 
 export default authValidator;

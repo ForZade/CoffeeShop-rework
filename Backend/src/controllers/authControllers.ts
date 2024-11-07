@@ -216,10 +216,10 @@ const authControllers = {
           message: "Email is already verified",
         });
       }
-
       user.roles.push("user");
       await user.save();
-
+      console.log(user)
+      
       res.status(200).json({
         message: "Email verified successfully",
       });
