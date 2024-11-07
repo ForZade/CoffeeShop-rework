@@ -1,5 +1,5 @@
 import axios from "axios";
-import { usePopup } from "../../contexts/PopupContext";
+import { useAlert } from "../../../contexts/AlertContext";
 import { Link } from "react-router-dom";
 import { Icon } from "@iconify/react";
 
@@ -15,7 +15,7 @@ interface UserDropdownItemProps {
 
 
 export default function UserDropdownItem({ type = "button", link = "", Side, click, text }: UserDropdownItemProps) {
-    const { toggleAdmin, toggleDiscount } = usePopup();
+    const { adminWindow, discountWindow } = useAlert();
     async function logout() {
         try {
             await axios.post(`http://localhost:7000/api/v1/auth/logout`, {}, { withCredentials: true });
@@ -46,7 +46,7 @@ export default function UserDropdownItem({ type = "button", link = "", Side, cli
         }
         else if (type.toLowerCase() === 'admin') {
             return (
-                <div className="dark:hover:bg-zinc-700 hover:bg-slate-100 px-2 py-1 rounded-md flex items-center gap-2 transition-colors cursor-pointer" onClick={toggleAdmin}>
+                <div className="dark:hover:bg-zinc-700 hover:bg-slate-100 px-2 py-1 rounded-md flex items-center gap-2 transition-colors cursor-pointer" onClick={adminWindow}>
                     <div className="w-6 h-6 grid place-items-center">
                         {Side && <Side/>}
                     </div>
@@ -56,7 +56,7 @@ export default function UserDropdownItem({ type = "button", link = "", Side, cli
         }
         else if (type.toLowerCase() === 'discounts') {
             return (
-                <div className="dark:hover:bg-zinc-700 hover:bg-slate-100 px-2 py-1 rounded-md flex items-center gap-2 transition-colors cursor-pointer" onClick={toggleDiscount}>
+                <div className="dark:hover:bg-zinc-700 hover:bg-slate-100 px-2 py-1 rounded-md flex items-center gap-2 transition-colors cursor-pointer" onClick={discountWindow}>
                     <div className="w-6 h-6 grid place-items-center">
                         {Side && <Side/>}
                     </div>

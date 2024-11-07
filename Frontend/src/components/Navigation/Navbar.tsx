@@ -1,5 +1,5 @@
-import UserBubble from "../UserBubble/UserBubble";
-import CartButton from "../Cart/CartButton";
+import UserBubble from "./UserBubble/UserBubble";
+import CartButton from "./Cart/CartButton";
 import NavLink from "./NavLink";
 import { Link } from "react-router-dom";
 

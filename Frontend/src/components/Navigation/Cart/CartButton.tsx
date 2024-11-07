@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Icon } from '@iconify/react';
-import { useAuth } from '../../contexts/AuthContext';
-import axios from 'axios'; 
+import { useAuth } from '../../../contexts/AuthContext';
 import { Link } from "react-router-dom";
-import { useCart } from '../../contexts/CartContext';
+import { useCart } from '../../../contexts/CartContext';
 
 const CartButton = () => {
   const [totalItems, setTotalItems] = useState("0");
