@@ -208,6 +208,7 @@ export default function ProductPage() {
                     <label className="block text-white mb-2">Price</label>
                     <input
                       type="number"
+                      step="0.01"
                       {...register("price", { required: "Price is required" })}
                       className="w-full px-4 py-2 rounded bg-zinc-700 text-white"
                     />
