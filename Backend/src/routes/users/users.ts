@@ -1,5 +1,6 @@
 import express from "express";
 import userControllers from "../../controllers/userControllers";
+import cartController from "../../controllers/cartController";
 import { isAdmin } from "../../middlewares/checkRoles";
 import requireAuth from "../../middlewares/authMiddleware";
 import { DISCOUNT_VALIDATOR } from "../../validations/discountValidator";
@@ -7,16 +8,16 @@ import "./users.docs";
 
 const router = express.Router();
 
-router.get("/cart", requireAuth, userControllers.getCart);
-router.post("/cart/:productId", requireAuth, userControllers.addToCart);
-router.delete("/cart/:productId", requireAuth, userControllers.removeFromCart);
-router.delete("/cart/clear", requireAuth, userControllers.clearCart);
+router.get("/cart", requireAuth, cartController.getCart);
+router.post("/cart/:productId", requireAuth, cartController.addToCart);
+router.delete("/cart/clear", requireAuth, cartController.clearCart);
+router.delete("/cart/:productId", requireAuth, cartController.removeFromCart);
 
 router.post("/contacts", userControllers.contact);
 
 router.post("/admins/:identifier", isAdmin, userControllers.addAdmin);
 router.delete("/admins/:identifier", isAdmin, userControllers.removeAdmin);
-router.get(`/admins`, isAdmin, userControllers.getAdmins);// Untested, dont have cookie - Jaunius
+router.get(`/admins`, isAdmin, userControllers.getAdmins);
 
 router.get(`/discounts`,isAdmin, userControllers.getDiscountCodes);
 router.post(`/discounts`, isAdmin , DISCOUNT_VALIDATOR, userControllers.addDiscount);

@@ -11,7 +11,6 @@ export default async function requireAuth(
   if (!token) {
     return res.status(401).json({
       message: "Access denied. You are not authenticated.",
-      token: token,
     });
   }
 

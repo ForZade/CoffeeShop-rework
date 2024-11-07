@@ -1,11 +1,16 @@
 import axios from "axios";
+import { useCart } from "../../contexts/CartContext";
 
 export default function AddToCart({productId}: {productId: number}) {
-   
+    const { getCart } = useCart();
+
     const addToCart = async (event: React.MouseEvent<HTMLButtonElement>) => {
         try {
+            event.preventDefault();
             event.stopPropagation();
-            await axios.post("http://localhost:7000/api/v1/cart", {productId}, {withCredentials: true});
+            console.log("clicked", productId);
+            await axios.post(`http://localhost:7000/api/v1/users/cart/${productId}`, {}, {withCredentials: true});
+            await getCart();
         } catch (err) {
             console.log(err);
         }

@@ -1,32 +1,31 @@
 import { useEffect } from "react";
-import ContactsForm from "../components/Forms/ContactsForm";
 import { useAuth } from "../contexts/AuthContext";
+import LoginForm from "../components/Forms/LoginForm";
 import { useNavigate } from "react-router-dom";
 
-export default function ContactsPage () {
-    const { checkAuth, user } = useAuth();
+export default function LoginPage() {
     const navigate = useNavigate();
+    const { checkAuth, auth } = useAuth();
 
     useEffect(() => {
         const loadPage = async () => {
             try {
-                await checkAuth();
+                await checkAuth()
+
+                console.log(auth)
+                if (auth) {
+                    navigate('/');
+                }
             }
             catch (error) {
                 console.error('Error:', error);
             }
-            finally {
-                if (user?.email && !user?.roles.includes("user")) {
-                    navigate("/verify");
-                }
-            }
         }
 
         loadPage();
-    })
+    }, [auth]);
 
-
-    return(
-        <ContactsForm/>
+    return (
+        <LoginForm />
     )
 }

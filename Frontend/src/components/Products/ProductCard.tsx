@@ -37,7 +37,7 @@ export default function ProductCard({ product }: CardInterface) {
         >
           <header className="flex flex-col">
             <div className="h-min flex justify-between items-center">
-              <h1 className="text-lg font-bold">{product.name}</h1>
+              <h1 className="text-lg font-bold tracking-wide">{product.name}</h1>
               {auth && <ReviewButton liked={product.liked} productId={product.id} />}
             </div>
             <p className="w-full text-sm truncate line-clamp-1 text-wrap">

@@ -74,15 +74,7 @@ const authControllers = {
       res.status(200).json({
         message: "Registration successful. Please verify your email.",
       });
-
-      const isProduction: boolean = process.env.NODE_ENV === "production";
-
-      res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: isProduction,
-        maxAge: 60 * 60 * 1000,
-        sameSite: "strict",
-      })
+      
     } catch (err: unknown) {
       next(err);
     }
@@ -219,13 +211,13 @@ const authControllers = {
       }
 
       // Check if user is already verified, if not verify user
-      if (user.roles.includes("User")) {
+      if (user.roles.includes("user")) {
         return res.status(400).json({
           message: "Email is already verified",
         });
       }
 
-      user.roles.push("User");
+      user.roles.push("user");
       await user.save();
 
       res.status(200).json({
@@ -262,9 +254,6 @@ const authControllers = {
           message: "Email is already verified",
         });
       }
-
-      //delete jwt token
-      res.cookie("jwt", "", { maxAge: 0 });
 
       // Generate JWT token and send it to users email
       const newToken: string = await generateVerifyToken(user.email, user.id, user.roles);

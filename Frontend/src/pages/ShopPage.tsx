@@ -2,11 +2,13 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import ProductCard, { ProductProps } from "../components/Products/ProductCard";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ShopPage() {
-    const { checkAuth } = useAuth();
+    const { checkAuth, user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<ProductProps[]>([]);
+    const navigate = useNavigate();
   
     useEffect(() => {
         async function getProducts() {
@@ -19,7 +21,10 @@ export default function ShopPage() {
                 console.log(err);
             }
             finally{
-                setTimeout(() => setLoading(false), 5000);
+                if (user?.email && !user?.roles.includes("user")) {
+                    navigate("/verify");
+                }
+                setLoading(false);
             }
         }
         getProducts();
@@ -27,7 +32,7 @@ export default function ShopPage() {
     }, [])
 
     return (
-        <main className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5 auto-rows-auto place-items-center py-4 px-8 ">
+        <main className="h-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5 auto-rows-auto place-items-center py-4 px-8 ">
             {data.map((product: ProductProps) => (
                 <ProductCard
                 key={product.id}  

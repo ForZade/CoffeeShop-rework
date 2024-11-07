@@ -8,15 +8,6 @@ import mongoose from "mongoose";
 import Discount, { DiscountInterface } from "../models/discountModel";
 import { generateDiscountCode } from "../utils/idgen"; // r stands for random
 
-// Delete after review (discounts task) -> Discount system will be on line (398)-(484)
-// Delete after review (discounts task) -> Discount system will be on line (398)-(484)
-// Delete after review (discounts task) -> Discount system will be on line (398)-(484)
-// Delete after review (discounts task) -> IMPORTS ON LINE 8, 9
-// Delete after review (discounts task) -> READ COMMENTS DROPPED ON LINE 406, 410, 411
-/* Delete after review (discounts task) -> CHECK VALIDATOR OF DISCOUNT */ import { DISCOUNT_VALIDATOR } from "../validations/discountValidator" // <- i left easy access, this is useless import
-
-// Delete after review (patchUser task) -> patchUser system will be on lie (72 - 94)
-
 interface CartTotalInterface {
   total: mongoose.Types.Decimal128;
   subtotal: mongoose.Types.Decimal128;
@@ -170,191 +161,10 @@ const userControllers = {
     }
   },
 
-  getCart: async (req: Request, res: Response, next: NextFunction) => {
-    const token: string = req.cookies.jwt;
-
-    try {
-      const decoded: TokenInterface = await verifyToken(token);
-
-      const user: UserInterface = await User.findOne({
-        id: decoded.id,
-      });
-
-      if (!user) {
-        return res.status(400).json({
-          message: "User not found",
-        });
-      }
-
-      res.status(200).json({
-        message: "Succsefull",
-        data: user.cart,
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
-
-  addToCart: async (req: Request, res: Response, next: NextFunction) => {
-    const token: string = req.cookies.jwt;
-    const productId: number = parseInt(req.params.productId);
-
-    try {
-      const decoded: TokenInterface = await verifyToken(token);
-
-      const user: UserInterface = await User.findOne({
-        id: decoded.id,
-      });
-
-      if (!user) {
-        return res.status(400).json({
-          message: "User not found",
-        });
-      }
-
-      const product: ProductInterface = await Product.findOne({
-        id: productId,
-      });
-
-      if (!product) {
-        return res.status(400).json({
-          message: "Product not found",
-        });
-      }
-
-      const existingItem = user.cart.items.find(
-        (item) => item.productId === productId,
-      );
-
-      if (existingItem) {
-        existingItem.quantity++;
-        existingItem.total = addDecimals(existingItem.total, product.price);
-      } else {
-        user.cart.items.push({
-          productId,
-          quantity: 1,
-          total: product.price,
-        });
-      }
-
-      if(!user.cart.total) {
-        user.cart.total = toDecimal(0);
-      }
-
-      user.cart.total = addDecimals(user.cart.total, product.price);
-
-      await user.save();
-
-      res.status(200).json({
-        message: "item added to cart",
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
-
-  removeFromCart: async (req: Request, res: Response, next: NextFunction) => {
-    const token: string = req.cookies.jwt;
-    const productId: number = parseInt(req.params.productId);
-
-    try {
-      const decoded: TokenInterface = await verifyToken(token);
-
-      const user: UserInterface = await User.findOne({
-        id: decoded.id,
-      });
-
-      if (!user) {
-        return res.status(400).json({
-          message: "User not found",
-        });
-      }
-
-      const product: ProductInterface = await Product.findOne({
-        id: productId,
-      });
-
-      if (!product) {
-        return res.status(400).json({
-          message: "Product not found",
-        });
-      }
-
-      const existingItem = user.cart.items.find(
-        (item) => item.productId === productId,
-      );
-
-      if (!existingItem) {
-        return res.status(400).json({
-          message: "Item not found in cart",
-        });
-      }
-
-      if (existingItem.quantity > 1) {
-        existingItem.quantity--;
-        existingItem.total = subtractDecimals(existingItem.total, product.price);
-      }
-      else if (existingItem.quantity === 1) {
-        user.cart.items = user.cart.items.filter((item) => item.productId !== productId);
-      }
-
-      user.cart.items.filter((item) => item.productId !== productId);
-      user.cart.total = subtractDecimals(user.cart.total, product.price);
-
-      await user.save();
-
-      res.status(200).json({
-        message: "item removed",
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
-
-  clearCart: async (req: Request, res: Response, next: NextFunction) => {
-    const token: string = req.cookies.jwt;
-
-    try {
-      const decoded: TokenInterface = await verifyToken(token);
-
-      const user: UserInterface = await User.findOne({
-        id: decoded.id,
-      });
-
-      if (!user) {
-        return res.status(400).json({
-          message: "User not found",
-        });
-      }
-
-      user.cart.items = [];
-
-      user.cart.total = toDecimal(0);
-
-      await user.save();
-      res.status(200).json({
-        message: "Cart cleared",
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
-
   contact: async (req: Request, res: Response, next: NextFunction) => {
-    const token: string = req.cookies.jwt;
-    const { subject, message } = req.body;
+    const { email, subject, message } = req.body;
+
     try {
-      let email: string;
-      let decoded: TokenInterface = {} as TokenInterface;
-
-      if(!token){
-        email = req.body.email;
-      }
-      else {
-        decoded = verifyToken(token);
-        email = decoded.email;
-      }
-
       if (!email || !subject || !message) {
         return res.status(400).json({
           message: "All fields are required",
@@ -510,18 +320,41 @@ const userControllers = {
   },
 
   checkDiscount: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
     const discountCode = req.params.code.toUpperCase();
 
     try {
+      const decoded: TokenInterface = await verifyToken(token);
+
+      const user = await User.findOne({ id: decoded.id });
+
+      if (!user) {
+        return res.status(400).json({
+          status: "User not found",
+        });
+      }
+
       const discount = await Discount.findOne({ code: discountCode });
       if(!discount) {
         return res.status(400).json({
           status: "Discount code not found",
         });
       }
+
+      if (discount.expires < new Date()) {
+        return res.status(400).json({
+          status: "Discount code expired",
+        });
+      }
+
+      user.cart.code = discount.code;
+      user.cart.percentage = discount.percentage;
+
+      await user.save();
+
       res.status(200).json({
         status: "Discount code exists!",
-        discounts: discount
+        discount: discount
       });
     }
     catch (err: unknown) {
