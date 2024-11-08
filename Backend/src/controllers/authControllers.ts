@@ -401,23 +401,35 @@ const authControllers = {
     }
   },
 
-  //^ DELETE /api/v1/auth/delete - Delete Account Route (Deletes user account)
+  //^ DELETE /api/v1/auth/delete - Delete Account Route (Requires user password for deletion)
   deleteAccount: async (req: Request, res: Response, next: NextFunction) => {
     const token: string = req.cookies.jwt;
-
+    const { password } = req.body;
+  
     try {
       const decoded: TokenInterface = verifyToken(token);
-      
-      const user: UserInterface = await User.findOneAndDelete({ email: decoded.email });
-      
+  
+      const user: UserInterface = await User.findOne({ email: decoded.email });
+  
       if (!user) {
         return res.status(404).json({
           message: "User not found",
         });
       }
-      
+  
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      console.log("Received password:", password);
+  
+      if (!isPasswordValid) {
+        return res.status(401).json({
+          message: "Invalid password. Account deletion requires a valid password.",
+        });
+      }
+  
+      await User.findByIdAndDelete(user._id);
+  
       res.clearCookie("jwt");
-
+  
       res.status(200).json({
         message: "Account deleted successfully",
       });
@@ -425,6 +437,8 @@ const authControllers = {
       next(err);
     }
   },
+  
+
 
     //^ POST /api/v1/auth/change-name - Change User Name Route
     changeName: async (req: Request, res: Response, next: NextFunction) => {

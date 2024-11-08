@@ -118,18 +118,31 @@ export default function UserSettingsForm() {
   };
 
   const handleDeleteAccount = async () => {
+    const password = prompt("Please enter your password to confirm account deletion:");
+  
+    if (!password) {
+      setError("Account deletion cancelled or password not provided.");
+      return;
+    }
+  
     if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
       try {
-        await axios.delete("http://localhost:7000/api/v1/auth/delete", { withCredentials: true });
+        await axios.delete("http://localhost:7000/api/v1/auth/delete", {
+          data: { password },
+          withCredentials: true
+        });
+  
         setLogoutMessage("Account deleted successfully... redirecting");
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
-      } catch (err) {
-        setError("Failed to delete account. Please try again.");
+        setIsLoggedIn(false); //viena karta kazkodel paliko loggedin, visus kitus kartus veike 
+  
+        navigate("/");
+      } catch (err) { 
+        setError("Failed to delete account. Please check your password and try again.");
       }
     }
   };
+  
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
