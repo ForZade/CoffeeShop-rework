@@ -38,6 +38,8 @@ const routes = createBrowserRouter(
             <Route path="/products/:id" element={<ProductPage />} />
             <Route path="/purchase" element={<PurchasePage/>}/>
             <Route path="/checkout" element={<CheckoutPage/>}/>
+            <Route path="/confirmation" element={<ConfirmationPage/>}/>
+            <Route path="/settings" element={<UserSettingsPage/>}/>
             <Route path="*" element={<PageNotFound />} />
         </Route>
     )
