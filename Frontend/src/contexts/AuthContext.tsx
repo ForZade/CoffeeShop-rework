@@ -13,16 +13,24 @@ export interface UserProps {
 
 interface AuthContextProps {
     auth: boolean
-    setAuth?: (status: boolean) => void;
     checkAuth: () => Promise<void>;
     user: UserProps | undefined;
-    setUser?: (user: UserProps) => void;
+
+    open: boolean;
+    toggle: () => void;
+    form: "login" | "register";
+    changeForm: (form: "login" | 'register') => void;
 }
 
 const defaultContextValue: AuthContextProps = {
     auth: false,
     checkAuth: async () => { },
     user: undefined,
+
+    open: false,
+    toggle: async () => { },
+    form: 'login',
+    changeForm: async () => { },
 };
 
 export const AuthContext = createContext<AuthContextProps>(defaultContextValue);
@@ -30,6 +38,8 @@ export const AuthContext = createContext<AuthContextProps>(defaultContextValue);
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [auth, setAuth] = useState<boolean>(false);
     const [user, setUser] = useState<UserProps | undefined>(undefined);
+    const [open, setOpen] = useState<boolean>(false);
+    const [form, setForm] = useState<"login" | 'register'>('login');
 
 
     const checkAuth = useCallback(async (): Promise<void> => {
@@ -43,8 +53,16 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, []);
 
+    const toggle = async () => {
+        setOpen(!open);
+    }
+
+    const changeForm = async (form: "login" | 'register') => {
+        setForm(form);
+    }
+
     return (
-        <AuthContext.Provider value={{ auth, checkAuth, user }}>
+        <AuthContext.Provider value={{ auth, checkAuth, user, open, toggle, form, changeForm }}>
             {children}
         </AuthContext.Provider>
     );

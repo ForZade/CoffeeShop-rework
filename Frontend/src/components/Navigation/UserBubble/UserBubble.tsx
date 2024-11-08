@@ -1,11 +1,10 @@
 import UserDropdown from "./UserDropdown";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 
 export default function UserBubble({ roles }: { roles: string[] }) {
     const [open, setOpen] = useState(false);
-    const { auth, user } = useAuth();
+    const { auth, user, toggle } = useAuth();
 
     function handleClickOutside() {
         setTimeout(() => setOpen(false), 150);
@@ -27,9 +26,12 @@ export default function UserBubble({ roles }: { roles: string[] }) {
                 </>
             ) : (
                 <div className="w-min h-min grid place-items-center">
-                    <Link to="/login" className="px-6 py-2 text-base font-semibold text-coffee-400 bg-gradient-to-br from-coffee-200 to-coffee-100 rounded-md active:scale-90 hover:opacity-80 transition-[transform,opacity]">
+                    <button 
+                        className="px-6 py-2 text-base font-semibold text-coffee-400 bg-gradient-to-br from-coffee-200 to-coffee-100 rounded-md active:scale-90 hover:opacity-80 transition-[transform,opacity]"
+                        onClick={toggle}  
+                    >
                         Login
-                    </Link>
+                    </button>
                 </div>
             )}
 

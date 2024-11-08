@@ -13,8 +13,6 @@ import ProductPage, { ProductLoader } from "./pages/ProductPage";
 import PurchasePage from "./pages/PurchasePage";
 import PageNotFound from "./pages/PageNotFound";
 import ShopPage, { ProductsLoader } from "./pages/ShopPage";
-import RegisterPage from "./pages/RegisterPage";
-import LoginPage from "./pages/LoginPage";
 
 
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -46,9 +44,6 @@ const routes = createBrowserRouter(
             <Route path="/contacts" element={<ContactsPage/>} />
 
             <Route path="*" element={<PageNotFound />} />
-
-            <Route path="/register" element={<RegisterPage/>} />
-            <Route path="/login" element={<LoginPage />} />
         </Route>
     )
 )

@@ -53,16 +53,13 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-slate-100 dark:bg-zinc-700">
       <form
         onSubmit={handleSubmit}
-        className="w-1/3 p-6 shadow-lg rounded bg-slate-200 dark:bg-zinc-800"
+        className="w-full flex flex-col gap-2"
       >
-        <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">Login</h2>
-
         {error && <div className="text-red-500 mb-4">{error}</div>}
 
-        <div className="mb-4">
+        <div className="">
           <label htmlFor="email" className="block text-black dark:text-white">
             Email
           </label>
@@ -71,12 +68,12 @@ export default function LoginForm() {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 p-2 border border-slate-300 dark:border-zinc-900 bg-slate-100 dark:bg-zinc-900 w-full"
+            className="p-2 border-b-2 border-white bg-transparent w-full outline-none dark:text-white"
             required
           />
         </div>
 
-        <div className="mb-4">
+        <div className="">
           <label htmlFor="password" className="block text-black dark:text-white">
             Password
           </label>
@@ -86,7 +83,7 @@ export default function LoginForm() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 p-2 border border-slate-300 dark:border-zinc-900 bg-slate-100 dark:bg-zinc-900 w-full"
+              className="p-2 border-b-2 border-white bg-transparent w-full outline-none dark:text-white"
               required
             />
             <button
@@ -99,13 +96,13 @@ export default function LoginForm() {
           </div>
         </div>
 
-        <div className="text-right mt-4">
+        <div className="text-center mt-4">
           <Link to="/reset-password" className="text-blue-500 hover:underline">
             Forgot Password?
           </Link>
         </div>
 
-        <div className="mb-4 flex items-center">
+        <div className="mb-4 flex items-center justify-center">
           <input
             type="checkbox"
             id="rememberMe"
@@ -125,14 +122,6 @@ export default function LoginForm() {
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-
-        <div className="text-center mt-4">
-          <span className="text-gray-600">Don't have an account? </span>
-          <Link to="/register" className="text-blue-500 hover:underline">
-            Make one
-          </Link>
-        </div>
       </form>
-    </div>
   );
 }
