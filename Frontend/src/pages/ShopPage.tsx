@@ -12,33 +12,34 @@ export default function ShopPage() {
     const [modalOpen, setModalOpen] = useState(false);
     
     const navigate = useNavigate();
-    
-
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-    useEffect(() => {
-        async function getProducts() {
-            try {
-                await checkAuth();
-                const response = await axios.get("http://localhost:7000/api/v1/products");
-                setData(response.data.data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                if (user?.email && !user?.roles.includes("user")) {
-                    navigate("/verify");
-                }
-                setLoading(false);
+    const getProducts = async () => {
+        setLoading(true);
+        try {
+            await checkAuth();
+            const response = await axios.get("http://localhost:7000/api/v1/products");
+            setData(response.data.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            if (user && user.email && !user.roles.includes("user")) {
+                navigate("/verify");
             }
+            setLoading(false);
         }
+    };
+
+    useEffect(() => {
         getProducts();
-    }, []);
+    }, []); // Empty dependency array ensures this only runs once on mount
 
     const onSubmit = async (data: any) => {
         try {
             await axios.post('http://localhost:7000/api/v1/products', data, { withCredentials: true });
             reset();
             setModalOpen(false);
+            getProducts(); // Reload products after adding a new one
         } catch (error) {
             console.error('Error:', error);
         }
@@ -85,7 +86,7 @@ export default function ShopPage() {
                                     className="w-full px-4 py-2 rounded bg-zinc-700 text-white h-24 resize-none"
                                     {...register("description", { required: "Description is required" })}
                                 ></textarea>
-                               {errors.description?.message && <p className="text-red-500">{errors.description.message.toString()}</p>}
+                                {errors.description?.message && <p className="text-red-500">{errors.description.message.toString()}</p>}
                             </div>
                             <div>
                                 <label className="block text-white mb-2">Category</label>
@@ -116,7 +117,7 @@ export default function ShopPage() {
                                     className="w-full px-4 py-2 rounded bg-zinc-700 text-white"
                                     {...register("size", { required: "Size is required" })}
                                 />
-                               {errors.size?.message && <p className="text-red-500">{errors.size.message.toString()}</p>}
+                                {errors.size?.message && <p className="text-red-500">{errors.size.message.toString()}</p>}
                             </div>
                             <div className="flex justify-end space-x-4 mt-6">
                                 <button
