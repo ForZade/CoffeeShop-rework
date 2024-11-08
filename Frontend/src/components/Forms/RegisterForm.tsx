@@ -186,9 +186,6 @@ export default function RegisterForm() {
       <div className="w-full max-w-md p-8 space-y-6 bg-slate-200 dark:bg-zinc-800 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center text-black dark:text-white">Register</h2>
 
-        {/* Display error message */}
-        {error && <div className="text-red-500 text-center">{error}</div>}
-
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-black dark:text-white">First Name:</label>
@@ -265,6 +262,10 @@ export default function RegisterForm() {
           <button type="submit" disabled={loading} className="w-full py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
             {loading ? 'Registering...' : 'Register'}
           </button>
+
+          {/* Display error message */}
+          {error && <div className="text-red-500 text-center">{error}</div>}
+
         </form>
       </div>
     </div>
