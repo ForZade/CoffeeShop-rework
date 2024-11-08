@@ -11,9 +11,13 @@ import toDecimal from "../utils/toDecimal";
 const transactionsController = {
   makeTransaction: async (req: Request, res: Response, next: NextFunction) => {
     const token: string = req.cookies.jwt;
+    const { card_number, cvv, expiry_date } = req.body;
 
     try {
-      const decoded: TokenInterface = await verifyToken(token);
+      console.log('Purchase started');
+      console.log(card_number, cvv, expiry_date);
+
+      const decoded: TokenInterface = verifyToken(token);
 
       const user: UserInterface = await User.findOne({ id: decoded.id });
       const id = await generateTransactionId();
@@ -24,7 +28,7 @@ const transactionsController = {
         });
       }
 
-      const ifEmpty: boolean = user.cart.total === toDecimal(0) || !user.cart.total;
+      const ifEmpty: boolean = user.cart.items.length <= 0;
 
       if (ifEmpty) {
         return res.status(400).json({
@@ -38,15 +42,6 @@ const transactionsController = {
         order_details: user.cart.items,
         total: user.cart.total,
       });
-
-      const ifFake: boolean = await fakeTransaction(user.cart.total);
-
-      if (!ifFake) {
-        return res.status(400).json({
-          message: "Transaction failed",
-          reason: "Insuffiecient funds",
-        });
-      }
 
       user.cart.items = [];
       user.cart.total = toDecimal(0);

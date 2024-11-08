@@ -36,12 +36,6 @@ export const CARD_VALIDATOR = [
     .notEmpty()
     .withMessage("EXPIRY DATE CANNOT BE EMPTY"),
 
-  body("name")
-    .isLength({ min: 3, max: 50 })
-    .withMessage("NAME MUST BE BETWEEN 3 AND 50 CHARACTERS")
-    .notEmpty()
-    .withMessage("NAME CANNOT BE EMPTY"),
-
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

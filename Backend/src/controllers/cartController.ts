@@ -88,61 +88,113 @@ const cartController = {
         }
       },
     
+      // removeFromCart: async (req: Request, res: Response, next: NextFunction) => {
+      //   const token: string = req.cookies.jwt;
+      //   const productId: number = parseInt(req.params.productId);
+    
+      //   try {
+      //     const decoded: TokenInterface = await verifyToken(token);
+    
+      //     const user: UserInterface = await User.findOne({
+      //       id: decoded.id,
+      //     });
+    
+      //     if (!user) {
+      //       return res.status(400).json({
+      //         message: "User not found",
+      //       });
+      //     }
+    
+      //     const product: ProductInterface = await Product.findOne({
+      //       id: productId,
+      //     });
+    
+      //     if (!product) {
+      //       return res.status(400).json({
+      //         message: "Product not found",
+      //       });
+      //     }
+    
+      //     const existingItem = user.cart.items.find(
+      //       (item) => item.productId === productId,
+      //     );
+    
+      //     if (!existingItem) {
+      //       return res.status(400).json({
+      //         message: "Item not found in cart",
+      //       });
+      //     }
+    
+      //     if (existingItem.quantity > 1) {
+      //       existingItem.quantity--;
+      //     }
+      //     else if (existingItem.quantity === 1) {
+      //       user.cart.items = user.cart.items.filter((item) => item.productId !== productId);
+      //     }
+    
+      //     user.cart.items.filter((item) => item.productId !== productId);
+    
+      //     await user.save();
+    
+      //     res.status(200).json({
+      //       message: "item removed",
+      //     });
+      //   } catch (err) {
+      //     next(err);
+      //   }
+      // },
+
       removeFromCart: async (req: Request, res: Response, next: NextFunction) => {
         const token: string = req.cookies.jwt;
         const productId: number = parseInt(req.params.productId);
     
         try {
-          const decoded: TokenInterface = await verifyToken(token);
+            const decoded: TokenInterface = await verifyToken(token);
     
-          const user: UserInterface = await User.findOne({
-            id: decoded.id,
-          });
-    
-          if (!user) {
-            return res.status(400).json({
-              message: "User not found",
+            const user: UserInterface = await User.findOne({
+                id: decoded.id,
             });
-          }
     
-          const product: ProductInterface = await Product.findOne({
-            id: productId,
-          });
+            if (!user) {
+                return res.status(400).json({
+                    message: "User not found",
+                });
+            }
     
-          if (!product) {
-            return res.status(400).json({
-              message: "Product not found",
+            const product: ProductInterface = await Product.findOne({
+                id: productId,
             });
-          }
     
-          const existingItem = user.cart.items.find(
-            (item) => item.productId === productId,
-          );
+            if (!product) {
+                return res.status(400).json({
+                    message: "Product not found",
+                });
+            }
     
-          if (!existingItem) {
-            return res.status(400).json({
-              message: "Item not found in cart",
-            });
-          }
+            const existingItem = user.cart.items.find(
+                (item) => item.productId === productId,
+            );
     
-          if (existingItem.quantity > 1) {
-            existingItem.quantity--;
-          }
-          else if (existingItem.quantity === 1) {
+            if (!existingItem) {
+                return res.status(400).json({
+                    message: "Item not found in cart",
+                });
+            }
+    
+            // Remove item completely when it is found
             user.cart.items = user.cart.items.filter((item) => item.productId !== productId);
-          }
     
-          user.cart.items.filter((item) => item.productId !== productId);
+            // Save the updated user with the modified cart
+            await user.save();
     
-          await user.save();
-    
-          res.status(200).json({
-            message: "item removed",
-          });
+            res.status(200).json({
+                message: "Item removed",
+                data: user.cart,  // Send back the updated cart data
+            });
         } catch (err) {
-          next(err);
+            next(err);
         }
-      },
+    },    
     
       clearCart: async (req: Request, res: Response, next: NextFunction) => {
         const token: string = req.cookies.jwt;
