@@ -55,7 +55,7 @@ export default function LoginForm() {
   return (
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-1/3 p-6 shadow-lg rounded bg-slate-200 dark:bg-zinc-800"
+        className="w-full p-6 shadow-lg rounded bg-slate-200 dark:bg-zinc-800"
       >
         {error && <div className="text-red-500 mb-4">{error}</div>}
 

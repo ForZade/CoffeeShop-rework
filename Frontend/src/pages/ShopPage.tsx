@@ -1,6 +1,8 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../contexts/AuthContext";
 import ProductCard, { ProductProps } from "../components/Products/ProductCard";
 
 export default function ShopPage() {

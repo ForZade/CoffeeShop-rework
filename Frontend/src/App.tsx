@@ -32,8 +32,8 @@ const routes = createBrowserRouter(
             </Route>
 
             <Route path="/products" element={<ProductLayout />}> {/* Will show additional recomended products */}
-                <Route index element={<ShopPage />} loader={ProductsLoader}/>
-                <Route path=":id" element={<ProductPage />} loader={ProductLoader}/>
+                <Route index element={<ShopPage />} />
+                <Route path=":id" element={<ProductPage />}/>
             </Route>
 
             <Route path="/reset-password" element={<ResetPassword />} />
