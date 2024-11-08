@@ -33,13 +33,7 @@ const userControllers = {
     let user: UserInterface;
 
     try {
-      if (param.includes("@")) {
         user = await User.findOne({ email: param });
-      }
-      else {
-        user = await User.findOne({ id: param });
-      }
-
       if (!user) {
         return res.status(404).json({
           status: "error",
@@ -88,12 +82,8 @@ const userControllers = {
 
     try {
       let user: UserInterface;
-
-      if (params.includes("@")) {
         user = await User.findOne({ email: params });
-      } else {
-        user = await User.findOne({ id: params });
-      }
+
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -127,12 +117,8 @@ const userControllers = {
 
     try {
       let user: UserInterface;
-
-      if (params.includes("@")) {
         user = await User.findOne({ email: params });
-      } else {
-        user = await User.findOne({ id: params });
-      }
+
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
