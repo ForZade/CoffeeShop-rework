@@ -1,9 +1,10 @@
 import { Icon } from "@iconify/react"
 import Switch from "../Switch";
-import { useTheme } from "../../contexts/ThemeContext";
+import { useTheme } from "../../../contexts/ThemeContext";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import UserDropdownItem from "./UserDropdownItem";
+import { useAuth } from "../../../contexts/AuthContext";
 
 interface UserDropdownProps {
     open: boolean
@@ -11,8 +12,9 @@ interface UserDropdownProps {
     roles: string[]
 }
 
-export default function UserDropdown({ open, toggle, roles }: UserDropdownProps) {
+export default function UserDropdown({ open, toggle }: UserDropdownProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const { user } = useAuth();
     const { theme, toggleTheme = () => {} } = useTheme();
     const [openTheme, setOpenTheme] = useState(false);
 
@@ -28,7 +30,6 @@ export default function UserDropdown({ open, toggle, roles }: UserDropdownProps)
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                console.log("Clicked outside dropdown");
                 toggle();
             }
         }
@@ -56,18 +57,18 @@ export default function UserDropdown({ open, toggle, roles }: UserDropdownProps)
             click: toggleTheme,
         },
         { divider: true },
-        ...(roles.includes("Admin") ? [{
-            type: "button",
+        ...(user?.roles.includes("admin") ? [{
+            type: "admin",
             text: "Manage Administrators",
             Side: () => <Icon icon="tabler:settings" className="w-6 h-6"/>,
         }] : []),
         // Only show "Manage Discounts" if "admin" role is present
-        ...(roles.includes("Admin") ? [{
-            type: "button",
+        ...(user?.roles.includes("admin") ? [{
+            type: "discounts",
             text: "Manage Discounts",
             Side: () => <Icon icon="tabler:rosette-discount" className="w-6 h-6"/>,
         }] : []),
-        ...(roles.includes("Admin") ? [{
+        ...(user?.roles.includes("admin") ? [{
             divider: true  
         }] : []),
         {

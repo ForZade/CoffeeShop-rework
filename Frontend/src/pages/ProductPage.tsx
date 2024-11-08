@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
-import { useEffect, useState } from "react";
 import AddToCart from "../components/Products/AddToCart";
 import ReviewButton from "../components/Products/ReviewButton";
 import { useForm } from "react-hook-form";
@@ -246,4 +245,15 @@ export default function ProductPage() {
       </main>
     )
   );
+}
+
+export const ProductLoader = async ({ params }: LoaderFunctionArgs) => {
+  const { id } = params
+
+  try {
+    const response = await axios.get(`http://localhost:7000/api/v1/products/${id}`, { withCredentials: true });
+    return response.data.data;
+  } catch (err) {
+    console.log(err);
+  }
 }

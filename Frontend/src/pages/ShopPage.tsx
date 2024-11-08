@@ -2,8 +2,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ProductCard, { ProductProps } from "../components/Products/ProductCard";
-import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 export default function ShopPage() {
     const { checkAuth, user } = useAuth();
