@@ -30,7 +30,6 @@ export default function UserDropdown({ open, toggle }: UserDropdownProps) {
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                console.log("Clicked outside dropdown");
                 toggle();
             }
         }

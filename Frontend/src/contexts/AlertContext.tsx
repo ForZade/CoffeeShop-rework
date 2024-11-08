@@ -12,25 +12,12 @@ interface AlertContextProps {
 
     window: string | null;
 
-    popup: {
-        password?: {
-            title: string;
-            message: string;
-        },
-        confirmation?: {
-            title: string;
-            message: string;
-        }
-    } | null;
-
     successAlert: (message: string) => void;
     errorAlert: (message: string) => void;
 
     adminWindow: () => void;
     discountWindow: () => void;
     closeWindow: () => void;
-
-    confirmPopup: () => void;
 }
 
 const defaultContextValue: AlertContextProps = {
@@ -38,16 +25,12 @@ const defaultContextValue: AlertContextProps = {
 
     window: '',
 
-    popup: {},
-
     successAlert: async () => {},
     errorAlert: async () => {},
 
     adminWindow: async () => {},
     discountWindow: async () => {},
     closeWindow: async () => {},
-
-    confirmPopup: async () => {},
 };
 
 export const AlertContext = createContext<AlertContextProps>(defaultContextValue);
@@ -55,7 +38,6 @@ export const AlertContext = createContext<AlertContextProps>(defaultContextValue
 const AlertProvider = ({ children }: { children: React.ReactNode }) => {
     const [alert, setAlert] = useState<AlertContextProps["alert"]>(defaultContextValue.alert);
     const [window, setWindow] = useState<AlertContextProps["window"]>(defaultContextValue.window);
-    const [popup, setPopup] = useState<AlertContextProps["popup"]>(defaultContextValue.popup);
 
     const successAlert = async (message: string) => {
         console.log('Success command ran')
@@ -95,7 +77,7 @@ const AlertProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <AlertContext.Provider value={{ alert, window, popup, successAlert, errorAlert, adminWindow, discountWindow, closeWindow }}>
+        <AlertContext.Provider value={{ alert, window, successAlert, errorAlert, adminWindow, discountWindow, closeWindow }}>
             {children}
         </AlertContext.Provider>
     );

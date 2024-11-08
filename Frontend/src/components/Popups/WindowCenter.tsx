@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useAlert } from "../../contexts/AlertContext";
 import AdminPopup from "./windows/Admin/AdminPopup";
+import DiscountPopup from "./windows/Discount/DiscountPopup";
 
 export default function WindowCenter() {
     const { window, closeWindow } = useAlert();
@@ -43,7 +44,7 @@ export default function WindowCenter() {
                                     transition={{ duration: 0.3 }}
                                     className="h-full"
                                 >
-                                    
+                                    <DiscountPopup/>
                                 </motion.div>
                             </AnimatePresence>
                         }

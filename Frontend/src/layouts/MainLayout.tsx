@@ -4,7 +4,6 @@ import { useAuth } from "../contexts/AuthContext";
 import Navbar from "../components/Navigation/Navbar";
 import AlertCenter from "../components/Popups/AlertCenter";
 import WindowCenter from "../components/Popups/WindowCenter";
-
 export default function MainLayout() {
     const navigate = useNavigate();
     const { user } = useAuth();
