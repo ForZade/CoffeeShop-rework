@@ -9,17 +9,22 @@ import ResetPassword from "./pages/ResetPasswordPage";
 import ContactsPage from "./pages/ContactsPage";
 import EmailVerified from "./pages/EmailVerifiedPage";
 import VerifyEmail from "./pages/VerifyEmailPage";
-import ProductPage, { ProductLoader } from "./pages/ProductPage";
+import ProductPage from "./pages/products/ProductPage";
 import PurchasePage from "./pages/PurchasePage";
 import PageNotFound from "./pages/PageNotFound";
-import ShopPage, { ProductsLoader } from "./pages/ShopPage";
+import ProductsPage from "./pages/products/ProductsPage";
 
 
 import { ThemeProvider } from "./contexts/ThemeContext";
 import CheckoutPage from "./pages/CheckoutPage";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import ProductLayout from "./layouts/ProductLayout";
+import UserSettingsPage from "./pages/UserSettingsPage";
+import SettingsLayout from "./layouts/SettingsLayout";
 
+// Loaders
+import productsLoader from "./loaders/products/ProductsLoader";
+import productLoader from "./loaders/products/ProductLoader";
 
 const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -31,9 +36,10 @@ const routes = createBrowserRouter(
                 <Route path="/checkout" element={<CheckoutPage/>}/>
             </Route>
 
-            <Route path="/products" element={<ProductLayout />}> {/* Will show additional recomended products */}
-                <Route index element={<ShopPage />} />
-                <Route path=":id" element={<ProductPage />}/>
+            <Route path="/produktai" element={<ProductLayout />}> {/* Will show additional recomended products */}
+                <Route index element={<ProductsPage />} loader={productsLoader}/>
+                <Route path=":category" element={<ProductsPage />} loader={productsLoader}/>
+                <Route path=":category/:id" element={<ProductPage />} loader={productLoader}/>
             </Route>
 
             <Route path="/reset-password" element={<ResetPassword />} />
@@ -41,7 +47,10 @@ const routes = createBrowserRouter(
             <Route path="/verify/:token" element={<EmailVerified/>} />
             <Route path="/verify" element={<VerifyEmail/>} />
 
-            <Route path="/contacts" element={<ContactsPage/>} />
+            <Route path="/kontaktai" element={<ContactsPage/>} />
+            <Route path="/nustatymai" element={<SettingsLayout />}>
+                <Route index element={<UserSettingsPage />} />
+            </Route>
 
             <Route path="*" element={<PageNotFound />} />
         </Route>

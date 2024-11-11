@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { DiscountProps } from "./DiscountPopup";
+import { DiscountProps } from "./DiscountModal";
 
 interface DiscountListProps {
     codes: DiscountProps[];

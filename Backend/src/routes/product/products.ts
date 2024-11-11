@@ -7,10 +7,11 @@ import "./products.docs";
 
 const router = express.Router();
 
-router.post("/", PRODUCT_VALIDATOR, productController.createProduct);
+router.post("/", productController.createProduct);
 router.get("/", productController.getAllProducts);
 router.delete("/:id", isAdmin, productController.deleteProduct);
-router.get("/:id", productController.getProductById);
+router.get("/:category/:id", productController.getProduct);
+router.get("/:category", productController.getProductByCategory);
 router.patch("/:id",  PRODUCT_VALIDATOR, isAdmin, productController.patchProduct);
 router.post("/review", requireAuth, productController.review);
 

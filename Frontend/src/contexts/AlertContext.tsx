@@ -10,34 +10,41 @@ interface AlertContextProps {
         };
     };
 
-    window: string | null;
+    modal: string | null;
+    action: "" | "add" | "edit";
 
     successAlert: (message: string) => void;
     errorAlert: (message: string) => void;
 
-    adminWindow: () => void;
-    discountWindow: () => void;
-    closeWindow: () => void;
+    adminModal: () => void;
+    discountModal: () => void;
+    productModal: (action: "" | "add" | "edit") => void;
+
+    closeModal: () => void;
 }
 
 const defaultContextValue: AlertContextProps = {
     alert: {},
 
-    window: '',
+    modal: '',
+    action: '',
 
     successAlert: async () => {},
     errorAlert: async () => {},
 
-    adminWindow: async () => {},
-    discountWindow: async () => {},
-    closeWindow: async () => {},
+    adminModal: async () => {},
+    discountModal: async () => {},
+    productModal: async () => {},
+
+    closeModal: async () => {},
 };
 
 export const AlertContext = createContext<AlertContextProps>(defaultContextValue);
 
 const AlertProvider = ({ children }: { children: React.ReactNode }) => {
     const [alert, setAlert] = useState<AlertContextProps["alert"]>(defaultContextValue.alert);
-    const [window, setWindow] = useState<AlertContextProps["window"]>(defaultContextValue.window);
+    const [modal, setModal] = useState<AlertContextProps["modal"]>(defaultContextValue.modal);
+    const [action, setAction] = useState<"" | "add" | "edit">('');
 
     const successAlert = async (message: string) => {
         console.log('Success command ran')
@@ -64,20 +71,39 @@ const AlertProvider = ({ children }: { children: React.ReactNode }) => {
         return () => clearTimeout(timer);
     };
 
-    const adminWindow = async () => {
-        setWindow('admin');
+    const adminModal = async () => {
+        if (modal === 'admin') {
+            return setModal(null);
+        }
+        console.log('admin modal');
+        return setModal('admin');
     };
 
-    const discountWindow = async () => {
-        setWindow('discount');
+    const discountModal = async () => {
+        if (modal === 'discount') {
+            return setModal(null);
+        }
+
+        return setModal('discount');
     };
 
-    const closeWindow = async () => {
-        setWindow(null);
+    const productModal = async (action: "" | "add" | "edit") => {
+        if (modal === 'product') {
+            setAction('');
+            return setModal(null);
+        }
+
+        setAction(action);
+        return setModal('product');
+    };
+
+    const closeModal = async () => {
+        setAction('');
+        return setModal(null);
     };
 
     return (
-        <AlertContext.Provider value={{ alert, window, successAlert, errorAlert, adminWindow, discountWindow, closeWindow }}>
+        <AlertContext.Provider value={{ alert, modal, successAlert, errorAlert, adminModal, discountModal, productModal, closeModal, action }}>
             {children}
         </AlertContext.Provider>
     );

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginForm() {
   const {
@@ -13,7 +14,7 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const { checkAuth, toggle } = useAuth();
 
   const onSubmit = async (data: { email: string; password: string; rememberMe: boolean }) => {
     setLoading(true);
@@ -30,8 +31,8 @@ export default function LoginForm() {
         { withCredentials: true }
       );
 
-      console.log("Login successful!", response.data);
-      navigate("/");
+      checkAuth();
+      toggle()
     } catch (err: any) {
       if (err.response) {
         console.error("Response error:", err.response.data);

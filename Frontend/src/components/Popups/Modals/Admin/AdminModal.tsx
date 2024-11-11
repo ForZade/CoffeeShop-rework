@@ -5,7 +5,7 @@ import AdminList from "./AdminList";
 import AdminSearch from "./AdminSearch";
 
 
-export default function AdminPopup() {
+export default function AdminModal() {
     const [admins, setAdmins] = useState([]);
 
     const getAdmins = async () => {
@@ -40,7 +40,7 @@ export default function AdminPopup() {
 
     return (
             <div 
-                className="w-full sm:w-[520px] h-full sm:max-h-[720px] bg-slate-100 dark:bg-zinc-700 rounded-3xl shadow-lg flex flex-col px-4 py-4"
+                className="w-full sm:w-[520px] h-full sm:max-h-[720px] bg-slate-100 dark:bg-zinc-700 rounded-3xl shadow-lg flex flex-col px-4 py-4 z-[100]"
                 onClick={(e) => e.stopPropagation()}
             >
                 <AdminSearch addAdmin={addAdmin}/>

@@ -1,12 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useAlert } from "../../contexts/AlertContext";
-import AdminPopup from "./windows/Admin/AdminPopup";
-import DiscountPopup from "./windows/Discount/DiscountPopup";
+import AdminModal from "./Modals/Admin/AdminModal";
+import DiscountModal from "./Modals/Discount/DiscountModal";
+import ProductModal from "./Modals/Product/ProductModal";
 
-export default function WindowCenter() {
-    const { window, closeWindow } = useAlert();
+export default function ModalCenter() {
+    const { modal, closeModal } = useAlert();
 
-    return window && (
+    return modal && (
             <AnimatePresence>
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -15,11 +16,11 @@ export default function WindowCenter() {
                     transition={{ duration: 0.3 }}
                 >
                     <main 
-                        className="w-screen h-screen bg-zinc-950 bg-opacity-40 grid place-items-center absolute top-0 left-0 px-8 py-24 z-20"
-                        onClick={closeWindow}
+                        className="w-screen h-screen bg-zinc-950 bg-opacity-40 grid place-items-center absolute top-0 left-0 px-8 py-24 z-40"
+                        onClick={closeModal}
                     >
                         {
-                            window === 'admin' &&
+                            modal === 'admin' &&
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key="admin"
@@ -29,24 +30,40 @@ export default function WindowCenter() {
                                     transition={{ duration: 0.3 }}
                                     className="h-full"
                                 >
-                                    <AdminPopup/>
+                                    <AdminModal/>
                                 </motion.div>
                             </AnimatePresence>
                         }
                         {
-                            window === 'discount' &&
+                            modal === 'discount' &&
                             <AnimatePresence mode="wait">
                                 <motion.div
-                                    key="admin"
+                                    key="discount"
                                     initial={{ scaleY: 0 }}
                                     animate={{ scaleY: 1 }}
                                     exit={{ scaleY: 0 }}
                                     transition={{ duration: 0.3 }}
                                     className="h-full"
                                 >
-                                    <DiscountPopup/>
+                                    <DiscountModal/>
                                 </motion.div>
                             </AnimatePresence>
+                        }
+                        {
+                            modal === 'product' && (
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key="product"
+                                        initial={{ scaleY: 0 }}
+                                        animate={{ scaleY: 1 }}
+                                        exit={{ scaleY: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="h-full"
+                                    >
+                                        <ProductModal />
+                                    </motion.div>
+                                </AnimatePresence>
+                            )
                         }
                     </main>
                 </motion.div>

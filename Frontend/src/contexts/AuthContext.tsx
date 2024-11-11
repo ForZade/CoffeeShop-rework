@@ -20,6 +20,8 @@ interface AuthContextProps {
     toggle: () => void;
     form: "login" | "register";
     changeForm: (form: "login" | 'register') => void;
+
+    logout: () => Promise<void>
 }
 
 const defaultContextValue: AuthContextProps = {
@@ -31,6 +33,8 @@ const defaultContextValue: AuthContextProps = {
     toggle: async () => { },
     form: 'login',
     changeForm: async () => { },
+
+    logout: async () => { }
 };
 
 export const AuthContext = createContext<AuthContextProps>(defaultContextValue);
@@ -61,8 +65,29 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setForm(form);
     }
 
+    const logout = async () => {
+        try {
+            await axios.post("http://localhost:7000/api/v1/auth/logout", {}, { withCredentials: true });
+            setAuth(false);
+        }
+        catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    const login = async (email: string, password: string, remember: boolean) => {
+        try {
+            await axios.post("http://localhost:7000/api/v1/auth/login", { email, password, remember }, { withCredentials: true });
+            setAuth(true);
+            setUser(undefined);
+        }
+        catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
     return (
-        <AuthContext.Provider value={{ auth, checkAuth, user, open, toggle, form, changeForm }}>
+        <AuthContext.Provider value={{ auth, checkAuth, user, open, toggle, form, changeForm, logout }}>
             {children}
         </AuthContext.Provider>
     );

@@ -9,7 +9,7 @@ export interface DiscountProps {
     expires: string;
 }
 
-export default function DiscountPopup() {
+export default function DiscountModal() {
     const [codes, setCodes] = useState<DiscountProps[]>([]);
     const [action, setAction] = useState<"" | "add" | "edit">('');
     const [code, setCode] = useState<object>({});

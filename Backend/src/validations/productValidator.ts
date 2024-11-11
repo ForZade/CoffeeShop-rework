@@ -12,7 +12,7 @@ export const PRODUCT_VALIDATOR = [
     .isEmpty()
     .withMessage("DESCRIPTION CANNOT BE EMPTY")
     .isLength({ max: 1024 })
-    .withMessage("DESCRIPTION MUST BE LESS THAN 1024 CHARACTERS"),
+    .withMessage("DESCRIPTION MUST BE LESS OR EQUAL TO 1024 CHARACTERS"),
 
   body("category")
     .isEmpty()

@@ -1,64 +1,34 @@
-import { useEffect, useState } from 'react';
-import { Icon } from '@iconify/react';
-import { useAuth } from '../../../contexts/AuthContext';
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
-import { useCart } from '../../../contexts/CartContext';
+import { useCart } from "../../../contexts/CartContext";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useEffect, useState } from "react";
 
-const CartButton = () => {
-  const [totalItems, setTotalItems] = useState("0");
-  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+export default function CartButton() {
+  const [number, setNumber] = useState("0");
+  const { cart } = useCart();
   const { auth } = useAuth();
-  const { cart, getCart } = useCart();
 
   useEffect(() => {
-    const fetchCartItems = async () => {
-      try {
-        await getCart(); // This updates the cart state directly
-      } catch (error) {
-        console.error('Error fetching cart items:', error);
-      }
-    };
-  
-    if (auth) {
-      fetchCartItems();
+    if (cart.count > 99) {
+      return setNumber("99+");
     }
-  }, [auth]);
-  
-  useEffect(() => {
-    if (cart && cart.count) {
-      if (cart.count > 99) {
-        setTotalItems("99+");
-      } else {
-        setTotalItems(cart.count.toString());
-      }
-    }
-  }, [cart]); // This effect will run whenever the cart state is updated
-  
 
-  if (!auth) return null; 
+    return setNumber(cart.count.toString());
+  }, [cart]);
 
-  return (
-    <Link to="/purchase" className="relative flex items-center">
-      <button
-        className="flex items-center p-2 rounded-full text-coffee-400 dark:text-white hover:bg-gray-800 hover:bg-opacity-10 transition-[background,color] relative"
-        aria-label="Your Cart"
-        onMouseEnter={() => setIsTooltipVisible(true)} // Show tooltip on hover
-        onMouseLeave={() => setIsTooltipVisible(false)} // Hide tooltip when not hovering
-      >
-        <Icon icon="tabler:shopping-cart" className="h-8 w-8" />
-        <div className='absolute top-0 right-0 w-4 h-4 bg-coffee-200 rounded-full text-sm text-center'>
-          <p className='scale-75 -mt-0.5 text-black'>{totalItems}</p>
-        </div>
-      </button>
+  return auth && (
+    <Link
+      to="/purchase" 
+      className="
+        w-10 h-10 flex items-center justify-center relative
+      "
+    >
+      <Icon icon="tabler:shopping-cart" className="w-8 h-8 text-[#ccc5c3] dark:text-[#66564c]"/>
 
-      {/* Tooltip on hover */}
-      {isTooltipVisible && (
-        <div className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white font-semibold text-xs rounded-md p-2 opacity-100 transition-opacity duration-300 whitespace-nowrap">
-          Your Cart
-        </div>
-      )}
+      <span className="absolute top-0 right-0 w-5 h-5 flex items-center justify-center text-[0.65rem] rounded-full dark:bg-[#F2CEA9] bg-[#66564c]">
+        <span className="-mt-px text-white">{number}</span>
+      </span>
     </Link>
-  );
-};
-
-export default CartButton;
+  )
+}
