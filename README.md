@@ -97,7 +97,7 @@ npm run start:build
 ```
 **With docker:**
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 ## Usage
 ### Access the Application
