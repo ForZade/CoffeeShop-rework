@@ -50,7 +50,7 @@ export default function PasswordModal() {
                 >
                     <h1 
                         className="
-                            text-2xl font-bold whitespace-nowrap text-center bg-clip-text text-transparent
+                            text-2xl font-bold lg:whitespace-nowrap text-center bg-clip-text text-transparent
                             bg-gradient-to-tr from-[#C29469] via-[#ccc5c3] to-[#C29469]
                         "
                     >

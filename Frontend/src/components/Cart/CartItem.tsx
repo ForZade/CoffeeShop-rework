@@ -55,7 +55,7 @@ export default function CartItem({ id, quantity }: { id: number, quantity: numbe
         <div className="w-full h-min flex flex-wrap items-center justify-between bg-gradient-to-br lg:bg-gradient-to-r from-[#C29469] to-transparent dark:from-[#523428] dark:to-transparent pr-4 rounded-xl">
             <section className="p-2 flex gap-4">
                 <div className="aspect-square bg-slate-200 dark:bg-[#3d292e] w-16 rounded-lg">
-                    <img src="/jacobs.webp" alt="" draggable="false" className="w-full h-full object-contain"/>
+                    <img src={product?.image || "/jacobs.webp"} alt="" draggable="false" className="w-full h-full object-contain"/>
                 </div>
 
                 <header className="flex flex-col justify-center">

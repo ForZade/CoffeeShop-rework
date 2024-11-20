@@ -163,7 +163,7 @@ export default function CheckoutPage() {
                         </section>
                     </motion.div>
 
-                    <footer className="w-full absolute bottom-0 left-0 p-4 flex items-center gap-2 -mb-20">
+                    <footer className="w-full absolute bottom-0 left-0 p-4 flex items-center gap-2 -mb-20 lg:mb-0">
                         {
                             step === 2 && <Button type="width" icon="tabler:arrow-left" onClick={() => setStep(step - 1)}>Atgal</Button>
                         }
