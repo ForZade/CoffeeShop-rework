@@ -1,11 +1,10 @@
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Input from '../../../Input';
 import Button from '../../../Button';
 import { Icon } from '@iconify/react/dist/iconify.js';
 
-export default function DiscountForm({ action, code, addDiscount, editDiscount }) {
+export default function DiscountForm({ action, code, addDiscount, editDiscount }: any) {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     defaultValues: {
       code: code?.code || '',
@@ -25,7 +24,7 @@ export default function DiscountForm({ action, code, addDiscount, editDiscount }
     }
   }, [code, setValue]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     try {
         if (action === 'add') {
             await addDiscount(data);

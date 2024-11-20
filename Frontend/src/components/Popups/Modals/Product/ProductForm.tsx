@@ -128,7 +128,7 @@ export default function ProductForm({ formType }: { formType: string}) {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col gap-6">
             <section className="flex flex-col gap-2">
                 <Input 
                     type="text" 

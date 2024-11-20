@@ -20,7 +20,7 @@ export default function PasswordModal() {
             closeModal();
             navigate('/');
         }
-        catch (err: unknown) {
+        catch (err: any) {
             setError("password", {
                 type: "server",
                 message: err.response?.data?.message || "Iškilo problema ištrinant paskyrą.",
@@ -68,7 +68,7 @@ export default function PasswordModal() {
                     />
 
                     <section className="w-full h-full flex items-center gap-4">
-                        <Button type="submit" onClick={handleSubmit(onSubmit)}>Ištrinti</Button>
+                        <Button type="submit" onClick={handleSubmit(onSubmit as any)}>Ištrinti</Button>
                         <Button type="width" onClick={closeModal}>Atšaukti</Button>
                     </section>
                 </div>

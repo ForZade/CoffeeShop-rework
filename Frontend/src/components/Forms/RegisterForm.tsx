@@ -17,7 +17,7 @@ interface FormInputs {
 
 export default function RegisterForm() {
     const navigate = useNavigate();
-    const { register, handleSubmit, setError, setValue, formState: { errors } } = useForm<FormInputs>();
+    const { register, handleSubmit, setError, formState: { errors } } = useForm<FormInputs>();
     const { successAlert, errorAlert } = useAlert();
     const { checkAuth, toggle } = useAuth();
     const [visiblePassword, setVisiblePassword] = useState(false);

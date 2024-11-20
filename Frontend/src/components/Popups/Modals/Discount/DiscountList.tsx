@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { DiscountProps } from "./DiscountModal";
 

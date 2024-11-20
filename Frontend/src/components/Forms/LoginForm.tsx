@@ -20,12 +20,12 @@ export default function LoginForm() {
             await checkAuth();
             toggle();
         }
-        catch (err: unknown) {
+        catch (err: any) {
             if (axios.isAxiosError(err) && err.response?.data?.errors) {
                 // Parse Express Validator errors and set them to the form
                 const apiErrors = err.response.data.errors;
                 apiErrors.forEach((error: { path: string; msg: string }) => {
-                    setError(error.path as keyof FormInputs, { type: 'manual', message: error.msg });
+                    setError(error.path as string, { type: 'manual', message: error.msg });
                 });
             } 
             else if (axios.isAxiosError(err) && err.response?.data?.error) {
@@ -130,7 +130,7 @@ export default function LoginForm() {
             <Button 
                 type="submit"
                 icon="tabler:key"
-                onClick={handleSubmit(onSubmit)}
+                onClick={handleSubmit(onSubmit as any)}
             >
                 Prisijungti
             </Button>

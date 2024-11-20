@@ -14,7 +14,7 @@ export default function InputEye({ visibility, onClick }: { visibility: boolean,
                 `}
             >
                 <button onClick={onClick}>
-                    <Icon icon="tabler:eye" className="w-6 h-6 active:scale-75 transition-[transform,color] dark:text-white" />
+                    <Icon icon={icon} className="w-6 h-6 active:scale-75 transition-[transform,color] dark:text-white" />
                 </button>
             </div>
         </main>

@@ -41,7 +41,7 @@ export default function ContactsForm () {
               // Parse Express Validator errors and set them to the form
               const apiErrors = err.response.data.errors;
               apiErrors.forEach((error: { path: string; msg: string }) => {
-                  setError(error.path as keyof FormInputs, { type: 'manual', message: error.msg });
+                  setError(error.path as any, { type: 'manual', message: error.msg });
               });
           } else {
               // Set a general error for unknown issues
@@ -90,7 +90,7 @@ export default function ContactsForm () {
             register={register('message')}
             error={errors.message?.message as string}
           />
-          <Button type="submit" onClick={handleSubmit(onSubmit)} icon="tabler:send">Send</Button>
+          <Button type="submit" onClick={handleSubmit(onSubmit as any)} icon="tabler:send">Send</Button>
       </form>
   </div>
 </section>

@@ -1,6 +1,4 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useState } from "react";
-import { useCart } from "../../contexts/CartContext";
 import axios from "axios";
 
 interface ProductProps {
@@ -13,7 +11,6 @@ interface ProductProps {
 
 export default function TransactionItem({ id, quantity }: { id: number, quantity: number }) {
     const [product, setProduct] = useState<ProductProps | undefined>(undefined);
-    const { getCart } = useCart();
 
     useEffect(() => {
         const loadProduct = async () => {

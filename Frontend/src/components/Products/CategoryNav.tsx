@@ -1,40 +1,52 @@
 import { useAlert } from "../../contexts/AlertContext";
 import { useAuth } from "../../contexts/AuthContext";
+import { useRef, useState } from "react";
 import Button from "../Button";
+import Dropdown from "../Dropdown/Dropdown";
 import CategoryItem from "./CategoryItem";
+import DropdownItem from "../Dropdown/DropdownItem";
 
 export default function CategoryNav() {
+    const [open, setOpen] = useState<boolean>(false);
     const { productModal } = useAlert();
     const { auth, user } = useAuth();
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const categories = [
         {
             name: "Visos kavos",
-            icon: "tabler:cup"
+            icon: "tabler:cup",
+            link: "/produktai"
         },
         {
             name: "Kavos pupelės",
-            icon: "game-icons:coffee-beans"
+            icon: "game-icons:coffee-beans",
+            link: "/produktai/kavos-pupeles"
         },
         {
             name: "Aromatizuota kava",
-            icon: "tabler:coffee"
+            icon: "tabler:coffee",
+            link: "/produktai/aromatizuota-kava"
         },
         {
             name: "Kavos be kafeino",
-            icon: "tabler:cup-off"
+            icon: "tabler:cup-off",
+            link: "/produktai/kavos-be-kafeino"
         },
         {
             name: "Šalta kava",
-            icon: "game-icons:soda-can"
+            icon: "game-icons:soda-can",
+            link: "/produktai/salta-kava"
         },
         {
             name: "Specijalios kavos",
-            icon: "tabler:gift"
+            icon: "tabler:gift",
+            link: "/produktai/specijalios-kavos"
         },
         {
             name: "Kitos kavos",
-            icon: "game-icons:coffee-pot"
+            icon: "game-icons:coffee-pot",
+            link: "/produktai/kitos-kavos"
         }
     ]
 
@@ -64,10 +76,29 @@ export default function CategoryNav() {
                         onClick={() => productModal("add")}
                     />
                 }
-                <Button
-                    icon="tabler:adjustments-horizontal"
-                    type="icon"
-                />
+                <div className="w-min h-min relative z-20" ref={dropdownRef}>
+                    <Button
+                        icon="tabler:adjustments-horizontal"
+                        type="icon"
+                        onClick={() => setOpen(!open)}
+                    />
+                    
+                    {
+                        open && <Dropdown>
+                            {
+                                categories && categories.map((category) => (
+                                    <DropdownItem
+                                        key={category.name}
+                                        icon={category.icon}
+                                        link={category.link}
+                                    >
+                                        {category.name}
+                                    </DropdownItem>
+                                ))
+                            }
+                        </Dropdown>
+                    }
+                </div>
             </section>
         </div>
     )

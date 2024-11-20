@@ -36,7 +36,7 @@ export default function UserForm() {
                 // Parse Express Validator errors and set them to the form
                 const apiErrors = err.response.data.errors;
                 apiErrors.forEach((error: { path: string; msg: string }) => {
-                    setError(error.path as keyof FormInputs, { type: 'manual', message: error.msg });
+                    setError(error.path as string, { type: 'manual', message: error.msg });
                 });
             } else {
                 // Set a general error for unknown issues
@@ -99,7 +99,7 @@ export default function UserForm() {
                     <Button
                         type="submit"
                         icon="tabler:send"
-                        onClick={handleSubmit(onSubmit)}
+                        onClick={handleSubmit(onSubmit as any)}
                     >Keisti</Button>
                 </div>
             </div>

@@ -73,7 +73,7 @@ export default function UserBubble() {
         <div className="relative overflow-visible z-30" ref={dropdownRef}>
             {
                 auth ? 
-                <Button icon="tabler:user" type="icon" onClick={openDropdown}></Button>
+                <Button icon="tabler:user" type="icon" onClick={openDropdown as any}></Button>
                 :
                 <Button icon="tabler:user" onClick={toggle}>Prisijungti</Button>
             }

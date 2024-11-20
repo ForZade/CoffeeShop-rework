@@ -81,9 +81,9 @@ export default function InputText({
                         <textarea
                             name={inputName}
                             placeholder={placeholder}
-                            {...register}
-                            onKeyDown={(event: KeyboardEvent<HTMLTextAreaElement>) => inputUtils.handleInputKeyDown(event, type)}
-                            onChange={(event: ChangeEvent<HTMLTextAreaElement>) => inputUtils.handleInputChange(event, type, setInputLength)}
+                            {...register as any}
+                            onKeyDown={(event: KeyboardEvent<HTMLTextAreaElement>) => inputUtils.handleInputKeyDown(event as any, type)}
+                            onChange={(event: ChangeEvent<HTMLTextAreaElement>) => inputUtils.handleInputChange(event as any, type, setInputLength)}
                             className="
                                 grow h-80 bg-transparent py-2 px-4 dark:text-white appearance-none outline-none resize-none
                             "
@@ -95,7 +95,7 @@ export default function InputText({
                             type={inputUtils.handleType(type, visible)}
                             name={inputName}
                             placeholder={placeholder}
-                            {...register}
+                            {...register as any}
                             onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => inputUtils.handleInputKeyDown(event, type)}
                             onChange={(event: ChangeEvent<HTMLInputElement>) => inputUtils.handleInputChange(event, type, setInputLength)}
                             step={0.01}

@@ -94,99 +94,117 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="w-1/3 p-6 shadow-lg rounded bg-white">
-        <h2 className="text-2xl font-bold mb-4">{isResetting ? "Reset Password" : "Request Password Reset"}</h2>
+    <div
+      className="w-full h-full grid place-items-center"
+    >
+      <main 
+      className="
+        w-full sm:w-[520px] h-min sm:max-h-[920px] rounded-3xl shadow-lg flex flex-col z-[100]
+        dark:bg-gradient-to-tr dark:from-[#C29469] dark:via-[#ccc5c3] dark:to-[#C29469] bg-white
+      "
+      onClick={(e) => e.stopPropagation()}
+    >
+        <div 
+            className="
+                w-full h-full rounded-3xl p-0.5
+                bg-gradient-to-br from-transparent dark:from-transparent via-30% via-[#f1e2d2] dark:via-[#523428] to-[#f1e2d2] dark:to-[#523428]
+            "
+        >
+            <div className="w-full h-full bg-[#f1e2d2] dark:bg-[#523428] rounded-3xl p-2 flex flex-col px-8 py-6 gap-4">
+                <h2 className="text-2xl font-bold mb-4 text-center text-transparent bg-clip-text
+                        bg-gradient-to-tr dark:from-[#C29469] dark:via-[#ccc5c3] dark:to-[#C29469] from-[#3b2d2b] via-[#66564c] to-[#3b2d2b]">{isResetting ? "Reset Password" : "Request Password Reset"}</h2>
 
-        {error && <div className="text-red-500 mb-4">{error}</div>}
-        {success && <div className="text-green-500 mb-4">{success}</div>}
+                {error && <div className="text-red-500 mb-4">{error}</div>}
+                {success && <div className="text-green-500 mb-4">{success}</div>}
 
-        {!isResetting ? (
-          <>
-            {!hasToken ? (
-              <form onSubmit={handlePasswordResetRequest}>
-                <div className="mb-4">
-                  <label htmlFor="email" className="block text-gray-700">Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="mt-1 p-2 border border-gray-300 w-full"
-                    required
-                  />
-                </div>
+                {!isResetting ? (
+                  <>
+                    {!hasToken ? (
+                      <form onSubmit={handlePasswordResetRequest}>
+                        <div className="mb-4">
+                          <label htmlFor="email" className="block text-black dark:text-white">Email</label>
+                          <input
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="mt-1 p-2 border border-gray-300 w-full"
+                            required
+                          />
+                        </div>
 
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white py-2 px-4 rounded w-full"
-                >
-                  Send Reset Email
-                </button>
-              </form>
-            ) : null}
-          </>
-        ) : (
-          <form onSubmit={handlePasswordReset}>
-            <div className="mb-4">
-              <label htmlFor="password" className="block text-gray-700">New Password</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1 p-2 border border-gray-300 w-full"
-                  required
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 flex items-center pr-3"
-                  onClick={() => setShowPassword(prev => !prev)}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
+                        <button
+                          type="submit"
+                          className="bg-blue-500 text-white py-2 px-4 rounded w-full"
+                        >
+                          Send Reset Email
+                        </button>
+                      </form>
+                    ) : null}
+                  </>
+                ) : (
+                  <form onSubmit={handlePasswordReset}>
+                    <div className="mb-4">
+                      <label htmlFor="password" className="block text-black dark:text-white">New Password</label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          id="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="mt-1 p-2 border border-gray-300 w-full"
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 flex items-center pr-3"
+                          onClick={() => setShowPassword(prev => !prev)}
+                        >
+                          {showPassword ? "Hide" : "Show"}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <label htmlFor="repeatPassword" className="block text-black dark:text-white">Confirm New Password</label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          id="repeatPassword"
+                          value={repeatPassword}
+                          onChange={(e) => setRepeatPassword(e.target.value)}
+                          className="mt-1 p-2 border border-gray-300 w-full"
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 flex items-center pr-3"
+                          onClick={() => setShowPassword(prev => !prev)}
+                        >
+                          {showPassword ? "Hide" : "Show"}
+                        </button>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="bg-blue-500 text-white py-2 px-4 rounded w-full"
+                    >
+                      Reset Password
+                    </button>
+
+                    <button
+                      type="button"
+                      className="mt-2 text-blue-500"
+                      onClick={() => setIsResetting(false)}
+                    >
+                      Back to requesting reset
+                    </button>
+                  </form>
+                )}
             </div>
-
-            <div className="mb-4">
-              <label htmlFor="repeatPassword" className="block text-gray-700">Confirm New Password</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="repeatPassword"
-                  value={repeatPassword}
-                  onChange={(e) => setRepeatPassword(e.target.value)}
-                  className="mt-1 p-2 border border-gray-300 w-full"
-                  required
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 flex items-center pr-3"
-                  onClick={() => setShowPassword(prev => !prev)}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded w-full"
-            >
-              Reset Password
-            </button>
-
-            <button
-              type="button"
-              className="mt-2 text-blue-500"
-              onClick={() => setIsResetting(false)}
-            >
-              Back to requesting reset
-            </button>
-          </form>
-        )}
-      </div>
+        </div>
+    </main>
     </div>
   );
 }

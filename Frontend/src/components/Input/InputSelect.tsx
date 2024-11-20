@@ -1,13 +1,12 @@
 import InputDropdown from "./InputDropdown"
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion";
-import { use } from "framer-motion/client";
 
 interface InputProps {
     inputName: string;
     dropdownData: string[];
     register: unknown;
-    setValue?: unknown;
+    setValue?: any;
     value?: string | number;
 }
 
@@ -57,7 +56,7 @@ export default function InputSelect({ inputName, dropdownData, register, setValu
                         type="text"
                         name={inputName}
                         readOnly
-                        {...register}
+                        {...register as any}
                         onClick={() => setOpen(!open)}
                         value={option}
                         className="

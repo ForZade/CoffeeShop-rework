@@ -43,7 +43,7 @@ export default function CheckoutPage() {
                 // Parse Express Validator errors and set them to the form
                 const apiErrors = err.response.data.errors;
                 apiErrors.forEach((error: { path: string; msg: string }) => {
-                    setError(error.path as keyof FormInputs, { type: 'manual', message: error.msg });
+                    setError(error.path as string, { type: 'manual', message: error.msg });
                 });
             } else {
                 // Set a general error for unknown issues
@@ -170,7 +170,7 @@ export default function CheckoutPage() {
                         {
                             step === 1 ? <Button type="width" icon="tabler:arrow-right" onClick={() => setStep(step + 1)}>Toliau</Button>
                             :
-                            <Button type="submit" icon="tabler:arrow-right" onClick={handleSubmit(onSubmit)}>Pirkti</Button>
+                            <Button type="submit" icon="tabler:arrow-right" onClick={handleSubmit(onSubmit as (data: any) => void)}>Pirkti</Button>
                         }
                         
                     </footer>

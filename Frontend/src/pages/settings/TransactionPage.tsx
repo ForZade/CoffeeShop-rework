@@ -21,7 +21,7 @@ export default function TransactionPage() {
             <div className="w-full grow flex">
                 <section className="grow flex flex-col gap-2">
                     {
-                        transaction.order_details.length && transaction.order_details.map((item) => <TransactionItem key={item.productId} id={item.productId} quantity={item.quantity} />) 
+                        transaction.order_details.length && transaction.order_details.map((item: any) => <TransactionItem key={item.productId} id={item.productId} quantity={item.quantity} />) 
                     }
                 </section>
 
