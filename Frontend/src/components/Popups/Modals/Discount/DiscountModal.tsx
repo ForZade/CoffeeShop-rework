@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import DiscountList from "./DiscountList";
 import DiscountForm from "./DiscountForm";
+import Button from "../../../Button";
 
 export interface DiscountProps {
     code: string;
@@ -69,31 +70,41 @@ export default function DiscountModal() {
 
     return (
         <div 
-            className="w-full sm:w-[520px] h-full sm:max-h-[720px] bg-slate-100 dark:bg-zinc-700 rounded-3xl shadow-lg flex flex-col px-4 py-4 relative"
-            onClick={(e) => e.stopPropagation()}
+            className="
+                w-full sm:w-[520px] h-full sm:max-h-[720px] rounded-xl
+                dark:bg-gradient-to-tr dark:from-[#C29469] dark:via-[#ccc5c3] dark:to-[#C29469] bg-white
+            "
         >
-            <section className="grow overflow-y-scroll">
-                <DiscountList 
-                    codes={codes} 
-                    openEdit={editForm} 
-                    deleteCode={deleteCode} 
-                />
-            </section>
-
-            <button 
-                className="w-full h-10 rounded-xl bg-blue-400 font-bold dark:text-white"
-                onClick={addForm}
+            <div
+                className="
+                    w-full h-full rounded-xl p-0.5
+                    bg-gradient-to-br from-transparent dark:from-transparent via-30% via-[#f1e2d2] dark:via-[#523428] to-[#f1e2d2] dark:to-[#523428]
+                "
             >
-                Add Discount Code
-            </button>
-
-            {
-                (action === 'add' || action === 'edit') && (
-                    <section className="absolute top-0 right-0 w-full h-full bg-red-400">
-                        <DiscountForm addDiscount={addDiscount} editDiscount={editDiscount} code={code} action={action}/>
+                <div 
+                    className="w-full sm:w-[520px] h-full sm:max-h-[720px] bg-[#f1e2d2] dark:bg-[#523428] rounded-xl shadow-lg flex flex-col px-4 py-4 relative"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <section className="grow overflow-y-scroll">
+                        <DiscountList 
+                            codes={codes} 
+                            openEdit={editForm} 
+                            deleteCode={deleteCode} 
+                        />
                     </section>
-                )
-            }
+
+                    <Button type="width" onClick={addForm} icon="tabler:plus">Add Discount</Button>
+
+                    {
+                        (action === 'add' || action === 'edit') && (
+                            <section className="absolute top-0 right-0 w-full h-full bg-[#f1e2d2] dark:bg-[#523428] rounded-xl">
+                                <DiscountForm addDiscount={addDiscount} editDiscount={editDiscount} code={code} action={action}/>
+                            </section>
+                        )
+                    }
+                </div>
+            </div>
         </div>
+        
     );
 }

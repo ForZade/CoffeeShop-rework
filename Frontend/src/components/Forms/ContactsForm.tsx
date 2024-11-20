@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import Input from '../Input';
+import Button from '../Button';
+import { useAlert } from '../../contexts/AlertContext';
 
 export default function ContactsForm () {
+    const { register, handleSubmit, setError, setValue, formState: { errors } } = useForm();
+    const { successAlert, errorAlert } = useAlert();
     const [email, setEmail] = useState('');
-    const [subject, setSubject] = useState('');
-    const [message, setMessage] = useState('');
-    const [disabled, setDisabled] = useState(false)
 
     async function getEmail() {
         try {
@@ -13,7 +16,7 @@ export default function ContactsForm () {
 
             if(response.data.authorized){
               setEmail(response.data.data.email);
-              setDisabled(true);
+              setValue('email', response.data.data.email);
             }
         } catch (error) {
           console.error('Error:', error);
@@ -24,43 +27,70 @@ export default function ContactsForm () {
         getEmail()
       }, []);
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
+    const onSubmit = async (data: { email: string; subject: string; message: string; }) => {
         try {
-            await axios.post('http://localhost:7000/api/v1/users/contacts', {
-              email,
-              subject,
-              message,
-            }, { withCredentials: true });
+            await axios.post('http://localhost:7000/api/v1/users/contacts', data, { withCredentials: true });
             
-            alert("Message successful");
-            setEmail('');
-            setSubject('');
-            setMessage('');
-            getEmail();
+            successAlert('Žinutė sėkmingai išsiūsta!')
+            setValue('email', '');
+            setValue('subject', '');
+            setValue('message', '');
 
-          } catch (error) {
-            console.error('Error:', error);
+          } catch (err: unknown) {
+            if (axios.isAxiosError(err) && err.response?.data?.errors) {
+              // Parse Express Validator errors and set them to the form
+              const apiErrors = err.response.data.errors;
+              apiErrors.forEach((error: { path: string; msg: string }) => {
+                  setError(error.path as keyof FormInputs, { type: 'manual', message: error.msg });
+              });
+          } else {
+              // Set a general error for unknown issues
+              setError("message", { type: "manual", message: "Nepavyko išsiūsti Žinutės. Bandykite dar kartą." });
+              errorAlert("Įvyko klaida įkeliant duomenis.");
           }
-        };
+          }
+      };
 
 
 
     return (
         <section>
   <div className="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
-      <form onSubmit={handleSubmit} className="space-y-8">
-          <div className='border-2'>            
+      <form className="">
+          {/* <div className='border-2'>            
               <input type="email" disabled={disabled}   className='w-[45.5rem] min-w-2/3'  placeholder="name@flowbite.com" required value={email}  onChange={(event) => setEmail(event.target.value)}></input>
-          </div>
-          <div className='border-2'>           
+          </div> */}
+          <Input
+            type='email'
+            inputName='El. Paštas'
+            placeholder='jūsų el. paštas.'
+            value={email}
+            disabled={true}
+            register={register('email')}
+          />
+          {/* <div className='border-2'>           
               <input type="text" className='w-[45.5rem] min-w-2/3' placeholder="Let us know how we can help you" required value={subject}  onChange={(event) => setSubject(event.target.value)}></input>
-          </div>
-          <div className='border-2'>            
+          </div> */}
+          <Input
+            type="text"
+            inputName="Tema"
+            placeholder="Tema"
+            max={64}
+            register={register('subject')}
+            error={errors.subject?.message as string}
+          />
+          {/* <div className='border-2'>            
               <textarea className='w-[45.5rem] min-w-2/3' placeholder="Leave a comment..." required  value={message}  onChange={(event) => setMessage(event.target.value)}></textarea>
-          </div>
-          <button type="submit" className='border-2 '>Send message</button>
+          </div> */}
+          <Input
+            type="textarea"
+            inputName="Žinute"
+            placeholder="Žinute"
+            max={1024}
+            register={register('message')}
+            error={errors.message?.message as string}
+          />
+          <Button type="submit" onClick={handleSubmit(onSubmit)} icon="tabler:send">Send</Button>
       </form>
   </div>
 </section>

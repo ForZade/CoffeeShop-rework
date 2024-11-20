@@ -11,7 +11,7 @@ interface ReviewProps {
 export default function ReviewButton({ liked, productId }: ReviewProps) {
     const [clicked, setClicked] = useState(false);
     const [likes, setLikes] = useState(liked);
-    const { checkAuth, user } = useAuth();
+    const { checkAuth, user, auth } = useAuth();
 
     async function postReview(event: React.MouseEvent<HTMLButtonElement>) {
         try {
@@ -57,7 +57,11 @@ export default function ReviewButton({ liked, productId }: ReviewProps) {
 
       const icon = clicked ? "tabler:star-filled" : "tabler:star";
     return (
-      <div className="w-min h-min">
+      <div className="w-min h-min relative">
+        {
+          auth && <h1 className="absolute -top-7 left-1/2 -translate-x-1/2 font-bold text-base text-white">{likes}</h1>
+        }
+
         <button 
           className="w-min h-min" 
           onClick={postReview}

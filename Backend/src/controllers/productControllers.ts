@@ -3,15 +3,13 @@ import Product, { ProductInterface } from "../models/productModel";
 import User, { UserInterface } from "../models/userModel";
 import { generateProductId } from "../utils/idgen";
 import { verifyToken, TokenInterface } from "../utils/token";
-const Decimal128 = require('mongodb').Decimal128;
+import { Decimal128 } from "mongodb";
 
 const productControllers = {
   // ^ POST /api/v1/products - Create product (creates product)
   createProduct: async (req: Request, res: Response, next: NextFunction) => {
     const { name, description, price, image, category, size }: ProductInterface = req.body;
     try {
-      console.log(name, description, price, image, category, size);
-
       const id: number = await generateProductId();
       const newProduct: ProductInterface = new Product({
         id,
@@ -52,15 +50,9 @@ const productControllers = {
   // ^ GET /api/v1/products/:category/:id - Get product by id (gets product by id)
   getProduct: async (req: Request, res: Response, next: NextFunction) => {
     const id: number = parseInt(req.params.id);
-    const category: string = req.params.category;
 
     try {
-      const categoryString = category
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-
-      const data: ProductInterface = await Product.findOne({ id, category: categoryString });
+      const data: ProductInterface = await Product.findOne({ id });
 
       res.status(201).json({
         message: "Success",
@@ -102,6 +94,8 @@ const productControllers = {
     });
 
     try {
+      console.log(fieldsToUpdate);
+
       const result = await Product.updateOne(
         { id },
         { $set: fieldsToUpdate },

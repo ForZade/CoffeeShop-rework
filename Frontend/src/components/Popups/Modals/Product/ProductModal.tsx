@@ -7,7 +7,7 @@ export default function ProductPopup() {
     return (
         <main 
             className="
-                w-full sm:w-[520px] h-min sm:max-h-[720px] rounded-3xl shadow-lg flex flex-col z-[100]
+                w-full sm:w-[520px] h-min sm:max-h-[920px] rounded-3xl shadow-lg flex flex-col z-[100]
                 dark:bg-gradient-to-tr dark:from-[#C29469] dark:via-[#ccc5c3] dark:to-[#C29469] bg-white
             "
             onClick={(e) => e.stopPropagation()}

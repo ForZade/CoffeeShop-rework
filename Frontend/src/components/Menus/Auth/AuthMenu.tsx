@@ -3,7 +3,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import AuthFormSelector from "./AuthFormSelector";
 import CloseButton from "../CloseButton";
 import LoginForm from "../../Forms/LoginForm";
-import RegistrationForm from "../../Forms/RegisterForm";
+import RegisterForm from "../../Forms/RegisterForm";
 
 export default function AuthMenu() {
     const { open, form } = useAuth();
@@ -31,7 +31,7 @@ export default function AuthMenu() {
                     form === 'login' ?
                         <LoginForm/>
                         :
-                        <RegistrationForm/>
+                        <RegisterForm/>
                 }
             </div>
         </motion.main>

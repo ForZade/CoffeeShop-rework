@@ -15,7 +15,7 @@ import { generateToken } from "../../src/utils/token";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use("/test/products/patch", productControllers.getProductById);
+app.use("/test/products/patch", productControllers.getProduct);
 
 let mongoServer: MongoMemoryServer;
 

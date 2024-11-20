@@ -1,21 +1,21 @@
 interface InputDropdownProps {
-    data: string[]
+    data?: string[]
     click: (option: string) => void
 }
 
 export default function InputDropdown({ data, click }: InputDropdownProps) {
     const handleClick = async (item: string) => {
-        const option = item.trim().replace(/[ąčęėįšųūž]/g, (c) => {
+        const option = item.trim().replace(/[ąčęėįšųūžĄČĘĖĮŠŲŪŽ]/g, (c) => {
             const replacements: { [key: string]: string } = {
-                'ą': 'a',
-                'č': 'c',
-                'ę': 'e',
-                'ė': 'e',
-                'į': 'i',
-                'š': 's',
-                'ų': 'u',
-                'ū': 'u',
-                'ž': 'z'
+                'ą': 'a', 'Ą': 'Ą',
+                'č': 'c', 'Č': 'C',
+                'ę': 'e', 'Ę': 'E',
+                'ė': 'e', 'Ė': 'E',
+                'į': 'i', 'Į': 'I',
+                'š': 's', 'Š': 'S',
+                'ų': 'u', 'Ų': 'U',
+                'ū': 'u', 'Ū': 'U',
+                'ž': 'z', 'Ž': 'Z',
             };
             return replacements[c] || c;
         });
@@ -38,11 +38,11 @@ export default function InputDropdown({ data, click }: InputDropdownProps) {
             >
                     <ul className="flex flex-col divide-y p-1">
                         {
-                            data.length ? data.map((item, index) => (
+                            data && data.length ? data.map((item, index) => (
                                 <li 
                                     key={index}
                                     className="
-                                        w-full h-min py-1 px-3 bg-[#EFD8BF] hover:bg-[#F2CEA9] cursor-pointer my-0.5
+                                        w-full h-min py-1 px-3 bg-[#EFD8BF] hover:bg-[#F2CEA9] dark:bg-[#3b2d2b] dark:hover:bg-[#66564c] cursor-pointer my-0.5
                                     "
                                     onClick={() => handleClick(item)}
                                 >

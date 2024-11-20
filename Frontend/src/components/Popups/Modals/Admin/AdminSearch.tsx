@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import AdminSearchList from "./AdminSearchList";
 
-export default function AdminSearch({ addAdmin }: { addAdmin: (id: number) => void }) {
+export default function AdminSearch({ addAdmin }: { addAdmin: (email: string) => void }) {
     const searchRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [users, setUsers] = useState([]);

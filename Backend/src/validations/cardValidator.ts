@@ -2,6 +2,26 @@ import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 
 export const CARD_VALIDATOR = [
+  body('address')
+    .notEmpty()
+    .withMessage("ADDRESS CANNOT BE EMPTY")
+    .matches(/^[A-Za-z\s]+$/)
+    .withMessage("ADDRESS CANNOT CONTAIN NUMBERS OR SPECIAL CHARACTERS"),
+
+  body('city')
+    .notEmpty()
+    .withMessage("CITY CANNOT BE EMPTY")
+    .matches(/^[A-Za-z\s]+$/)
+    .withMessage("CITY CANNOT CONTAIN NUMBERS OR SPECIAL CHARACTERS"),
+
+  body('zip')
+    .notEmpty()
+    .withMessage("ZIP CANNOT BE EMPTY")
+    .matches(/^[0-9]+$/)
+    .withMessage("ZIP CANNOT CONTAIN LETTERS OR SPECIAL CHARACTERS")
+    .isLength({ min: 5, max: 5 })
+    .withMessage("ZIP MUST BE 5 CHARACTERS"),
+
   body("card_number")
     .isLength({ min: 13, max: 19 })
     .withMessage("CARD NUMBER MUST BE BETWEEN 13 AND 19 CHARACTERS")
@@ -14,7 +34,7 @@ export const CARD_VALIDATOR = [
     .notEmpty()
     .withMessage("CVC/CVV CANNOT BE EMPTY"),
 
-  body("expiry_date")
+  body("expiry")
     .custom((value) => {
       // Example used : "05/27"
       const today = new Date();

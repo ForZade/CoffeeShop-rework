@@ -1,15 +1,19 @@
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface DropdownItemProps {
     children: React.ReactNode;
     icon?: string;
     link?: string;
     highlight?: boolean;
+    role?: string;
     onClick?: () => void;
 }
 
-export default function DropdownItem({ children, icon, link, onClick }: DropdownItemProps) {
+export default function DropdownItem({ children, icon, link, role, onClick }: DropdownItemProps) {
+    const { user } = useAuth();
+
     return link ? (
         <li 
             className="list-none whitespace-nowrap py-1 px-2 rounded-md cursor-pointer select-none
@@ -33,7 +37,7 @@ export default function DropdownItem({ children, icon, link, onClick }: Dropdown
     )
     :
     (
-        <li 
+        role && user?.roles.includes(role) && <li 
             className="list-none whitespace-nowrap py-1 px-2 rounded-md cursor-pointer select-none
                 dark:hover:bg-[#66564c] hover:bg-[#F2CEA9]
             "

@@ -11,7 +11,7 @@ import { useAuth } from "../../contexts/AuthContext";
 export default function ProductsPage() {
     const { products, setProducts } = useProduct();
     const { productModal } = useAlert();
-    const { auth, checkAuth } = useAuth();
+    const { auth, user, checkAuth } = useAuth();
     const data: ProductProps[] = useLoaderData() as ProductProps[];
 
     useEffect(() => {
@@ -20,16 +20,16 @@ export default function ProductsPage() {
     }, [data]);
 
     return (
-        <main className="relative h-auto py-4 px-12 sm:px-16 md:px-20 lg:px-28 xl:px-32 2xl:px-48 flex flex-col gap-8 z-10">
+        <main className="relative h-auto py-4 px-8 sm:px-16 md:px-20 lg:px-28 xl:px-32 2xl:px-48 flex flex-col gap-8 z-10">
             <h1 
                 className="
-                    text-5xl font-bold bg-clip-text text-transparent h-16 text-center relative
+                    text-5xl font-bold bg-clip-text text-transparent h-min text-center relative leading-tight
                     bg-gradient-to-br dark:from-[#C29469] dark:via-[#ccc5c3] dark:to-[#C29469] from-[#3b2d2b] via-[#66564c] to-[#3b2d2b]
                 "
             >
                 Atrask mūsų kavą!
                 {
-                    auth && <div className="absolute w-min h-min text-base top-0 right-0">
+                    auth && user?.roles.includes("admin") && <div className="absolute w-min h-min text-base top-0 right-0 hidden lg:block">
                         <Button icon="tabler:plus" onClick={() => productModal("add")}>Pridėti prekę</Button>
                     </div>
                 }

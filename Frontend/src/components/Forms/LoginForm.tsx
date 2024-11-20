@@ -1,125 +1,139 @@
-import { useState } from "react";
 import axios from "axios";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useAlert } from "../../contexts/AlertContext";
 import { useAuth } from "../../contexts/AuthContext";
+import InputEye from "../Input/extras/InputEye";
+import Button from "../Button";
 
 export default function LoginForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-  
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const { checkAuth, toggle } = useAuth();
+    const { register, handleSubmit, setError, formState: { errors } } = useForm();
+    const { successAlert, errorAlert } = useAlert();
+    const { toggle, checkAuth } = useAuth();
+    const [visible, setVisible] = useState(false);
 
-  const onSubmit = async (data: { email: string; password: string; rememberMe: boolean }) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await axios.post(
-        "http://localhost:7000/api/v1/auth/login",
-        {
-          email: data.email,
-          password: data.password,
-          remember: data.rememberMe,
-        },
-        { withCredentials: true }
-      );
-
-      checkAuth();
-      toggle()
-    } catch (err: any) {
-      if (err.response) {
-        console.error("Response error:", err.response.data);
-        if (err.response.data.errors) {
-          const errorMessages = err.response.data.errors
-            .map((err: any) => err.msg)
-            .join(", ");
-          setError(errorMessages);
-        } else {
-          setError(err.response.data.message || "An error occurred.");
+    const onSubmit = async (data: { email: string; password: string; remember: boolean; }) => {
+        try {
+            await axios.post('http://localhost:7000/api/v1/auth/login', data, { withCredentials: true });
+            successAlert('Sėkmingai prisijungėte!')
+            await checkAuth();
+            toggle();
         }
-      } else {
-        console.error("Error message:", err.message);
-        setError("An error occurred.");
-      }
-    } finally {
-      setLoading(false);
+        catch (err: unknown) {
+            if (axios.isAxiosError(err) && err.response?.data?.errors) {
+                // Parse Express Validator errors and set them to the form
+                const apiErrors = err.response.data.errors;
+                apiErrors.forEach((error: { path: string; msg: string }) => {
+                    setError(error.path as keyof FormInputs, { type: 'manual', message: error.msg });
+                });
+            } 
+            else if (axios.isAxiosError(err) && err.response?.data?.error) {
+                const apiError = err.response.data.error;
+                setError(apiError.path as string, { type: 'manual', message: apiError.message });
+            }
+            else {
+                console.error(err.response.data.message);
+                errorAlert('Iškilo klaida prisijungiant. Bandykite dar kartą.');
+            }
+        }
     }
-  };
 
-  return (
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full p-6 shadow-lg rounded bg-slate-200 dark:bg-zinc-800"
-      >
-        {error && <div className="text-red-500 mb-4">{error}</div>}
+    return (
+        <div className="w-full flex flex-col gap-4">
+            <section>
+                <label 
+                    htmlFor="email" 
+                    className="
+                        text-base font-semibold ml-2 bg-clip-text text-transparent
+                        bg-gradient-to-tr dark:from-[#C29469] dark:via-[#ccc5c3] dark:to-[#C29469] from-[#3b2d2b] via-[#66564c] to-[#3b2d2b]
+                    "
+                >
+                    El.paštas
+                </label>
 
-        <div className="">
-          <label htmlFor="email" className="block text-black dark:text-white">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            {...register("email", { required: "Email is required." })}
-            className="mt-1 p-2 border border-slate-300 dark:border-zinc-900 bg-slate-100 dark:bg-zinc-900 w-full"
-          />
-          {errors.email && <p className="text-red-500">{errors.email.message}</p>}
-        </div>
+                <div 
+                    className={`
+                        w-full h-min p-0.5 flex gap-0.5 rounded-full
+                        bg-gradient-to-tr dark:from-[#C29469] dark:via-[#ccc5c3] dark:to-[#C29469] from-[#3b2d2b] via-[#66564c] to-[#3b2d2b]
+                    `}
+                >
+                    <div 
+                        className={`
+                            grow h-full overflow-hidden flex rounded-full
+                            dark:bg-[#3b2d2b] dark:hover:bg-[#66564c] hover:bg-[#F2CEA9] bg-[#EFD8BF] 
+                            
+                        `}
+                    >
+                        <input 
+                            type="email" 
+                            {...register('email')}
+                            placeholder="El.paštas"
+                            className="grow h-full bg-transparent py-2 px-4 dark:text-white appearance-none outline-none"
+                        />
+                    </div>
+                </div>
 
-        <div className="">
-          <label htmlFor="password" className="block text-black dark:text-white">
-            Password
-          </label>
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              {...register("password", { required: "Password is required." })}
-              className="mt-1 p-2 border border-slate-300 dark:border-zinc-900 bg-slate-100 dark:bg-zinc-900 w-full"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute inset-y-0 right-0 px-3 py-2 text-gray-600"
+                {errors?.email ? <p className="text-red-500 text-sm mt-1 ml-2">{errors?.email?.message as string}</p> : <p className="w-full h-6"></p>}
+            </section>
+
+            <section>
+                <label 
+                    htmlFor="password" 
+                    className="
+                        text-base font-semibold ml-2 bg-clip-text text-transparent
+                        bg-gradient-to-tr dark:from-[#C29469] dark:via-[#ccc5c3] dark:to-[#C29469] from-[#3b2d2b] via-[#66564c] to-[#3b2d2b]
+                    "
+                >
+                    Slaptažodis
+                </label>
+                <div 
+                    className={`
+                        w-full h-min p-0.5 flex gap-0.5 rounded-full
+                        bg-gradient-to-tr dark:from-[#C29469] dark:via-[#ccc5c3] dark:to-[#C29469] from-[#3b2d2b] via-[#66564c] to-[#3b2d2b]
+                    `}
+                >
+                    <div 
+                        className={`
+                            grow h-full overflow-hidden flex rounded-l-full
+                            dark:bg-[#3b2d2b] dark:hover:bg-[#66564c] hover:bg-[#F2CEA9] bg-[#EFD8BF] 
+                            
+                        `}
+                    >
+                        <input 
+                            type={visible ? "text" : "password"}
+                            {...register('password')}
+                            placeholder="Slaptažodis"
+                            className="grow h-full bg-transparent py-2 px-4 dark:text-white appearance-none outline-none"
+                        />
+                    </div>
+
+                    <InputEye onClick={() => setVisible(!visible)} visibility={visible} />
+                </div>
+
+                {errors?.password ? <p className="text-red-500 text-sm mt-1 ml-2">{errors?.password?.message as string}</p> : <p className="w-full h-6"></p>}
+            </section>
+
+            <section className="flex flex-col gap-4 mb-4 items-end">
+                <Link to="/reset-password" className="text-[#66564c] dark:text-[#ccc5c3] underline">Pamiršai slaptažodį?</Link>
+
+                <label htmlFor="remember" className="w-full flex justify-center items-center gap-2 text-black dark:text-white">
+                    <input 
+                        type="checkbox" 
+                        id="remember"
+                        {...register("remember")}
+                    />
+                    Prisiminti
+                </label>
+            </section>
+
+            <Button 
+                type="submit"
+                icon="tabler:key"
+                onClick={handleSubmit(onSubmit)}
             >
-              {showPassword ? "Hide" : "Show"}
-            </button>
-          </div>
-          {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+                Prisijungti
+            </Button>
         </div>
-
-        <div className="text-center mt-4">
-          <Link to="/reset-password" className="text-blue-500 hover:underline">
-            Forgot Password?
-          </Link>
-        </div>
-
-        <div className="mb-4 flex items-center justify-center">
-          <input
-            type="checkbox"
-            id="rememberMe"
-            {...register("rememberMe")}
-            className="mr-2"
-          />
-          <label htmlFor="rememberMe" className="text-gray-700">
-            Remember Me
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white py-2 px-4 rounded w-full"
-          disabled={loading}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
-  );
+    )
 }

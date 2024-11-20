@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function ContactsPage () {
-    const { checkAuth, user } = useAuth();
+    const { checkAuth, user, auth } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -14,7 +14,7 @@ export default function ContactsPage () {
             } catch (error) {
                 console.error('Error:', error);
             } finally {
-                if (!user) {
+                if (!auth) {
                     navigate("/");
                 } else if (user?.email && !user?.roles.includes("user")) {
                     navigate("/verify");

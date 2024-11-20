@@ -1,7 +1,7 @@
-import Button from "../Button";
 import { useAuth } from "../../contexts/AuthContext";
 import ReviewButton from "./ReviewButton";
 import { Link } from "react-router-dom";
+import AddToCart from "./AddToCart";
 
 export interface ProductProps {
   name: string;
@@ -38,7 +38,7 @@ export default function ProductCard({ product }: CardInterface) {
           <div className="w-full h-full bg-[#523428] rounded-xl p-2 flex flex-col gap-2">
             <div className="w-full h-6 relative flex justify-center">
               <div className="w-2/3 absolute -bottom-5 flex justify-center z-10">
-                <img src="/jacobs.webp" alt="" draggable="false" />
+                <img src={product.image || "/jacobs.webp"} alt="" draggable="false" />
               </div>
 
               <div className="w-1/2 h-4 bg-white blur-2xl rounded-full"></div>
@@ -52,14 +52,14 @@ export default function ProductCard({ product }: CardInterface) {
             >
               <h3 className="w-full text-sm text-center tracking-widest">{product.category}</h3>
               <h1 className="w-full font-bold truncate text-center">{product.name}</h1>
-              <h1 className="w-full text-2xl text-center">${product.price.$numberDecimal}</h1>
+              <h1 className="w-full text-2xl text-center">{product.price.$numberDecimal}€</h1>
             </header>
 
             {
               auth && (
                 <section className="w-full flex items-center gap-2">
                   <div className="grow">
-                    <Button icon="tabler:shopping-cart" type="width">Add to cart</Button>
+                    <AddToCart productId={product.id} />
                   </div>
 
                   <ReviewButton liked={product.liked} productId={product.id} />

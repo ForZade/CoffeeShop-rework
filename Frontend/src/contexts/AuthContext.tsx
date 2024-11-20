@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export interface UserProps {
     id: number
@@ -54,6 +55,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         catch (err) {
             console.log(err);
+            setAuth(false);
+            setUser(undefined);
         }
     }, []);
 
@@ -69,17 +72,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             await axios.post("http://localhost:7000/api/v1/auth/logout", {}, { withCredentials: true });
             setAuth(false);
-        }
-        catch (error) {
-            console.error('Error:', error);
-        }
-    }
-
-    const login = async (email: string, password: string, remember: boolean) => {
-        try {
-            await axios.post("http://localhost:7000/api/v1/auth/login", { email, password, remember }, { withCredentials: true });
-            setAuth(true);
             setUser(undefined);
+            window.location.href = "/";
         }
         catch (error) {
             console.error('Error:', error);

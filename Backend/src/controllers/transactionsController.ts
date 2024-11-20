@@ -5,18 +5,16 @@ import { verifyToken, TokenInterface } from "../utils/token";
 import generateTransactionId from "../utils/idgen";
 import { fakeTransaction } from "../utils/fakeTransaction";
 import toDecimal from "../utils/toDecimal";
+import { get } from "node:http";
 
 // import transactionModel from "../models/transactionModel";
 
 const transactionsController = {
   makeTransaction: async (req: Request, res: Response, next: NextFunction) => {
     const token: string = req.cookies.jwt;
-    const { card_number, cvv, expiry_date } = req.body;
+    const { address, city, zip } = req.body;
 
     try {
-      console.log('Purchase started');
-      console.log(card_number, cvv, expiry_date);
-
       const decoded: TokenInterface = verifyToken(token);
 
       const user: UserInterface = await User.findOne({ id: decoded.id });
@@ -41,16 +39,31 @@ const transactionsController = {
         user_id: user.id,
         order_details: user.cart.items,
         total: user.cart.total,
+        subtotal: user.cart.subtotal,
+        discount: user.cart.discount,
+        percentage: user.cart.percentage,
+        code: user.cart.code,
+        count: user.cart.count,
+        address: address,
+        city: city,
+        zip: zip,
       });
+
+      await newTransaction.save();
 
       user.cart.items = [];
       user.cart.total = toDecimal(0);
-      user.save();
-      newTransaction.save();
+      user.cart.subtotal = toDecimal(0);
+      user.cart.discount = toDecimal(0);
+      user.cart.count = 0;
+      user.cart.percentage = 0;
+      user.cart.code = "";
+
+      await user.save();
 
       return res.status(201).json({
         message: "Transaction successful",
-        newTransaction,
+        transactionId: id,
       });
     } catch (err) {
       next(err);
@@ -74,6 +87,31 @@ const transactionsController = {
       res.status(200).json({
         message: "Transactions retrieved successfully",
         transactions: transaction,
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  getTransaction: async (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.jwt;
+    const { id } = req.params;
+
+    try {
+      const decoded: TokenInterface = await verifyToken(token!);
+      const transaction = await Transaction.findOne({
+        id: id,
+      })
+
+      if (!transaction) {
+        return res.status(404).json({
+          message: "Transaction not found",
+        });
+      }
+
+      res.status(200).json({
+        message: "Transaction retrieved successfully",
+        transaction: transaction,
       });
     } catch (err) {
       next(err);

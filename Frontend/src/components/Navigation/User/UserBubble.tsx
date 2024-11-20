@@ -9,6 +9,7 @@ interface DropdownDataProps {
     name: string,
     icon: string,
     link?: string,
+    role?: string,
     onClick?: () => void
 }
 
@@ -22,22 +23,24 @@ export default function UserBubble() {
         {
             name: "Nustatymai",
             icon: "tabler:settings",
-            link: "/settings"
+            link: "/nustatymai"
         },
         {
             name: "Valdyti administratorius",
             icon: "tabler:users",
+            role: 'admin',
             onClick: adminModal
         },
         {
             name: "Valdyti nuolaidas",
             icon: "tabler:discount",
+            role: 'admin',
             onClick: discountModal
         },
         {
             name: "Atsijungti",
             icon: "tabler:logout",
-            highlight: true,
+            role: 'user',
             onClick: logout
         }
     ]
@@ -54,6 +57,12 @@ export default function UserBubble() {
         };
     }, []);
 
+    const openDropdown = (event: MouseEvent) => {
+        event.preventDefault();
+        event?.stopPropagation();
+        setOpen(!open);
+    }
+
     // Close dropdown when an item is clicked
     const handleItemClick = (onClick?: () => void) => {
         if (onClick) onClick();
@@ -64,7 +73,7 @@ export default function UserBubble() {
         <div className="relative overflow-visible z-30" ref={dropdownRef}>
             {
                 auth ? 
-                <Button icon="tabler:user" type="icon" onClick={() => setOpen(!open)}></Button>
+                <Button icon="tabler:user" type="icon" onClick={openDropdown}></Button>
                 :
                 <Button icon="tabler:user" onClick={toggle}>Prisijungti</Button>
             }
@@ -72,7 +81,7 @@ export default function UserBubble() {
                 open && <Dropdown>
                 {
                     dropdownData && dropdownData.map((item: DropdownDataProps, index: number) => (
-                        <DropdownItem key={index} icon={item.icon} link={item.link} onClick={() => handleItemClick(item.onClick)}>
+                        <DropdownItem key={index} icon={item.icon} link={item.link} role={item.role} onClick={() => handleItemClick(item.onClick)}>
                             {item.name}
                         </DropdownItem>
                     ))

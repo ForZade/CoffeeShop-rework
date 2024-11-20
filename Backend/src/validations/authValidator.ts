@@ -5,9 +5,9 @@ const authValidator = {
   register: [
     body("email") // Validates email
       .isEmail()
-      .withMessage("Invalid email format.")
+      .withMessage("Neteisingas El.pašto formatas.")
       .notEmpty()
-      .withMessage("Email must not be empty."),
+      .withMessage("Prašome pateikti El.paštą."),
 
     body("password") // Validates password
       .isStrongPassword({
@@ -17,29 +17,29 @@ const authValidator = {
         minNumbers: 1,
         minSymbols: 1,
       })
-      .withMessage("Password must meet the following requirements.")
+      .withMessage("Slaptažodis turi atitikti nurodytus reikalavimus.")
       .notEmpty()
-      .withMessage("Password must not be empty."),
+      .withMessage("Prašome pateikti slaptažodį."),
 
     body("first_name") // Validates first name
       .notEmpty()
-      .withMessage("First name must not be empty.")
+      .withMessage("Prašome pateikti vardą.")
       .matches(/^[A-Za-z]+$/)
-      .withMessage("First name cannot contain any symbols."),
+      .withMessage("Vardas negali turėti specialiųjų simbolių"),
 
     body("last_name") // Validates last name
       .notEmpty()
-      .withMessage("Last name must not be empty")
+      .withMessage("Prašome pateikti pavardę")
       .matches(/^[A-Za-z]+$/)
-      .withMessage("Last name cannot contain any symbols"),
+      .withMessage("Pavardė negali turėti specialiųjų simbolių"),
 
     body("repeat_password") // Validates repeat password
       .notEmpty()
-      .withMessage("Repeat password must not be empty")
+      .withMessage("Prašome pateikti slaptažodį.")
       .custom((value, { req }) => {
         console.log(value, req.body.password);
         if (value !== req.body.password) {
-          throw new Error("Passwords must match");
+          throw new Error("Slaptažodžiai nesutampa.");
         }
         return true;
       }),
@@ -61,16 +61,16 @@ const authValidator = {
         minNumbers: 1,
         minSymbols: 1,
       })
-      .withMessage("Password must meet the required criteria.")
+      .withMessage("Slaptažodis turi atitikti nurodytus reikalavimus.")
       .notEmpty()
-      .withMessage("Password must not be empty."),
+      .withMessage("Prašome pateikti slaptažodį."),
 
     body("repeat_password")
       .notEmpty()
-      .withMessage("Repeat password must not be empty.")
+      .withMessage("Prašome pakartoti slaptažodį.")
       .custom((value, { req }) => {
         if (value !== req.body.password) {
-          throw new Error("Passwords must match");
+          throw new Error("Slaptažodžiai nesutampa.");
         }
         return true;
       }),
@@ -86,21 +86,13 @@ const authValidator = {
   login: [
     body("email") // Validates email
       .isEmail()
-      .withMessage("Invalid email format")
+      .withMessage("Neteisingas El.pašto formatas.")
       .notEmpty()
-      .withMessage("Email must not be empty"),
+      .withMessage("Prašome pateikti El.paštą."),
 
     body("password") // Validates password
       .notEmpty()
-      .withMessage("Password must not be empty.")
-      .isStrongPassword({
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 1,
-        minSymbols: 1,
-      })
-      .withMessage("Password must meet the following requirements."),
+      .withMessage("Prašome pateikti slaptažodį."),
 
     (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
@@ -110,31 +102,11 @@ const authValidator = {
       next();
     },
   ],
-  password : [
-    body("password") // Validates password
-    .isStrongPassword({
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 1,
-    })
-    .withMessage("Password must meet the following requirements.")
-    .notEmpty()
-    .withMessage("Password must not be empty."),
-  ],
-  settingsPasswordReset: [
+  
+  changePassword: [
     body("password")
-      .isStrongPassword({
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 1,
-        minSymbols: 1,
-      })
-      .withMessage("Password must meet the required criteria.")
       .notEmpty()
-      .withMessage("Password must not be empty."),
+      .withMessage("Prašome pateikti slaptažodį."),
     
     body("newPassword")
       .isStrongPassword({
@@ -144,42 +116,20 @@ const authValidator = {
         minNumbers: 1,
         minSymbols: 1,
       })
-      .withMessage("New password must meet the required criteria.")
+      .withMessage("Naujas slaptažodis turi atitikti nurodytus reikalavimus.")
       .notEmpty()
-      .withMessage("New password must not be empty."),
+      .withMessage("Prašome pateikti nauja slaptažodį."),
   
     body("confirmPassword")
       .notEmpty()
-      .withMessage("Repeat password must not be empty.")
+      .withMessage("Prašome pakartoti slaptažodį.")
       .custom((value, { req }) => {
         if (value !== req.body.newPassword) { // Check against newPassword
-          throw new Error("Passwords must match");
+          throw new Error("Slaptažodžiai nesutampa.");
         }
         return true;
       }),
   
-    (req: Request, res: Response, next: NextFunction) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      next();
-    },
-  ],
-
-  changeName: [
-    body("first_name") // Validates first name
-      .notEmpty()
-      .withMessage("First name must not be empty.")
-      .matches(/^[A-Za-z]+$/)
-      .withMessage("First name cannot contain any symbols."),
-    
-    body("last_name") // Validates last name
-      .notEmpty()
-      .withMessage("Last name must not be empty")
-      .matches(/^[A-Za-z]+$/)
-      .withMessage("Last name cannot contain any symbols"),
-    
     (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {

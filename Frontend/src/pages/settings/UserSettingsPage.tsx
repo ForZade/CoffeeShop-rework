@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import UserSettingsForm from "../components/Forms/UserSettingsForm";
-import { useAuth } from "../contexts/AuthContext";
+import UserForm from "../../components/Forms/UserForm";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function UserSettingsPage () {
     const { checkAuth } = useAuth();
@@ -20,6 +20,6 @@ export default function UserSettingsPage () {
 
 
     return(
-        <UserSettingsForm/>
+        <UserForm/>
     )
 }

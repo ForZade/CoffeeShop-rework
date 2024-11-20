@@ -6,7 +6,8 @@ import toDecimal, { addDecimals, divideDecimals, multiplyDecimals, subtractDecim
 import { sendContactEmail } from "../utils/email";
 import mongoose from "mongoose";
 import Discount, { DiscountInterface } from "../models/discountModel";
-import { generateDiscountCode } from "../utils/idgen"; // r stands for random
+import { generateDiscountCode } from "../utils/idgen";
+import calculateCart from "../utils/cart";
 
 interface CartTotalInterface {
   total: mongoose.Types.Decimal128;
@@ -78,7 +79,7 @@ const userControllers = {
   },
   
   addAdmin: async (req: Request, res: Response, next: NextFunction) => {
-    const params: string | number = req.params.identifier;
+    const params: string = req.params.email;
 
     try {
       let user: UserInterface;
@@ -113,7 +114,7 @@ const userControllers = {
   },
 
   removeAdmin: async (req: Request, res: Response, next: NextFunction) => {
-    const params: string | number = req.params.identifier;
+    const params: string = req.params.email;
 
     try {
       let user: UserInterface;
@@ -224,6 +225,7 @@ const userControllers = {
       });
 
       await discount.save();
+
       res.status(200).json({
         status: "Discount added successfully",
         discount: discount
@@ -244,6 +246,7 @@ const userControllers = {
           status: "Discount code not found",
         });
       }
+
       res.status(200).json({
         status: "Discount code deleted successfully",
       });
@@ -257,6 +260,7 @@ const userControllers = {
     const {new_code, percentage, expires} = req.body;
 
     try{
+
       const discount = await Discount.findOne({ code });
 
       if (!discount) {
@@ -349,6 +353,8 @@ const userControllers = {
       user.cart.percentage = discount.percentage;
 
       await user.save();
+
+      await calculateCart(decoded.id);
 
       res.status(200).json({
         status: "Discount code exists!",

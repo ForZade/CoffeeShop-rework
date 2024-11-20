@@ -17,6 +17,38 @@ const transactionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Decimal128,
       required: true,
     },
+    subtotal: {
+      type: mongoose.Schema.Types.Decimal128,
+      required: true,
+    },
+    discount: {
+      type: mongoose.Schema.Types.Decimal128,
+      required: true,
+    },
+    percentage: {
+      type: Number,
+      required: true,
+    },
+    count: {
+      type: Number,
+      required: true,
+    },
+    code: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    zip: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true },
 );

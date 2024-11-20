@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { useEffect } from 'react';
-export default function VerifyEmail() {
+import { useNavigate } from 'react-router-dom';
+export default function VerifyPage() {
 const {checkAuth, user} = useAuth();
-
+const navigate = useNavigate();
 
 useEffect(() => {
   const loadPage = async () => {
@@ -12,6 +13,12 @@ useEffect(() => {
     } 
     catch (error) {
       console.log(error)
+    }
+    finally {
+      console.log(user?.roles)
+      if (user?.roles.includes("user")) {
+        navigate("/")
+      }
     }
   } 
   

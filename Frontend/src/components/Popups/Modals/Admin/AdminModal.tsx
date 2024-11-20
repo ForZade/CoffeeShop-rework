@@ -18,9 +18,9 @@ export default function AdminModal() {
         }
     }
 
-    const addAdmin = async (id: number) => {
+    const addAdmin = async (email: string) => {
         try {
-            await axios.post(`http://localhost:7000/api/v1/users/admins/${id}`, {}, { withCredentials: true });
+            await axios.post(`http://localhost:7000/api/v1/users/admins/${email}`, {}, { withCredentials: true });
             await getAdmins();
         }
         catch (err) {
@@ -28,9 +28,9 @@ export default function AdminModal() {
         }
     }
 
-    const removeAdmin = async (id: number) => {
+    const removeAdmin = async (email: string) => {
         try {
-            await axios.delete(`http://localhost:7000/api/v1/users/admins/${id}`, { withCredentials: true });
+            await axios.delete(`http://localhost:7000/api/v1/users/admins/${email}`, { withCredentials: true });
             await getAdmins();
         }
         catch (err) {
@@ -40,12 +40,26 @@ export default function AdminModal() {
 
     return (
             <div 
-                className="w-full sm:w-[520px] h-full sm:max-h-[720px] bg-slate-100 dark:bg-zinc-700 rounded-3xl shadow-lg flex flex-col px-4 py-4 z-[100]"
-                onClick={(e) => e.stopPropagation()}
+                className="
+                    w-full sm:w-[520px] h-full sm:max-h-[720px] rounded-xl
+                    dark:bg-gradient-to-tr dark:from-[#C29469] dark:via-[#ccc5c3] dark:to-[#C29469] bg-white
+                "
             >
-                <AdminSearch addAdmin={addAdmin}/>
+                <div
+                    className="
+                        w-full h-full rounded-xl p-0.5
+                        bg-gradient-to-br from-transparent dark:from-transparent via-30% via-[#f1e2d2] dark:via-[#523428] to-[#f1e2d2] dark:to-[#523428]
+                    "
+                >
+                    <div 
+                        className="w-full h-full bg-[#f1e2d2] dark:bg-[#523428] rounded-xl shadow-lg flex flex-col px-4 py-4 z-[100]"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <AdminSearch addAdmin={addAdmin}/>
 
-                <AdminList getAdmins={getAdmins} admins={admins} removeAdmin={removeAdmin}/>
+                        <AdminList getAdmins={getAdmins} admins={admins} removeAdmin={removeAdmin}/>
+                    </div>
+                </div>
             </div>
     )
 }

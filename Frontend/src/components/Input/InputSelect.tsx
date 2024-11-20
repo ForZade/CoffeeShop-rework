@@ -1,24 +1,32 @@
 import InputDropdown from "./InputDropdown"
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion";
+import { use } from "framer-motion/client";
 
 interface InputProps {
     inputName: string;
     dropdownData: string[];
     register: unknown;
+    setValue?: unknown;
+    value?: string | number;
 }
 
-export default function InputSelect({ inputName, dropdownData, register, setValue }: InputProps) {
-    const [option, setOption] = useState(dropdownData[dropdownData.length - 1]);
+export default function InputSelect({ inputName, dropdownData, register, setValue, value }: InputProps) {
+    const [option, setOption] = useState(value || dropdownData[dropdownData.length - 1]);
     const [open, setOpen] = useState<boolean>(false);
 
-    const selectOption = (option: string) => {
-        setOption(option);
+    const selectOption = (selectedOption: string) => {
+        console.log(selectedOption);
+        setOption(selectedOption);
         setOpen(false);
     }
 
     useEffect(() => {
-        setValue("productCategory", option);
+        setOption(value ? value : dropdownData[dropdownData.length - 1]);
+    }, [value]);
+
+    useEffect(() => {
+        setValue("category", option);
     }, [option])
 
     return (

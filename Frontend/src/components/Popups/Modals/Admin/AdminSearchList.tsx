@@ -11,7 +11,7 @@ interface Props {
     users: UserProps[] 
     search: string
     open: boolean
-    addAdmin: (id: number) => void
+    addAdmin: (email: string) => void
 }
 
 export default function AdminSearchList({ users, search, open, addAdmin }: Props) {
@@ -41,7 +41,7 @@ export default function AdminSearchList({ users, search, open, addAdmin }: Props
                         <li
                             key={user.id}
                             className="w-full h-12 px-4 py-4 flex items-center gap-4 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-                            onClick={() => addAdmin(user.id)}
+                            onClick={() => addAdmin(user.email)}
                         >
                             <div className="flex items-center gap-4 w-10 h-10 bg-slate-100 dark:bg-zinc-700 rounded-full overflow-hidden border border-slate-300 dark:border-zinc-900">
                                 <img

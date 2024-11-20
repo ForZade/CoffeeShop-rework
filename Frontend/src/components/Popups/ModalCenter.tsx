@@ -3,6 +3,7 @@ import { useAlert } from "../../contexts/AlertContext";
 import AdminModal from "./Modals/Admin/AdminModal";
 import DiscountModal from "./Modals/Discount/DiscountModal";
 import ProductModal from "./Modals/Product/ProductModal";
+import PasswordModal from "./Modals/Password/PasswordModal";
 
 export default function ModalCenter() {
     const { modal, closeModal } = useAlert();
@@ -16,7 +17,7 @@ export default function ModalCenter() {
                     transition={{ duration: 0.3 }}
                 >
                     <main 
-                        className="w-screen h-screen bg-zinc-950 bg-opacity-40 grid place-items-center absolute top-0 left-0 px-8 py-24 z-40"
+                        className="w-screen h-screen bg-zinc-950 bg-opacity-40 flex items-center justify-center fixed top-0 left-0 px-8 py-24 z-40"
                         onClick={closeModal}
                     >
                         {
@@ -58,9 +59,24 @@ export default function ModalCenter() {
                                         animate={{ scaleY: 1 }}
                                         exit={{ scaleY: 0 }}
                                         transition={{ duration: 0.3 }}
-                                        className="h-full"
+                                        className="w-min h-min"
                                     >
                                         <ProductModal />
+                                    </motion.div>
+                                </AnimatePresence>
+                            )
+                        }
+                        {
+                            modal === "password" && (
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key="product"
+                                        initial={{ scaleY: 0 }}
+                                        animate={{ scaleY: 1 }}
+                                        exit={{ scaleY: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <PasswordModal />
                                     </motion.div>
                                 </AnimatePresence>
                             )

@@ -6,7 +6,7 @@ interface ProductContextProps {
     products: ProductProps[];
     setProducts: (products: ProductProps[]) => void;
 
-    refreshProducts?: (guild: string) => Promise<void>
+    refreshProducts: ({ category }: { category?: string}) => void
 }
 
 const defaultContextValue: ProductContextProps = {
@@ -25,15 +25,16 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
         setProductsArr(products);
     }
 
-    const refreshProducts = async (guild: string) => {
+    const refreshProducts = async ({ category }: { category?: string}) => {
         try {
             let response;
 
-            if (guild) {
-                response = await axios.get(`http://localhost:7000/api/v1/products/${guild}`, { withCredentials: true });
+            if (category) {
+                response = await axios.get(`http://localhost:7000/api/v1/products/${category}`, { withCredentials: true });
                 
                 if (response.data) {
-                    return setProducts(response.data.data);
+                    setProducts(response.data.data);
+                    return
                 }
             }
 
@@ -41,13 +42,11 @@ const ProductProvider = ({ children }: { children: React.ReactNode }) => {
             
             if (response.data) {
                 setProducts(response.data.data);
-                return Promise.resolve();
+                return
             }
 
-            return Promise.reject();
         } catch (err) {
             console.log(err);
-            return Promise.reject(err);
         }
     }
     

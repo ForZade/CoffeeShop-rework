@@ -26,7 +26,7 @@ export default function MainLayout() {
                     bg-gradient-to-br  dark:to-[#221518] dark:from-[#5a4842] to-[#f1e2d2] from-slate-100 transition-[background]
                 `}>
                 <Navbar />
-                <main className="w-full grow flex flex-col mt-32">
+                <main className={`w-full grow flex flex-col mt-32 ${modal && "overflow-hidden"}`}>
                     <Outlet />
                 </main>
             </main>

@@ -80,6 +80,8 @@ const cartController = {
     
           await user.save();
     
+          await calculateCart(decoded.id);
+
           res.status(200).json({
             message: "item added to cart",
           });
@@ -88,113 +90,64 @@ const cartController = {
         }
       },
     
-      // removeFromCart: async (req: Request, res: Response, next: NextFunction) => {
-      //   const token: string = req.cookies.jwt;
-      //   const productId: number = parseInt(req.params.productId);
-    
-      //   try {
-      //     const decoded: TokenInterface = await verifyToken(token);
-    
-      //     const user: UserInterface = await User.findOne({
-      //       id: decoded.id,
-      //     });
-    
-      //     if (!user) {
-      //       return res.status(400).json({
-      //         message: "User not found",
-      //       });
-      //     }
-    
-      //     const product: ProductInterface = await Product.findOne({
-      //       id: productId,
-      //     });
-    
-      //     if (!product) {
-      //       return res.status(400).json({
-      //         message: "Product not found",
-      //       });
-      //     }
-    
-      //     const existingItem = user.cart.items.find(
-      //       (item) => item.productId === productId,
-      //     );
-    
-      //     if (!existingItem) {
-      //       return res.status(400).json({
-      //         message: "Item not found in cart",
-      //       });
-      //     }
-    
-      //     if (existingItem.quantity > 1) {
-      //       existingItem.quantity--;
-      //     }
-      //     else if (existingItem.quantity === 1) {
-      //       user.cart.items = user.cart.items.filter((item) => item.productId !== productId);
-      //     }
-    
-      //     user.cart.items.filter((item) => item.productId !== productId);
-    
-      //     await user.save();
-    
-      //     res.status(200).json({
-      //       message: "item removed",
-      //     });
-      //   } catch (err) {
-      //     next(err);
-      //   }
-      // },
-
       removeFromCart: async (req: Request, res: Response, next: NextFunction) => {
         const token: string = req.cookies.jwt;
         const productId: number = parseInt(req.params.productId);
+        const { purge } = req.body;
     
         try {
-            const decoded: TokenInterface = await verifyToken(token);
+          const decoded: TokenInterface = await verifyToken(token);
     
-            const user: UserInterface = await User.findOne({
-                id: decoded.id,
+          const user: UserInterface = await User.findOne({
+            id: decoded.id,
+          });
+    
+          if (!user) {
+            return res.status(400).json({
+              message: "User not found",
             });
+          }
     
-            if (!user) {
-                return res.status(400).json({
-                    message: "User not found",
-                });
-            }
+          const product: ProductInterface = await Product.findOne({
+            id: productId,
+          });
     
-            const product: ProductInterface = await Product.findOne({
-                id: productId,
+          if (!product) {
+            return res.status(400).json({
+              message: "Product not found",
             });
+          }
     
-            if (!product) {
-                return res.status(400).json({
-                    message: "Product not found",
-                });
-            }
+          const existingItem = user.cart.items.find(
+            (item) => item.productId === productId,
+          );
     
-            const existingItem = user.cart.items.find(
-                (item) => item.productId === productId,
-            );
+          if (!existingItem) {
+            return res.status(400).json({
+              message: "Item not found in cart",
+            });
+          }
     
-            if (!existingItem) {
-                return res.status(400).json({
-                    message: "Item not found in cart",
-                });
-            }
-    
-            // Remove item completely when it is found
+          if (existingItem.quantity > 1 && !purge) {
+            existingItem.quantity--;
+          }
+          else if (existingItem.quantity === 1 || purge) {
             user.cart.items = user.cart.items.filter((item) => item.productId !== productId);
+          }
     
-            // Save the updated user with the modified cart
-            await user.save();
+          user.cart.items.filter((item) => item.productId !== productId);
     
-            res.status(200).json({
-                message: "Item removed",
-                data: user.cart,  // Send back the updated cart data
-            });
+          await user.save();
+    
+          await calculateCart(decoded.id);
+
+          res.status(200).json({
+            message: "item removed",
+          });
         } catch (err) {
-            next(err);
+          next(err);
         }
-    },    
+      },
     
       clearCart: async (req: Request, res: Response, next: NextFunction) => {
         const token: string = req.cookies.jwt;

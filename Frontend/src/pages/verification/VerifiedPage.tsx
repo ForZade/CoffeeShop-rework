@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
-export default function EmailVerified() {
+export default function VerifiedPage() {
     const { token } = useParams();
     const [verify, setVerify] = useState(false);
     const hasFetched = useRef(false);

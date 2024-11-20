@@ -20,6 +20,7 @@ interface CartDetails {
 // Define CartContextProps type
 interface CartContextProps {
     cart: CartDetails;
+    setCart: (cart: CartDetails) => void;
     getCart: () => Promise<void>;
     addItemToCart: (productId: number, quantity: number) => Promise<void>;
     updateItemQuantity: (productId: number, quantity: number) => Promise<void>;
@@ -37,6 +38,7 @@ const defaultContextValue: CartContextProps = {
         percentage: 0,
         count: 0,
     },
+    setCart: () => {},
     getCart: async () => {},
     addItemToCart: async () => {},
     updateItemQuantity: async () => {},
@@ -116,6 +118,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         <CartContext.Provider
             value={{
                 cart,
+                setCart,
                 getCart,
                 addItemToCart,
                 updateItemQuantity,

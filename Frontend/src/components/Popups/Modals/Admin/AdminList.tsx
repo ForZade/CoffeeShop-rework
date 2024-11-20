@@ -10,7 +10,7 @@ interface AdminProps {
     roles: string[]
 }
 
-export default function AdminList({ getAdmins, admins, removeAdmin }: { getAdmins: () => void, admins: AdminProps[], removeAdmin: (id: number) => void }) {
+export default function AdminList({ getAdmins, admins, removeAdmin }: { getAdmins: () => void, admins: AdminProps[], removeAdmin: (email: string) => void }) {
     
 
     useEffect(() => {
@@ -42,7 +42,7 @@ export default function AdminList({ getAdmins, admins, removeAdmin }: { getAdmin
                         <section className="flex items-center gap-1">
                             <button 
                                 className="w-8 h-8 bg-red-500 dark:bg-red-400 rounded-md text-white grid place-items-center"
-                                onClick={() => removeAdmin(admin.id)}
+                                onClick={() => removeAdmin(admin.email)}
                             >
                                 <Icon icon="tabler:trash" className="w-5 h-5"/>
                             </button>
