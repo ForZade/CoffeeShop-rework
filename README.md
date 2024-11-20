@@ -160,4 +160,4 @@ This project was a collective effort by a team of developers. Each member contri
 |Ričardas    |[KaRichR](https://github.com/KaRichR)            | Full-stack Development           |
 
 ## License
-#This project is licensed under the MIT License. See the **[LICENSE]()** file for details.
+#This project is licensed under the MIT License. See the **[LICENSE](https://github.com/4Zade/CoffeeShop/blob/fix-Lukas/LICENSE.md#mit-license)** file for details.
