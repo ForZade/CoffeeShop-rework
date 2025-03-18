@@ -1,6 +1,6 @@
 # ☕ CoffeeShop
+A full-stack coffee shop website created as a team school project. Reworked and upgraded version.
 
-A full-stack coffee shop website that allows users to browse products, add them to the cart, and make purchases. Admin users can manage products, administrators and discounts.
 ## Table of contents
 - [Getting Started](https://github.com/4Zade/CoffeeShop/blob/fix-Lukas/README.md#getting-started)
 - [Features](https://github.com/4Zade/CoffeeShop/tree/fix-Lukas?tab=readme-ov-file#features)
